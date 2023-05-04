@@ -400,6 +400,16 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarServerHostImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_SERVER_HOST);
     cedarServerHostImpex.add(SystemComponent.SERVER_MONITOR);
 
+    Set<SystemComponent> cedarHttpPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT);
+    cedarHttpPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> cedarAdminPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT);
+    cedarAdminPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    cedarAdminPortBridge.add(SystemComponent.SERVER_MONITOR);
+    Set<SystemComponent> cedarStopPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT);
+    cedarStopPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> cedarServerHostBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST);
+    cedarServerHostBridge.add(SystemComponent.SERVER_MONITOR);
+
     // Compute the reverse map
     componentToVariable = new LinkedHashMap<>();
     for (SystemComponent component : SystemComponent.values()) {

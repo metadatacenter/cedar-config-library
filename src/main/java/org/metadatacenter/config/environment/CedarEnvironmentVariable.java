@@ -142,7 +142,12 @@ public enum CedarEnvironmentVariable {
   CEDAR_IMPEX_SERVER_HOST("CEDAR_IMPEX_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_IMPEX_HTTP_PORT("CEDAR_IMPEX_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_IMPEX_ADMIN_PORT("CEDAR_IMPEX_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_IMPEX_STOP_PORT("CEDAR_IMPEX_STOP_PORT", CedarEnvironmentVariableType.NUMERIC);
+  CEDAR_IMPEX_STOP_PORT("CEDAR_IMPEX_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
+
+  CEDAR_BRIDGE_SERVER_HOST("CEDAR_BRIDGE_SERVER_HOST", CedarEnvironmentVariableType.STRING),
+  CEDAR_BRIDGE_HTTP_PORT("CEDAR_BRIDGE_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
+  CEDAR_BRIDGE_ADMIN_PORT("CEDAR_BRIDGE_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
+  CEDAR_BRIDGE_STOP_PORT("CEDAR_BRIDGE_STOP_PORT", CedarEnvironmentVariableType.NUMERIC);
 
   private final String name;
   private final CedarEnvironmentVariableSecure secure;

@@ -210,6 +210,11 @@ servers:
     adminPort: "${CEDAR_IMPEX_ADMIN_PORT}"
     stopPort: "${CEDAR_IMPEX_STOP_PORT}"
     adminBase: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_ADMIN_PORT}/"
+  bridge:
+    httpPort: "${CEDAR_BRIDGE_HTTP_PORT}"
+    adminPort: "${CEDAR_BRIDGE_ADMIN_PORT}"
+    stopPort: "${CEDAR_BRIDGE_STOP_PORT}"
+    adminBase: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_ADMIN_PORT}/"
 
 
 #Default values for user profile

@@ -32,6 +32,8 @@ public class ServersConfig {
 
   private ServerConfig impex;
 
+  private ServerConfig bridge;
+
   public ServerConfig getGroup() {
     return group;
   }
@@ -88,6 +90,10 @@ public class ServersConfig {
     return impex;
   }
 
+  public ServerConfig getBridge() {
+    return impex;
+  }
+
   public ServerConfig get(ServerName serverName) {
     switch (serverName) {
       case GROUP:
@@ -118,6 +124,8 @@ public class ServersConfig {
         return monitor;
       case IMPEX:
         return impex;
+      case BRIDGE:
+        return bridge;
       default:
         return null;
     }

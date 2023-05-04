@@ -147,6 +147,10 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_IMPEX_ADMIN_PORT.getName(), "9108");
     env.put(CedarEnvironmentVariable.CEDAR_IMPEX_STOP_PORT.getName(), "9208");
 
+    env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT.getName(), "9015");
+    env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT.getName(), "9115");
+    env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT.getName(), "9215");
+
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER1_ID.getName(), "https://metadatacenter.org/users/user1-uuid");
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER2_ID.getName(), "https://metadatacenter.org/users/user2-uuid");
 
