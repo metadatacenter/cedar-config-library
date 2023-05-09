@@ -221,6 +221,13 @@ public class CedarConfigEnvironmentDescriptor {
     cedarSaltApiKey.add(SystemComponent.CADSR_TOOL);
     cedarSaltApiKey.add(SystemComponent.SERVER_RESOURCE); //profile creation triggered by event listener
 
+    Set<SystemComponent> dataCiteRepositoryId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_ID);
+    dataCiteRepositoryId.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteRepositoryPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PASSWORD);
+    dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
+    dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
+
     Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable
         .CEDAR_REDIS_PERSISTENT_HOST);
     redisPersistentHost.addAll(allMicroservices);

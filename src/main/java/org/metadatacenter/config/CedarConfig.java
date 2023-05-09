@@ -108,6 +108,9 @@ public class CedarConfig extends Configuration {
   @JsonProperty("sundial")
   private SundialConfiguration sundialConfig;
 
+  @JsonProperty("bridge")
+  private BridgeConfig bridgeConfig;
+
   protected static final Logger log = LoggerFactory.getLogger(CedarConfig.class);
 
   private static CedarConfig instance;
@@ -294,6 +297,8 @@ public class CedarConfig extends Configuration {
   public SundialConfiguration getSundialConfig() {
     return sundialConfig;
   }
+
+  public BridgeConfig getBridgeConfig() { return bridgeConfig; }
 
   // Utility methods
 
