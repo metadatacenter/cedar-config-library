@@ -227,6 +227,8 @@ public class CedarConfigEnvironmentDescriptor {
     dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
     dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteTemplateId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_TEMPLATE_ID);
+    dataCiteTemplateId.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable
         .CEDAR_REDIS_PERSISTENT_HOST);
