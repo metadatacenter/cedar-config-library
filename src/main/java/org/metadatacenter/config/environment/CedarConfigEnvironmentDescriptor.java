@@ -129,6 +129,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarAdminUserApiKey.add(SystemComponent.SERVER_SUBMISSION);
     cedarAdminUserApiKey.add(SystemComponent.SERVER_MONITOR);
     cedarAdminUserApiKey.add(SystemComponent.SERVER_OPENVIEW);
+    cedarAdminUserApiKey.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarAdminUserPasswd = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ADMIN_USER_PASSWORD);
     cedarAdminUserPasswd.add(SystemComponent.ADMIN_TOOL); // all keycloak related tasks
