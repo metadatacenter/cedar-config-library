@@ -221,6 +221,13 @@ public class CedarConfigEnvironmentDescriptor {
     cedarSaltApiKey.add(SystemComponent.CADSR_TOOL);
     cedarSaltApiKey.add(SystemComponent.SERVER_RESOURCE); //profile creation triggered by event listener
 
+    Set<SystemComponent> dataCiteRepositoryId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_ID);
+    dataCiteRepositoryId.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteRepositoryPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PASSWORD);
+    dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
+    dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
+
     Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable
         .CEDAR_REDIS_PERSISTENT_HOST);
     redisPersistentHost.addAll(allMicroservices);
@@ -399,6 +406,16 @@ public class CedarConfigEnvironmentDescriptor {
     cedarStopPortImpex.add(SystemComponent.SERVER_IMPEX);
     Set<SystemComponent> cedarServerHostImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_SERVER_HOST);
     cedarServerHostImpex.add(SystemComponent.SERVER_MONITOR);
+
+    Set<SystemComponent> cedarHttpPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT);
+    cedarHttpPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> cedarAdminPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT);
+    cedarAdminPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    cedarAdminPortBridge.add(SystemComponent.SERVER_MONITOR);
+    Set<SystemComponent> cedarStopPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT);
+    cedarStopPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> cedarServerHostBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST);
+    cedarServerHostBridge.add(SystemComponent.SERVER_MONITOR);
 
     // Compute the reverse map
     componentToVariable = new LinkedHashMap<>();
