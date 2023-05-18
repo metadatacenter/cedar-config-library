@@ -315,6 +315,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarPortArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarPortArtifact.add(SystemComponent.SERVER_WORKER);
+    cedarPortArtifact.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> cedarAdminPortArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_MONITOR);
@@ -325,6 +326,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarServerHostArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarServerHostArtifact.add(SystemComponent.SERVER_OPENVIEW);
     cedarServerHostArtifact.add(SystemComponent.SERVER_MONITOR);
+    cedarServerHostArtifact.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarHttpPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT);
     cedarHttpPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
