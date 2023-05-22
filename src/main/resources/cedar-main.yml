@@ -370,6 +370,7 @@ bridge:
     repositoryId: "${CEDAR_DATACITE_REPOSITORY_ID}"
     password: "${CEDAR_DATACITE_REPOSITORY_PASSWORD}"
     endpointUrl: "${CEDAR_DATACITE_API_ENDPOINT_URL}"
+    templateId: "${CEDAR_DATACITE_TEMPLATE_ID}"
 
 testUsers:
   testUser1:

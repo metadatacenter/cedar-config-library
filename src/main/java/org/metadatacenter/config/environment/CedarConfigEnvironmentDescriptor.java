@@ -129,6 +129,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarAdminUserApiKey.add(SystemComponent.SERVER_SUBMISSION);
     cedarAdminUserApiKey.add(SystemComponent.SERVER_MONITOR);
     cedarAdminUserApiKey.add(SystemComponent.SERVER_OPENVIEW);
+    cedarAdminUserApiKey.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarAdminUserPasswd = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ADMIN_USER_PASSWORD);
     cedarAdminUserPasswd.add(SystemComponent.ADMIN_TOOL); // all keycloak related tasks
@@ -227,6 +228,8 @@ public class CedarConfigEnvironmentDescriptor {
     dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
     dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteTemplateId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_TEMPLATE_ID);
+    dataCiteTemplateId.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable
         .CEDAR_REDIS_PERSISTENT_HOST);
@@ -312,6 +315,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarPortArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarPortArtifact.add(SystemComponent.SERVER_WORKER);
+    cedarPortArtifact.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> cedarAdminPortArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_MONITOR);
@@ -322,6 +326,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarServerHostArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarServerHostArtifact.add(SystemComponent.SERVER_OPENVIEW);
     cedarServerHostArtifact.add(SystemComponent.SERVER_MONITOR);
+    cedarServerHostArtifact.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarHttpPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT);
     cedarHttpPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);

@@ -7,6 +7,8 @@ public class DataCiteConfig {
 
     private String endpointUrl;
 
+    private String templateId;
+
     public String getRepositoryId() {
         return repositoryId;
     }
@@ -17,5 +19,9 @@ public class DataCiteConfig {
 
     public String getEndpointUrl() {
         return endpointUrl;
+    }
+
+    public String getTemplateId() {
+        return templateId;
     }
 }
