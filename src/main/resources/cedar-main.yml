@@ -251,6 +251,8 @@ blueprintUserProfile:
       sortDirection: "asc"
       viewMode: "grid"
     stylesheet: "default"
+    metadataEditor:
+      useNewUI: false
 
 #Terminology server configuration
 terminology:
