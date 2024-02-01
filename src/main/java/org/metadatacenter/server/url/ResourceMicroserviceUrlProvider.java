@@ -31,4 +31,8 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
     return getArtifactTypeWithId(resourceType, id.getId(), Optional.empty());
   }
 
+  public String getCommandDOIUpdate() {
+    return base + "/command/annotations/doi";
+  }
+
 }
