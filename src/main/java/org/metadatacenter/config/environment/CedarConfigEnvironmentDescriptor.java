@@ -226,6 +226,8 @@ public class CedarConfigEnvironmentDescriptor {
     dataCiteRepositoryId.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteRepositoryPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PASSWORD);
     dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteRepositoryPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PREFIX);
+    dataCiteRepositoryPrefix.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
     dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteTemplateId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_TEMPLATE_ID);

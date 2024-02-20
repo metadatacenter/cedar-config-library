@@ -1,27 +1,33 @@
 package org.metadatacenter.config;
 
 public class DataCiteConfig {
-    private String repositoryId;
+  private String repositoryId;
 
-    private String password;
+  private String password;
 
-    private String endpointUrl;
+  private String prefix;
 
-    private String templateId;
+  private String endpointUrl;
 
-    public String getRepositoryId() {
-        return repositoryId;
-    }
+  private String templateId;
 
-    public String getPassword() {
-        return password;
-    }
+  public String getRepositoryId() {
+    return repositoryId;
+  }
 
-    public String getEndpointUrl() {
-        return endpointUrl;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public String getTemplateId() {
-        return templateId;
-    }
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public String getEndpointUrl() {
+    return endpointUrl;
+  }
+
+  public String getTemplateId() {
+    return templateId;
+  }
 }
