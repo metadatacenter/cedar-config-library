@@ -1,5 +1,7 @@
 package org.metadatacenter.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DataCiteConfig {
   private String repositoryId;
 
@@ -10,6 +12,9 @@ public class DataCiteConfig {
   private String endpointUrl;
 
   private String templateId;
+
+  @JsonProperty("enabled")
+  private boolean enabled;
 
   public String getRepositoryId() {
     return repositoryId;
@@ -29,5 +34,9 @@ public class DataCiteConfig {
 
   public String getTemplateId() {
     return templateId;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
   }
 }

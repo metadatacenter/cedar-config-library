@@ -373,6 +373,7 @@ bridge:
     prefix: "${CEDAR_DATACITE_REPOSITORY_PREFIX}"
     endpointUrl: "${CEDAR_DATACITE_API_ENDPOINT_URL}"
     templateId: "${CEDAR_DATACITE_TEMPLATE_ID}"
+    enabled: "${CEDAR_DATACITE_ENABLED}"
 
 testUsers:
   testUser1:
