@@ -226,13 +226,16 @@ public class CedarConfigEnvironmentDescriptor {
     dataCiteRepositoryId.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteRepositoryPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PASSWORD);
     dataCiteRepositoryPassword.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteRepositoryPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PREFIX);
+    dataCiteRepositoryPrefix.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteApiEndpointUrl = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL);
     dataCiteApiEndpointUrl.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteTemplateId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_TEMPLATE_ID);
     dataCiteTemplateId.add(SystemComponent.SERVER_BRIDGE);
+    Set<SystemComponent> dataCiteEnabled = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_ENABLED);
+    dataCiteEnabled.add(SystemComponent.SERVER_BRIDGE);
 
-    Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable
-        .CEDAR_REDIS_PERSISTENT_HOST);
+    Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_HOST);
     redisPersistentHost.addAll(allMicroservices);
     redisPersistentHost.add(SystemComponent.ADMIN_TOOL);
     redisPersistentHost.add(SystemComponent.CADSR_TOOL);

@@ -1,27 +1,42 @@
 package org.metadatacenter.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DataCiteConfig {
-    private String repositoryId;
+  private String repositoryId;
 
-    private String password;
+  private String password;
 
-    private String endpointUrl;
+  private String prefix;
 
-    private String templateId;
+  private String endpointUrl;
 
-    public String getRepositoryId() {
-        return repositoryId;
-    }
+  private String templateId;
 
-    public String getPassword() {
-        return password;
-    }
+  @JsonProperty("enabled")
+  private boolean enabled;
 
-    public String getEndpointUrl() {
-        return endpointUrl;
-    }
+  public String getRepositoryId() {
+    return repositoryId;
+  }
 
-    public String getTemplateId() {
-        return templateId;
-    }
+  public String getPassword() {
+    return password;
+  }
+
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public String getEndpointUrl() {
+    return endpointUrl;
+  }
+
+  public String getTemplateId() {
+    return templateId;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
 }
