@@ -200,6 +200,7 @@ servers:
     adminPort: "${CEDAR_OPENVIEW_ADMIN_PORT}"
     stopPort: "${CEDAR_OPENVIEW_STOP_PORT}"
     adminBase: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_ADMIN_PORT}/"
+    uriBase: "https://openview.${CEDAR_HOST}/"
   monitor:
     httpPort: "${CEDAR_MONITOR_HTTP_PORT}"
     adminPort: "${CEDAR_MONITOR_ADMIN_PORT}"
@@ -369,8 +370,10 @@ bridge:
   dataCite:
     repositoryId: "${CEDAR_DATACITE_REPOSITORY_ID}"
     password: "${CEDAR_DATACITE_REPOSITORY_PASSWORD}"
+    prefix: "${CEDAR_DATACITE_REPOSITORY_PREFIX}"
     endpointUrl: "${CEDAR_DATACITE_API_ENDPOINT_URL}"
     templateId: "${CEDAR_DATACITE_TEMPLATE_ID}"
+    enabled: "${CEDAR_DATACITE_ENABLED}"
 
 testUsers:
   testUser1:

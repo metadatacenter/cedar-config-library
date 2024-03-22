@@ -26,7 +26,7 @@ public class ServersConfig {
 
   private ServerConfig worker;
 
-  private ServerConfig openview;
+  private OpenviewServerConfig openview;
 
   private ServerConfig monitor;
 
@@ -78,7 +78,7 @@ public class ServersConfig {
     return worker;
   }
 
-  public ServerConfig getOpenview() {
+  public OpenviewServerConfig getOpenview() {
     return openview;
   }
 
