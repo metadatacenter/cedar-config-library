@@ -270,6 +270,7 @@ worker:
 
 importExport:
   exportDir: "${CEDAR_HOME}/export/"
+  exportConvertedDir: "${CEDAR_HOME}/export-converted/"
   importDir: "${CEDAR_HOME}/import/"
 
 resourceRESTAPI:
