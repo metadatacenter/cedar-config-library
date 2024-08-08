@@ -163,8 +163,11 @@ public class CedarConfigEnvironmentDescriptor {
     cedarOpensearchHost.add(SystemComponent.SERVER_RESOURCE);
     cedarOpensearchHost.add(SystemComponent.SERVER_MONITOR);
 
-    Set<SystemComponent> cedarOpensearchTransportPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT);
-    cedarOpensearchTransportPort.addAll(cedarOpensearchHost);
+    Set<SystemComponent> cedarOpenSearchRestPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_REST_PORT);
+    cedarOpenSearchRestPort.addAll(cedarOpensearchHost);
+
+    Set<SystemComponent> cedarOpenSearchTransportPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT);
+    cedarOpenSearchTransportPort.addAll(cedarOpensearchHost);
 
     Set<SystemComponent> cedarMessagingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_HOST);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_MESSAGING);

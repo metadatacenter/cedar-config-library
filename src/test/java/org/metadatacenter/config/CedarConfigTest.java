@@ -85,6 +85,7 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_BIOPORTAL_REST_BASE.getName(), "http://data.bioontology.org/");
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_HOST.getName(), "127.0.0.1");
+    env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_REST_PORT.getName(), "9200");
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT.getName(), "9300");
 
     env.put(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_HOST.getName(), "127.0.0.1");

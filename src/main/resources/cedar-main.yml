@@ -92,6 +92,7 @@ elasticsearch:
     rulesIndex:
       name: "cedar-rules"
   host: "${CEDAR_OPENSEARCH_HOST}"
+  restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
   size: 1000
   scrollKeepAlive: 60000
