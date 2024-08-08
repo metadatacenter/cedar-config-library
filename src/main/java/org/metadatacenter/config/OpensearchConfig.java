@@ -8,6 +8,8 @@ public class OpensearchConfig {
 
   private String host;
 
+  private int restPort;
+
   private int transportPort;
 
   private int size;
@@ -24,6 +26,10 @@ public class OpensearchConfig {
 
   public String getHost() {
     return host;
+  }
+
+  public int getRestPort() {
+    return restPort;
   }
 
   public int getTransportPort() {
