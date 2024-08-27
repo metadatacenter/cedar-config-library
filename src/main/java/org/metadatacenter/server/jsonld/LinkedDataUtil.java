@@ -96,11 +96,13 @@ public class LinkedDataUtil {
         }
       }
       // iterate over possible children
-      Iterator<Map.Entry<String, JsonNode>> childrenIterator = fieldContent.fields();
-      while (childrenIterator.hasNext()) {
-        Map.Entry<String, JsonNode> child = childrenIterator.next();
-        if (!child.getKey().equals(LinkedData.CONTEXT) && !child.getKey().equals(LinkedData.ID)) {
-          addElementInstanceIdsToPotentialElementInstance(child.getValue());
+      if (isElementInstance(fieldContent)) {
+        Iterator<Map.Entry<String, JsonNode>> childrenIterator = fieldContent.fields();
+        while (childrenIterator.hasNext()) {
+          Map.Entry<String, JsonNode> child = childrenIterator.next();
+          if (!child.getKey().equals(LinkedData.CONTEXT) && !child.getKey().equals(LinkedData.ID)) {
+            addElementInstanceIdsToPotentialElementInstance(child.getValue());
+          }
         }
       }
     }
@@ -110,6 +112,10 @@ public class LinkedDataUtil {
         addElementInstanceIdsToPotentialElementInstance(fieldContent.get(i));
       }
     }
+  }
+
+  private boolean isElementInstance(JsonNode fieldContent) {
+    return fieldContent != null && fieldContent.has(LinkedData.CONTEXT);
   }
 
   public boolean isValidId(String id) {
