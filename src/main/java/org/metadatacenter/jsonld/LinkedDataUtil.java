@@ -10,11 +10,7 @@ import org.metadatacenter.model.CedarResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class LinkedDataUtil {
 
@@ -97,6 +93,14 @@ public class LinkedDataUtil {
           String id = buildNewLinkedDataId(CedarResourceType.ELEMENT_INSTANCE);
           ((ObjectNode) fieldContent).put(LinkedData.ID, id);
           addElementInstanceIds(fieldContent, CedarResourceType.INSTANCE);
+        }
+      }
+      // iterate over possible children
+      Iterator<Map.Entry<String, JsonNode>> childrenIterator = fieldContent.fields();
+      while (childrenIterator.hasNext()) {
+        Map.Entry<String, JsonNode> child = childrenIterator.next();
+        if (!child.getKey().equals(LinkedData.CONTEXT) && !child.getKey().equals(LinkedData.ID)) {
+          addElementInstanceIdsToPotentialElementInstance(child.getValue());
         }
       }
     }
