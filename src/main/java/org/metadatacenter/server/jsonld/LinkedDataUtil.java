@@ -19,7 +19,7 @@ public class LinkedDataUtil {
   protected static final String SEPARATOR = "/";
 
   private final LinkedDataConfig ldConfig;
-  private List<String> knownPrefixes;
+  private final List<String> knownPrefixes;
 
   public LinkedDataUtil(LinkedDataConfig ldConfig) {
     this.ldConfig = ldConfig;
@@ -122,7 +122,7 @@ public class LinkedDataUtil {
       }
     }
     if (uuid != null) {
-      return uuid.trim().length() > 0;
+      return !uuid.trim().isEmpty();
     }
     return false;
   }
