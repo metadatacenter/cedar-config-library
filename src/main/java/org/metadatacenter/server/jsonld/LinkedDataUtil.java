@@ -2,7 +2,6 @@ package org.metadatacenter.server.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Iterators;
 import org.metadatacenter.config.LinkedDataConfig;
 import org.metadatacenter.constant.LinkedData;
 import org.metadatacenter.id.CedarResourceId;
@@ -87,16 +86,14 @@ public class LinkedDataUtil {
     // Single value
     if (fieldContent.isObject()) {
       // Check that it is an element instance
-      if (!fieldContent.has(LinkedData.VALUE) && !fieldContent.has(LinkedData.ID)) {
-        if ((!fieldContent.has(LinkedData.TYPE) && Iterators.size(fieldContent.elements()) > 0) || (fieldContent.has
-            (LinkedData.TYPE) && Iterators.size(fieldContent.elements()) > 1)) {
+      if (isElementInstance(fieldContent)) {
+        //  and has no id
+        if (!fieldContent.has(LinkedData.ID)) {
           String id = buildNewLinkedDataId(CedarResourceType.ELEMENT_INSTANCE);
           ((ObjectNode) fieldContent).put(LinkedData.ID, id);
           addElementInstanceIds(fieldContent, CedarResourceType.INSTANCE);
         }
-      }
-      // iterate over possible children
-      if (isElementInstance(fieldContent)) {
+        // iterate over possible children of element instance type
         Iterator<Map.Entry<String, JsonNode>> childrenIterator = fieldContent.fields();
         while (childrenIterator.hasNext()) {
           Map.Entry<String, JsonNode> child = childrenIterator.next();
