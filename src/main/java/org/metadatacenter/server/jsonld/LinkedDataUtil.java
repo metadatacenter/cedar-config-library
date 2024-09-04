@@ -2,7 +2,6 @@ package org.metadatacenter.server.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Iterators;
 import org.metadatacenter.config.LinkedDataConfig;
 import org.metadatacenter.constant.LinkedData;
 import org.metadatacenter.id.CedarResourceId;
@@ -10,11 +9,7 @@ import org.metadatacenter.model.CedarResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class LinkedDataUtil {
 
@@ -23,7 +18,7 @@ public class LinkedDataUtil {
   protected static final String SEPARATOR = "/";
 
   private final LinkedDataConfig ldConfig;
-  private List<String> knownPrefixes;
+  private final List<String> knownPrefixes;
 
   public LinkedDataUtil(LinkedDataConfig ldConfig) {
     this.ldConfig = ldConfig;
@@ -91,12 +86,20 @@ public class LinkedDataUtil {
     // Single value
     if (fieldContent.isObject()) {
       // Check that it is an element instance
-      if (!fieldContent.has(LinkedData.VALUE) && !fieldContent.has(LinkedData.ID)) {
-        if ((!fieldContent.has(LinkedData.TYPE) && Iterators.size(fieldContent.elements()) > 0) || (fieldContent.has
-            (LinkedData.TYPE) && Iterators.size(fieldContent.elements()) > 1)) {
+      if (isElementInstance(fieldContent)) {
+        //  and has no id
+        if (!fieldContent.has(LinkedData.ID)) {
           String id = buildNewLinkedDataId(CedarResourceType.ELEMENT_INSTANCE);
           ((ObjectNode) fieldContent).put(LinkedData.ID, id);
           addElementInstanceIds(fieldContent, CedarResourceType.INSTANCE);
+        }
+        // iterate over possible children of element instance type
+        Iterator<Map.Entry<String, JsonNode>> childrenIterator = fieldContent.fields();
+        while (childrenIterator.hasNext()) {
+          Map.Entry<String, JsonNode> child = childrenIterator.next();
+          if (!child.getKey().equals(LinkedData.CONTEXT) && !child.getKey().equals(LinkedData.ID)) {
+            addElementInstanceIdsToPotentialElementInstance(child.getValue());
+          }
         }
       }
     }
@@ -106,6 +109,10 @@ public class LinkedDataUtil {
         addElementInstanceIdsToPotentialElementInstance(fieldContent.get(i));
       }
     }
+  }
+
+  private boolean isElementInstance(JsonNode fieldContent) {
+    return fieldContent != null && fieldContent.has(LinkedData.CONTEXT);
   }
 
   public boolean isValidId(String id) {
@@ -118,7 +125,7 @@ public class LinkedDataUtil {
       }
     }
     if (uuid != null) {
-      return uuid.trim().length() > 0;
+      return !uuid.trim().isEmpty();
     }
     return false;
   }
