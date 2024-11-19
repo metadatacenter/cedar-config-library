@@ -87,6 +87,12 @@ public class CedarConfigEnvironmentDescriptor {
     cedarAnalyticsKey.add(SystemComponent.FRONTEND_TEST);
     cedarAnalyticsKey.add(SystemComponent.FRONTEND_PRODUCTION);
 
+    Set<SystemComponent> cedarGA4TrackingId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GA4_TRACKING_ID);
+    // gulpfile.js replaces int version.js
+    cedarGA4TrackingId.add(SystemComponent.FRONTEND_DEVELOPMENT);
+    cedarGA4TrackingId.add(SystemComponent.FRONTEND_TEST);
+    cedarGA4TrackingId.add(SystemComponent.FRONTEND_PRODUCTION);
+
     Set<SystemComponent> cedarNcbiSraFtpPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_NCBI_SRA_FTP_PASSWORD);
     cedarNcbiSraFtpPassword.add(SystemComponent.SERVER_SUBMISSION);
 
