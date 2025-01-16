@@ -90,6 +90,9 @@ public class CedarConfig extends Configuration {
   @JsonProperty("trustedFolders")
   private TrustedFoldersConfig trustedFolders;
 
+  @JsonProperty("externalAuthorities")
+  private ExternalAuthoritiesConfig externalAuthorities;
+
   @JsonProperty("testUsers")
   private TestUsers testUsers;
 
@@ -273,6 +276,8 @@ public class CedarConfig extends Configuration {
   public SubmissionConfig getSubmissionConfig() { return submissionConfig; }
 
   public TrustedFoldersConfig getTrustedFolders() { return trustedFolders; }
+
+  public ExternalAuthoritiesConfig getExternalAuthorities() { return externalAuthorities; }
 
   public TestUsers getTestUsers() {
     return testUsers;

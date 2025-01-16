@@ -83,6 +83,12 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(),
         "{\\\"caDSR\\\":[\\\"https://repo.metadatacenter.orgx/folders/c3a7b03c-87bb-49c4-b311-2eb1bd398c4e\\\"]}");
 
+    env.put(CedarEnvironmentVariable.ROR_API_PREFIX.getName(), "https://api.ror.org/v2/");
+
+    env.put(CedarEnvironmentVariable.ORCID_API_PREFIX.getName(), "https://api.sandbox.orcid.org/v3.0/");
+    env.put(CedarEnvironmentVariable.ORCID_API_CLIENT_ID.getName(), "changeme");
+    env.put(CedarEnvironmentVariable.ORCID_API_CLIENT_SECRET.getName(), "changeme");
+
     env.put(CedarEnvironmentVariable.CEDAR_BIOPORTAL_REST_BASE.getName(), "http://data.bioontology.org/");
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_HOST.getName(), "127.0.0.1");

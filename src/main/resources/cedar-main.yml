@@ -385,3 +385,11 @@ testUsers:
 
 trustedFolders:
   foldersStr: "${CEDAR_TRUSTED_FOLDERS}"
+
+externalAuthorities:
+  ror:
+    apiPrefix: "${ROR_API_PREFIX}"
+  orcid:
+    apiPrefix: "${ORCID_API_PREFIX}"
+    clientId: "${ORCID_API_CLIENT_ID}"
+    clientSecret: "${ORCID_API_CLIENT_SECRET}"
