@@ -388,8 +388,8 @@ trustedFolders:
 
 externalAuthorities:
   ror:
-    apiPrefix: "${ROR_API_PREFIX}"
+    apiPrefix: "${CEDAR_ROR_API_PREFIX}"
   orcid:
-    apiPrefix: "${ORCID_API_PREFIX}"
-    clientId: "${ORCID_API_CLIENT_ID}"
-    clientSecret: "${ORCID_API_CLIENT_SECRET}"
+    apiPrefix: "${CEDAR_ORCID_API_PREFIX}"
+    clientId: "${CEDAR_ORCID_API_CLIENT_ID}"
+    clientSecret: "${CEDAR_ORCID_API_CLIENT_SECRET}"

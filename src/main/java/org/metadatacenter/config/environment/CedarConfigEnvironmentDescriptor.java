@@ -397,16 +397,16 @@ public class CedarConfigEnvironmentDescriptor {
     cedarTrustedFolders.add(SystemComponent.SERVER_WORKER);
     cedarTrustedFolders.add(SystemComponent.SERVER_RESOURCE);
 
-    Set<SystemComponent> rorApiPrefix = variableToComponent.get(CedarEnvironmentVariable.ROR_API_PREFIX);
+    Set<SystemComponent> rorApiPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ROR_API_PREFIX);
     rorApiPrefix.add(SystemComponent.SERVER_BRIDGE);
 
-    Set<SystemComponent> orcidApiPrefix = variableToComponent.get(CedarEnvironmentVariable.ORCID_API_PREFIX);
+    Set<SystemComponent> orcidApiPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ORCID_API_PREFIX);
     orcidApiPrefix.add(SystemComponent.SERVER_BRIDGE);
 
-    Set<SystemComponent> orcidApiClientId = variableToComponent.get(CedarEnvironmentVariable.ORCID_API_CLIENT_ID);
+    Set<SystemComponent> orcidApiClientId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_ID);
     orcidApiClientId.add(SystemComponent.SERVER_BRIDGE);
 
-    Set<SystemComponent> orcidApiClientSecret = variableToComponent.get(CedarEnvironmentVariable.ORCID_API_CLIENT_SECRET);
+    Set<SystemComponent> orcidApiClientSecret = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_SECRET);
     orcidApiClientSecret.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarHttpPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_HTTP_PORT);
