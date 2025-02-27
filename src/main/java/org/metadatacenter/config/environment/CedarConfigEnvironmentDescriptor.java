@@ -400,6 +400,9 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> rorApiPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ROR_API_PREFIX);
     rorApiPrefix.add(SystemComponent.SERVER_BRIDGE);
 
+    Set<SystemComponent> orcidTokenPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ORCID_TOKEN_PREFIX);
+    orcidTokenPrefix.add(SystemComponent.SERVER_BRIDGE);
+
     Set<SystemComponent> orcidApiPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ORCID_API_PREFIX);
     orcidApiPrefix.add(SystemComponent.SERVER_BRIDGE);
 

@@ -85,6 +85,7 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_ROR_API_PREFIX.getName(), "https://api.ror.org/v2/");
 
+    env.put(CedarEnvironmentVariable.CEDAR_ORCID_TOKEN_PREFIX.getName(), "https://api.sandbox.orcid.org/v3.0/");
     env.put(CedarEnvironmentVariable.CEDAR_ORCID_API_PREFIX.getName(), "https://api.sandbox.orcid.org/v3.0/");
     env.put(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_ID.getName(), "changeme");
     env.put(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_SECRET.getName(), "changeme");

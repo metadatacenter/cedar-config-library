@@ -390,6 +390,7 @@ externalAuthorities:
   ror:
     apiPrefix: "${CEDAR_ROR_API_PREFIX}"
   orcid:
+    tokenPrefix: "${CEDAR_ORCID_TOKEN_PREFIX}"
     apiPrefix: "${CEDAR_ORCID_API_PREFIX}"
     clientId: "${CEDAR_ORCID_API_CLIENT_ID}"
     clientSecret: "${CEDAR_ORCID_API_CLIENT_SECRET}"
