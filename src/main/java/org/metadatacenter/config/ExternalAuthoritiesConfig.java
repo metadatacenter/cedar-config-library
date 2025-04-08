@@ -6,6 +6,8 @@ public class ExternalAuthoritiesConfig {
 
   private ExternalAuthorityORCID orcid;
 
+  private ExternalAuthorityEPACompTox epaCompTox;
+
   public ExternalAuthorityROR getRor() {
     return ror;
   }
@@ -13,4 +15,6 @@ public class ExternalAuthoritiesConfig {
   public ExternalAuthorityORCID getOrcid() {
     return orcid;
   }
+
+  public ExternalAuthorityEPACompTox getEpaCompTox() { return epaCompTox; }
 }
