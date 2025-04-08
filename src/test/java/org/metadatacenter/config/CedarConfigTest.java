@@ -90,6 +90,9 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_ID.getName(), "changeme");
     env.put(CedarEnvironmentVariable.CEDAR_ORCID_API_CLIENT_SECRET.getName(), "changeme");
 
+    env.put(CedarEnvironmentVariable.CEDAR_COMP_TOX_API_PREFIX.getName(), "https://api-ccte.epa.gov/");
+    env.put(CedarEnvironmentVariable.CEDAR_COMP_TOX_API_KEY.getName(), "changeme");
+
     env.put(CedarEnvironmentVariable.CEDAR_BIOPORTAL_REST_BASE.getName(), "http://data.bioontology.org/");
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_HOST.getName(), "127.0.0.1");

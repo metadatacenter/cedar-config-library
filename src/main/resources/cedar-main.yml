@@ -394,3 +394,6 @@ externalAuthorities:
     apiPrefix: "${CEDAR_ORCID_API_PREFIX}"
     clientId: "${CEDAR_ORCID_API_CLIENT_ID}"
     clientSecret: "${CEDAR_ORCID_API_CLIENT_SECRET}"
+  epaCompTox:
+    apiPrefix: "${CEDAR_COMP_TOX_API_PREFIX}"
+    apiKey: "${CEDAR_COMP_TOX_API_KEY}"
