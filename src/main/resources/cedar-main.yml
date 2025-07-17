@@ -323,6 +323,7 @@ cache:
       ncbiSubmission: "CEDAR-QUEUE-ncbi-submission"
       appLog: "CEDAR-QUEUE-app-log"
       valuerecommender: "CEDAR-QUEUE-valuerecommender"
+      cloneInstances: "CEDAR-QUEUE-cloneInstances"
   nonPersistent:
     connection:
       host: "${CEDAR_REDIS_NONPERSISTENT_HOST}"
