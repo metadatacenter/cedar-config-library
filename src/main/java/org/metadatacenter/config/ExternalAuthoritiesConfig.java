@@ -8,6 +8,8 @@ public class ExternalAuthoritiesConfig {
 
   private ExternalAuthorityEPACompTox epaCompTox;
 
+  private ExternalAuthorityRRID rrid;
+
   public ExternalAuthorityROR getRor() {
     return ror;
   }
@@ -17,4 +19,8 @@ public class ExternalAuthoritiesConfig {
   }
 
   public ExternalAuthorityEPACompTox getEpaCompTox() { return epaCompTox; }
+
+  public ExternalAuthorityRRID getRrid() {
+    return rrid;
+  }
 }
