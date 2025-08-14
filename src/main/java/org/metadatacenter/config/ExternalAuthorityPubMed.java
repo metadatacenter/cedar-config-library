@@ -1,6 +1,7 @@
+
 package org.metadatacenter.config;
 
-public class ExternalAuthorityRRID {
+public class ExternalAuthorityPubMed {
   private String apiKey;
 
   public String getApiKey() {

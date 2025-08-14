@@ -398,6 +398,7 @@ externalAuthorities:
     apiPrefix: "${CEDAR_COMP_TOX_API_PREFIX}"
     apiKey: "${CEDAR_COMP_TOX_API_KEY}"
   rrid:
-    apiPrefix: "${CEDAR_RRID_API_PREFIX}"
     apiKey: "${CEDAR_RRID_API_KEY}"
+  pubMed:
+    apiKey: "${CEDAR_PUBMED_API_KEY}"
 

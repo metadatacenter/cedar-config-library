@@ -418,11 +418,11 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> compToxApiKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_COMP_TOX_API_KEY);
     compToxApiKey.add(SystemComponent.SERVER_BRIDGE);
 
-    Set<SystemComponent> rridApiPrefix = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RRID_API_PREFIX);
-    rridApiPrefix.add(SystemComponent.SERVER_BRIDGE);
-
     Set<SystemComponent> rridApiKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RRID_API_KEY);
     rridApiKey.add(SystemComponent.SERVER_BRIDGE);
+
+    Set<SystemComponent> pubMedApiKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_PUBMED_API_KEY);
+    pubMedApiKey.add(SystemComponent.SERVER_BRIDGE);
 
     Set<SystemComponent> cedarHttpPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_HTTP_PORT);
     cedarHttpPortOpenview.add(SystemComponent.SERVER_OPENVIEW);

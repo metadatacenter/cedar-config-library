@@ -10,6 +10,8 @@ public class ExternalAuthoritiesConfig {
 
   private ExternalAuthorityRRID rrid;
 
+  private ExternalAuthorityPubMed pubMed;
+
   public ExternalAuthorityROR getRor() {
     return ror;
   }
@@ -22,5 +24,9 @@ public class ExternalAuthoritiesConfig {
 
   public ExternalAuthorityRRID getRrid() {
     return rrid;
+  }
+
+  public ExternalAuthorityPubMed getPubMed() {
+    return pubMed;
   }
 }

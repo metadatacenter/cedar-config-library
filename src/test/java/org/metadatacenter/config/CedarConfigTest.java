@@ -93,8 +93,9 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_COMP_TOX_API_PREFIX.getName(), "https://api-ccte.epa.gov/");
     env.put(CedarEnvironmentVariable.CEDAR_COMP_TOX_API_KEY.getName(), "changeme");
 
-    env.put(CedarEnvironmentVariable.CEDAR_RRID_API_PREFIX.getName(), "https://api.scicrunch.io/elastic/v1/RIN_CellLine_pr,RIN_Antibody_pr,RIN_Tool_pr,RIN_Organism_pr,RIN_Addgene_pr,RIN_Protocols_pr/_search");
     env.put(CedarEnvironmentVariable.CEDAR_RRID_API_KEY.getName(), "changeme");
+
+    env.put(CedarEnvironmentVariable.CEDAR_PUBMED_API_KEY.getName(), "changeme");
 
     env.put(CedarEnvironmentVariable.CEDAR_BIOPORTAL_REST_BASE.getName(), "http://data.bioontology.org/");
 
