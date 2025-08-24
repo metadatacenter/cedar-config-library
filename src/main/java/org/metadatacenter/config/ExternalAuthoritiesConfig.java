@@ -8,6 +8,10 @@ public class ExternalAuthoritiesConfig {
 
   private ExternalAuthorityEPACompTox epaCompTox;
 
+  private ExternalAuthorityRRID rrid;
+
+  private ExternalAuthorityPubMed pubMed;
+
   public ExternalAuthorityROR getRor() {
     return ror;
   }
@@ -17,4 +21,12 @@ public class ExternalAuthoritiesConfig {
   }
 
   public ExternalAuthorityEPACompTox getEpaCompTox() { return epaCompTox; }
+
+  public ExternalAuthorityRRID getRrid() {
+    return rrid;
+  }
+
+  public ExternalAuthorityPubMed getPubMed() {
+    return pubMed;
+  }
 }
