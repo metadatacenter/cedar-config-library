@@ -390,10 +390,12 @@ public class CedarConfigEnvironmentDescriptor {
     cedarTestUser1Id.add(SystemComponent.SERVER_TERMINOLOGY);
     cedarTestUser1Id.add(SystemComponent.SERVER_MESSAGING);
     cedarTestUser1Id.add(SystemComponent.SERVER_USER);
+    cedarTestUser1Id.add(SystemComponent.SERVER_GROUP);
 
     Set<SystemComponent> cedarTestUser2Id = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TEST_USER2_ID);
     cedarTestUser2Id.add(SystemComponent.SERVER_MESSAGING);
     cedarTestUser2Id.add(SystemComponent.SERVER_USER);
+    cedarTestUser2Id.add(SystemComponent.SERVER_GROUP);
 
     Set<SystemComponent> cedarTrustedFolders = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS);
     cedarTrustedFolders.add(SystemComponent.SERVER_WORKER);
