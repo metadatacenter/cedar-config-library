@@ -262,6 +262,12 @@ terminology:
     connectTimeout: 3000
     socketTimeout: 30000
     defaultPageSize: 50
+  # Local, version-aware SQLite store. Empty = disabled (all terminology served via BioPortal).
+  # Enable by pointing catalogPath at an ingested catalog and listing ontologies to serve locally,
+  # e.g. via -Dcedar.terminology.localStore.catalogPath=... -Dcedar.terminology.localStore.localOntologies=DOID
+  localStore:
+    catalogPath: ""
+    localOntologies: ""
 
 worker:
   valuerecommender:
