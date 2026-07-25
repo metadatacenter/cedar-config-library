@@ -1,13 +1,14 @@
 package org.metadatacenter.config;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.metadatacenter.config.environment.CedarEnvironmentSource;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
 import org.metadatacenter.config.environment.CedarEnvironmentVariableProvider;
 import org.metadatacenter.model.SystemComponent;
-import org.metadatacenter.util.test.TestUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -171,7 +172,17 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER1_ID.getName(), "https://metadatacenter.org/users/user1-uuid");
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER2_ID.getName(), "https://metadatacenter.org/users/user2-uuid");
 
-    TestUtil.setEnv(env);
+    // Merge over the process environment, so variables the test does not set keep their real
+    // values; the override redirects every CEDAR environment read without touching the process
+    // environment itself.
+    Map<String, String> merged = new HashMap<>(System.getenv());
+    merged.putAll(env);
+    CedarEnvironmentSource.setOverride(merged);
+  }
+
+  @After
+  public void clearEnvironmentOverride() {
+    CedarEnvironmentSource.clearOverride();
   }
 
   private CedarConfig getCedarConfig() {
@@ -182,6 +193,37 @@ public class CedarConfigTest {
   public void testGetInstance() throws Exception {
     CedarConfig instance = getCedarConfig();
     Assert.assertNotNull(instance);
+  }
+
+  @Test
+  public void testGetInstanceIsCachedForTheSameEnvironment() throws Exception {
+    CedarConfig first = getCedarConfig();
+    CedarConfig second = getCedarConfig();
+    Assert.assertSame(first, second);
+  }
+
+  @Test
+  public void testGetInstanceRebuildsForAChangedEnvironment() throws Exception {
+    CedarConfig before = getCedarConfig();
+
+    Map<String, String> merged = new HashMap<>(CedarEnvironmentSource.getAll());
+    merged.put(CedarEnvironmentVariable.CEDAR_HOST.getName(), "changed.metadatacenter.orgx");
+    CedarEnvironmentSource.setOverride(merged);
+
+    CedarConfig after = getCedarConfig();
+    Assert.assertNotSame(before, after);
+    Assert.assertEquals("changed.metadatacenter.orgx", after.getHost());
+  }
+
+  @Test
+  public void testBuildForEnvironmentDoesNotCache() throws Exception {
+    Map<String, String> environment = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
+    CedarConfig first = CedarConfig.buildForEnvironment(environment);
+    CedarConfig second = CedarConfig.buildForEnvironment(environment);
+    Assert.assertNotNull(first);
+    Assert.assertNotSame(first, second);
+    Assert.assertNotNull(first.getLinkedDataUtil());
+    Assert.assertNotNull(first.getMicroserviceUrlUtil());
   }
 
   @Test

@@ -17,7 +17,7 @@ public class CedarEnvironmentVariableProvider {
     Map<String, String> env = new LinkedHashMap<>();
     for (CedarEnvironmentVariable variable : CedarEnvironmentVariable.values()) {
       if (neededVariables.contains(variable)) {
-        String value = System.getenv(variable.getName());
+        String value = CedarEnvironmentSource.get(variable.getName());
         env.put(variable.getName(), value);
       } else {
         if (variable.isNumeric()) {
@@ -27,7 +27,7 @@ public class CedarEnvironmentVariableProvider {
           env.put(variable.getName(), "false");
           log.info("Setting default boolean value false for                               : " + variable.getName());
         } else {
-          String value = System.getenv(variable.getName());
+          String value = CedarEnvironmentSource.get(variable.getName());
           if (value != null) {
             log.info("Environment contains not needed variable, holding it back from sandbox: " + variable.getName());
           }
