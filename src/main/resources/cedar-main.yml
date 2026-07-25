@@ -253,6 +253,7 @@ blueprintUserProfile:
       sortDirection: "asc"
       viewMode: "grid"
     stylesheet: "default"
+    preferredDateFormat: "MM/DD/YYYY"
 
 #Terminology server configuration
 terminology:
