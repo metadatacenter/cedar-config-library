@@ -7,7 +7,6 @@ import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
-import org.knowm.dropwizard.sundial.SundialConfiguration;
 import org.metadatacenter.server.jsonld.LinkedDataUtil;
 import org.metadatacenter.server.url.MicroserviceUrlUtil;
 import org.slf4j.Logger;
@@ -108,9 +107,6 @@ public class CedarConfig extends Configuration {
 
   @JsonProperty("validation")
   private ValidationConfig validationConfig;
-
-  @JsonProperty("sundial")
-  private SundialConfiguration sundialConfig;
 
   @JsonProperty("bridge")
   private BridgeConfig bridgeConfig;
@@ -342,10 +338,6 @@ public class CedarConfig extends Configuration {
 
   public ValidationConfig getValidationConfig() {
     return validationConfig;
-  }
-
-  public SundialConfiguration getSundialConfig() {
-    return sundialConfig;
   }
 
   public BridgeConfig getBridgeConfig() { return bridgeConfig; }

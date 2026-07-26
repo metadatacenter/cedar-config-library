@@ -342,16 +342,6 @@ cache:
 validation:
   enabled: "${CEDAR_VALIDATION_ENABLED}"
 
-sundial:
-  thread-pool-size: 10
-  shutdown-on-unload: true
-  wait-on-shutdown: false
-  start-delay-seconds: 0
-  start-scheduler-on-load: true
-  global-lock-on-load: false
-  annotated-jobs-package-name: org.metadatacenter.worker
-  tasks: [startjob, stopjob]
-
 submission:
   ncbi:
     sra:
