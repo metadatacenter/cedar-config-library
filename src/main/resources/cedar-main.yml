@@ -58,7 +58,7 @@ messagingServer:
     serverTimezone: "America/Los_Angeles"
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
-    hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
+    hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
 
 dbLogging:
   url: "jdbc:mysql://${CEDAR_LOG_MYSQL_HOST}:${CEDAR_LOG_MYSQL_PORT}/${CEDAR_LOG_MYSQL_DB}"
@@ -70,7 +70,7 @@ dbLogging:
     serverTimezone: "America/Los_Angeles"
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
-    hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
+    hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
 
 #Neo4J settings
 neo4j:
