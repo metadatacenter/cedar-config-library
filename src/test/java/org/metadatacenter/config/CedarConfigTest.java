@@ -1,10 +1,9 @@
 package org.metadatacenter.config;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.metadatacenter.config.environment.CedarEnvironmentSource;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
 import org.metadatacenter.config.environment.CedarEnvironmentVariableProvider;
@@ -13,13 +12,15 @@ import org.metadatacenter.model.SystemComponent;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class CedarConfigTest {
 
   public static final String CEDAR_ADMIN_USER_PASSWORD = "Password123";
   public static final String CEDAR_ADMIN_USER_API_KEY = "abcd-efgh";
   public static final String CEDAR_CADSR_ADMIN_USER_API_KEY = "ijkl-mnop";
 
-  @Before
+  @BeforeEach
   public void setEnvironment() {
     Map<String, String> env = new HashMap<>();
     env.put(CedarEnvironmentVariable.CEDAR_VERSION.getName(), "1.0.0");
@@ -180,7 +181,7 @@ public class CedarConfigTest {
     CedarEnvironmentSource.setOverride(merged);
   }
 
-  @After
+  @AfterEach
   public void clearEnvironmentOverride() {
     CedarEnvironmentSource.clearOverride();
   }
@@ -192,14 +193,14 @@ public class CedarConfigTest {
   @Test
   public void testGetInstance() throws Exception {
     CedarConfig instance = getCedarConfig();
-    Assert.assertNotNull(instance);
+assertNotNull(instance);
   }
 
   @Test
   public void testGetInstanceIsCachedForTheSameEnvironment() throws Exception {
     CedarConfig first = getCedarConfig();
     CedarConfig second = getCedarConfig();
-    Assert.assertSame(first, second);
+assertSame(first, second);
   }
 
   @Test
@@ -211,8 +212,8 @@ public class CedarConfigTest {
     CedarEnvironmentSource.setOverride(merged);
 
     CedarConfig after = getCedarConfig();
-    Assert.assertNotSame(before, after);
-    Assert.assertEquals("changed.metadatacenter.orgx", after.getHost());
+assertNotSame(before, after);
+assertEquals("changed.metadatacenter.orgx", after.getHost());
   }
 
   @Test
@@ -220,49 +221,49 @@ public class CedarConfigTest {
     Map<String, String> environment = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
     CedarConfig first = CedarConfig.buildForEnvironment(environment);
     CedarConfig second = CedarConfig.buildForEnvironment(environment);
-    Assert.assertNotNull(first);
-    Assert.assertNotSame(first, second);
-    Assert.assertNotNull(first.getLinkedDataUtil());
-    Assert.assertNotNull(first.getMicroserviceUrlUtil());
+assertNotNull(first);
+assertNotSame(first, second);
+assertNotNull(first.getLinkedDataUtil());
+assertNotNull(first.getMicroserviceUrlUtil());
   }
 
   @Test
-  @Ignore // TODO: the env variables can not changed
+  @Disabled // TODO: the env variables can not changed
   public void testKeycloakConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     KeycloakConfig keycloakConfig = instance.getKeycloakConfig();
-    Assert.assertNotNull(keycloakConfig);
-    Assert.assertEquals("admin-cli", keycloakConfig.getClientId());
+assertNotNull(keycloakConfig);
+assertEquals("admin-cli", keycloakConfig.getClientId());
 
     AdminUserConfig adminUser = instance.getAdminUserConfig();
-    Assert.assertNotNull(adminUser);
-    Assert.assertEquals("cedar-admin", adminUser.getUserName());
-    Assert.assertEquals(CEDAR_ADMIN_USER_PASSWORD, adminUser.getPassword());
-    Assert.assertEquals(CEDAR_ADMIN_USER_API_KEY, adminUser.getApiKey());
+assertNotNull(adminUser);
+assertEquals("cedar-admin", adminUser.getUserName());
+assertEquals(CEDAR_ADMIN_USER_PASSWORD, adminUser.getPassword());
+assertEquals(CEDAR_ADMIN_USER_API_KEY, adminUser.getApiKey());
   }
 
   @Test
   public void testMongoConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     MongoConfig artifactServerConfig = instance.getArtifactServerConfig();
-    Assert.assertNotNull(artifactServerConfig);
-    Assert.assertEquals("cedar", artifactServerConfig.getDatabaseName());
+assertNotNull(artifactServerConfig);
+assertEquals("cedar", artifactServerConfig.getDatabaseName());
 
     Map<String, String> artifactServerCollections = artifactServerConfig.getCollections();
-    Assert.assertNotNull(artifactServerCollections);
-    Assert.assertEquals("template-fields", artifactServerCollections.get("field"));
-    Assert.assertEquals("template-elements", artifactServerCollections.get("element"));
-    Assert.assertEquals("templates", artifactServerCollections.get("template"));
-    Assert.assertEquals("template-instances", artifactServerCollections.get("instance"));
+assertNotNull(artifactServerCollections);
+assertEquals("template-fields", artifactServerCollections.get("field"));
+assertEquals("template-elements", artifactServerCollections.get("element"));
+assertEquals("templates", artifactServerCollections.get("template"));
+assertEquals("template-instances", artifactServerCollections.get("instance"));
 
     MongoConfig userServerConfig = instance.getUserServerConfig();
-    Assert.assertNotNull(userServerConfig);
-    Assert.assertEquals("cedar", userServerConfig.getDatabaseName());
+assertNotNull(userServerConfig);
+assertEquals("cedar", userServerConfig.getDatabaseName());
 
     Map<String, String> userServerCollections = userServerConfig.getCollections();
-    Assert.assertNotNull(userServerCollections);
+assertNotNull(userServerCollections);
 
-    Assert.assertEquals("users", userServerCollections.get("user"));
+assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
@@ -270,10 +271,10 @@ public class CedarConfigTest {
     CedarConfig instance = getCedarConfig();
     OpensearchSettingsMappingsConfig searchSettingsMappingsConfig = instance
         .getSearchSettingsMappingsConfig();
-    Assert.assertNotNull(searchSettingsMappingsConfig);
-    Assert.assertNotNull(searchSettingsMappingsConfig.getSettings());
-    Assert.assertNotNull(searchSettingsMappingsConfig.getMappings());
-    Assert.assertNotNull(searchSettingsMappingsConfig.getMappings().getDoc());
+assertNotNull(searchSettingsMappingsConfig);
+assertNotNull(searchSettingsMappingsConfig.getSettings());
+assertNotNull(searchSettingsMappingsConfig.getMappings());
+assertNotNull(searchSettingsMappingsConfig.getMappings().getDoc());
 
     Map<String, Object> settings = searchSettingsMappingsConfig.getSettings();
     Map<String, Object> index = (Map<String, Object>) settings.get("index");
@@ -281,7 +282,7 @@ public class CedarConfigTest {
     Map<String, Object> tokenizer = (Map<String, Object>) analysis.get("tokenizer");
     Map<String, Object> ngram_tokenizer = (Map<String, Object>) tokenizer.get("cedar_ngram_tokenizer");
 
-    Assert.assertEquals("ngram", ngram_tokenizer.get("type"));
+assertEquals("ngram", ngram_tokenizer.get("type"));
   }
 
   @Test
@@ -289,10 +290,10 @@ public class CedarConfigTest {
     CedarConfig instance = getCedarConfig();
     OpensearchSettingsMappingsConfig rulesSettingsMappingsConfig = instance
         .getSearchSettingsMappingsConfig();
-    Assert.assertNotNull(rulesSettingsMappingsConfig);
-    Assert.assertNotNull(rulesSettingsMappingsConfig.getSettings());
-    Assert.assertNotNull(rulesSettingsMappingsConfig.getMappings());
-    Assert.assertNotNull(rulesSettingsMappingsConfig.getMappings().getDoc());
+assertNotNull(rulesSettingsMappingsConfig);
+assertNotNull(rulesSettingsMappingsConfig.getSettings());
+assertNotNull(rulesSettingsMappingsConfig.getMappings());
+assertNotNull(rulesSettingsMappingsConfig.getMappings().getDoc());
   }
 
 }
