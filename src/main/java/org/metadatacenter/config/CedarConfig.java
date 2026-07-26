@@ -1,7 +1,7 @@
 package org.metadatacenter.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -12,8 +12,8 @@ import org.metadatacenter.server.url.MicroserviceUrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
