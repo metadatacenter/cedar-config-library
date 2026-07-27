@@ -241,6 +241,7 @@ blueprintUserProfile:
       - "metadataCreator"
       - "userAdministrator"
       - "groupAdministrator"
+      - "groupPrivilegedAdministrator"
       - "filesystemAdministrator"
       - "categoryAdministrator"
       - "categoryPrivilegedAdministrator"
