@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import org.metadatacenter.util.json.JsonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,6 +38,9 @@ public class TrustedFoldersConfig {
  * This class transforms the input string to a map to be able to quickly check if a folderId is trusted
  */
 class TrustedFoldersConfigConverter extends StdConverter<TrustedFoldersConfig, TrustedFoldersConfig> {
+
+  private static final Logger log = LoggerFactory.getLogger(TrustedFoldersConfigConverter.class);
+
   @Override
   public TrustedFoldersConfig convert(TrustedFoldersConfig trustedFoldersConfig) {
     if (trustedFoldersConfig.getFoldersStr() != null &&
@@ -51,7 +56,7 @@ class TrustedFoldersConfigConverter extends StdConverter<TrustedFoldersConfig, T
         }
         trustedFoldersConfig.setFoldersMap(folderToEntityMap);
       } catch (IOException e) {
-        e.printStackTrace();
+        log.error("Could not parse the trusted-folders configuration; no folder is treated as trusted", e);
       }
     }
     return trustedFoldersConfig;

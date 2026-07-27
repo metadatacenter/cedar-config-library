@@ -1,7 +1,7 @@
 package org.metadatacenter.config;
 
 import io.dropwizard.configuration.UndefinedEnvironmentVariableException;
-import org.apache.commons.text.StrLookup;
+import org.apache.commons.text.lookup.StringLookup;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CedarEnvironmentVariableLookup extends StrLookup<Object> {
+public class CedarEnvironmentVariableLookup implements StringLookup {
 
   private enum VariableStatus {
     PRESENT_WITH_VALUE, PRESENT_WITHOUT_VALUE, NEEDED_NOT_INCLUDED
@@ -107,6 +107,7 @@ public class CedarEnvironmentVariableLookup extends StrLookup<Object> {
     }
   }
 
+  @Override
   public String lookup(String key) {
     String value = environment.get(key);
     if (value == null) {

@@ -1,21 +1,21 @@
 package org.metadatacenter.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 import io.dropwizard.configuration.ConfigurationException;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.configuration.YamlConfigurationFactory;
 import io.dropwizard.jackson.Jackson;
-import org.knowm.dropwizard.sundial.SundialConfiguration;
 import org.metadatacenter.server.jsonld.LinkedDataUtil;
 import org.metadatacenter.server.url.MicroserviceUrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CedarConfig extends Configuration {
@@ -108,17 +108,16 @@ public class CedarConfig extends Configuration {
   @JsonProperty("validation")
   private ValidationConfig validationConfig;
 
-  @JsonProperty("sundial")
-  private SundialConfiguration sundialConfig;
-
   @JsonProperty("bridge")
   private BridgeConfig bridgeConfig;
 
   protected static final Logger log = LoggerFactory.getLogger(CedarConfig.class);
 
   private static CedarConfig instance;
-  private static LinkedDataUtil linkedDataUtil;
-  private static MicroserviceUrlUtil microserviceUrlUtil;
+  private static Map<String, String> instanceEnvironment;
+
+  private LinkedDataUtil linkedDataUtil;
+  private MicroserviceUrlUtil microserviceUrlUtil;
 
   private static CedarConfig buildInstance(Map<String, String> environment) {
 
@@ -139,7 +138,6 @@ public class CedarConfig extends Configuration {
       config = mainConfigurationFactory.build(substitutingSourceProvider, mainConfigFileName);
     } catch (IOException | ConfigurationException e) {
       log.error("Error while reading main config file", e);
-      e.printStackTrace();
       System.exit(-1);
     }
 
@@ -153,6 +151,9 @@ public class CedarConfig extends Configuration {
     config.rulesSettingsMappingsConfig =
         getSettingsMappingsConfigFromFile(rulesSettingsMappingsConfigFileName, validator,
             substitutingSourceProvider);
+
+    config.linkedDataUtil = new LinkedDataUtil(config.getLinkedDataConfig());
+    config.microserviceUrlUtil = new MicroserviceUrlUtil(config.getServers());
 
     return config;
   }
@@ -170,19 +171,57 @@ public class CedarConfig extends Configuration {
       settingsMappingsConfig = configurationFactory.build(substitutingSourceProvider, configFileName);
     } catch (IOException | ConfigurationException e) {
       log.error("Error while reading config file", e);
-      e.printStackTrace();
       System.exit(-2);
     }
     return settingsMappingsConfig;
   }
 
-  public static CedarConfig getInstance(Map<String, String> environment) {
+  /**
+   * Builds a fresh configuration from the given environment map. The result is not cached and
+   * does not touch the instance {@link #getInstance(Map)} manages; every call constructs a new,
+   * independent {@link CedarConfig}.
+   */
+  public static CedarConfig buildForEnvironment(Map<String, String> environment) {
+    return buildInstance(environment);
+  }
+
+  /**
+   * Returns the shared configuration for the given environment map.
+   *
+   * <p>The instance is cached together with a snapshot of the environment it was built from.
+   * A call whose environment matches the snapshot returns the cached instance. A call whose
+   * environment differs materially rebuilds the configuration from the new environment and
+   * replaces the cached instance; earlier callers keep their old instance, so anything holding
+   * a reference across such a rebuild sees the configuration it was built with. Two
+   * environments differ materially when their non-null entries differ; entries whose value is
+   * {@code null} count the same as absent entries.
+   *
+   * <p>For a configuration that is private to the caller, use
+   * {@link #buildForEnvironment(Map)} instead.
+   */
+  public static synchronized CedarConfig getInstance(Map<String, String> environment) {
+    Map<String, String> snapshot = nonNullEntries(environment);
     if (instance == null) {
       instance = buildInstance(environment);
-      linkedDataUtil = new LinkedDataUtil(instance.getLinkedDataConfig());
-      microserviceUrlUtil = new MicroserviceUrlUtil(instance.getServers());
+      instanceEnvironment = snapshot;
+    } else if (!instanceEnvironment.equals(snapshot)) {
+      log.info("CedarConfig requested for an environment that differs from the cached one; rebuilding");
+      instance = buildInstance(environment);
+      instanceEnvironment = snapshot;
     }
     return instance;
+  }
+
+  private static Map<String, String> nonNullEntries(Map<String, String> environment) {
+    Map<String, String> nonNull = new HashMap<>();
+    if (environment != null) {
+      for (Map.Entry<String, String> entry : environment.entrySet()) {
+        if (entry.getValue() != null) {
+          nonNull.put(entry.getKey(), entry.getValue());
+        }
+      }
+    }
+    return nonNull;
   }
 
   public String getHome() {
@@ -297,10 +336,6 @@ public class CedarConfig extends Configuration {
 
   public ValidationConfig getValidationConfig() {
     return validationConfig;
-  }
-
-  public SundialConfiguration getSundialConfig() {
-    return sundialConfig;
   }
 
   public BridgeConfig getBridgeConfig() { return bridgeConfig; }

@@ -58,7 +58,7 @@ messagingServer:
     serverTimezone: "America/Los_Angeles"
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
-    hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
+    hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
 
 dbLogging:
   url: "jdbc:mysql://${CEDAR_LOG_MYSQL_HOST}:${CEDAR_LOG_MYSQL_PORT}/${CEDAR_LOG_MYSQL_DB}"
@@ -70,7 +70,7 @@ dbLogging:
     serverTimezone: "America/Los_Angeles"
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
-    hibernate.dialect: "org.hibernate.dialect.MySQL8Dialect"
+    hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
 
 #Neo4J settings
 neo4j:
@@ -241,6 +241,7 @@ blueprintUserProfile:
       - "metadataCreator"
       - "userAdministrator"
       - "groupAdministrator"
+      - "groupPrivilegedAdministrator"
       - "filesystemAdministrator"
       - "categoryAdministrator"
       - "categoryPrivilegedAdministrator"
@@ -253,6 +254,7 @@ blueprintUserProfile:
       sortDirection: "asc"
       viewMode: "grid"
     stylesheet: "default"
+    preferredDateFormat: "MM/DD/YYYY"
 
 #Terminology server configuration
 terminology:
@@ -262,6 +264,17 @@ terminology:
     connectTimeout: 3000
     socketTimeout: 30000
     defaultPageSize: 50
+  # Local, version-aware SQLite store. Empty = disabled (all terminology served via BioPortal).
+  # Enable by pointing catalogPath at an ingested catalog and listing ontologies to serve locally.
+  # Snapshot files are located relative to the catalog file's own directory, so deploying is just:
+  # copy catalog.sqlite plus its snapshots/ directory anywhere and set catalogPath to the catalog.
+  # System-property overrides use the terminologyStore.* names (NOT a cedar.* prefix, which CedarConfig
+  # claims for its own Dropwizard config overrides and would break the search/rules configs):
+  #   -DterminologyStore.catalogPath=/opt/cedar/terminology/catalog.sqlite
+  #   -DterminologyStore.localOntologies=DOID,NCIT,PECO
+  localStore:
+    catalogPath: ""
+    localOntologies: ""
 
 worker:
   valuerecommender:
@@ -334,16 +347,6 @@ cache:
 
 validation:
   enabled: "${CEDAR_VALIDATION_ENABLED}"
-
-sundial:
-  thread-pool-size: 10
-  shutdown-on-unload: true
-  wait-on-shutdown: false
-  start-delay-seconds: 0
-  start-scheduler-on-load: true
-  global-lock-on-load: false
-  annotated-jobs-package-name: org.metadatacenter.worker
-  tasks: [startjob, stopjob]
 
 submission:
   ncbi:
