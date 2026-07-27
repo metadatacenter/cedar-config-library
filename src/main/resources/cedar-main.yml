@@ -265,8 +265,13 @@ terminology:
     socketTimeout: 30000
     defaultPageSize: 50
   # Local, version-aware SQLite store. Empty = disabled (all terminology served via BioPortal).
-  # Enable by pointing catalogPath at an ingested catalog and listing ontologies to serve locally,
-  # e.g. via -Dcedar.terminology.localStore.catalogPath=... -Dcedar.terminology.localStore.localOntologies=DOID
+  # Enable by pointing catalogPath at an ingested catalog and listing ontologies to serve locally.
+  # Snapshot files are located relative to the catalog file's own directory, so deploying is just:
+  # copy catalog.sqlite plus its snapshots/ directory anywhere and set catalogPath to the catalog.
+  # System-property overrides use the terminologyStore.* names (NOT a cedar.* prefix, which CedarConfig
+  # claims for its own Dropwizard config overrides and would break the search/rules configs):
+  #   -DterminologyStore.catalogPath=/opt/cedar/terminology/catalog.sqlite
+  #   -DterminologyStore.localOntologies=DOID,NCIT,PECO
   localStore:
     catalogPath: ""
     localOntologies: ""
