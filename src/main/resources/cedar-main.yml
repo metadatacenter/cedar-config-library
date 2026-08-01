@@ -71,10 +71,11 @@ dbLogging:
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
-    # Store/read all Instants as true UTC (the hourUtc rollup grain depends on this). Without it,
-    # Hibernate maps Instant<->datetime through the connection tz above, so hourUtc would hold
-    # local-time values and be fragile across DST / half-hour zones.
-    hibernate.jdbc.time_zone: "UTC"
+    # NOTE: deliberately NOT forcing hibernate.jdbc.time_zone=UTC. The aggregator is self-consistent
+    # under serverTimezone above (reads, writes and range-bounds all pass through the same connection
+    # tz, so instants and rollups are correct). Forcing UTC would make the connection misread the YEARS
+    # of existing LA-stored rows in log_request/log_cypher and *_pre284 (+7/8h, DST-dependent), so it
+    # is a prod landmine. hourUtc physically stores connection-tz wall-clock but is queried consistently.
 
 #Neo4J settings
 neo4j:
