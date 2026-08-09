@@ -344,6 +344,13 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT);
     cedarHttpPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
+    // The resource server resolves every controlled-term constraint to its current version through
+    // the terminology server when a template is published. Undeclared, the two variables that say
+    // where that server is were simply absent from the containerized resource server, and the freeze
+    // walk had nothing to ask: it pinned every constraint to null instead of failing, which a
+    // published artifact then carries silently. Declaring them makes the absence fatal at startup
+    // and visible to ops/check_docker_env.py, which asks this descriptor what each server needs.
+    cedarHttpPortTerminology.add(SystemComponent.SERVER_RESOURCE);
     Set<SystemComponent> cedarAdminPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_MONITOR);
@@ -351,6 +358,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarStopPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
     Set<SystemComponent> cedarServerHostTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST);
     cedarServerHostTerminology.add(SystemComponent.SERVER_MONITOR);
+    cedarServerHostTerminology.add(SystemComponent.SERVER_RESOURCE);
 
     Set<SystemComponent> cedarHttpPortValuerecommender = variableToComponent.get(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_HTTP_PORT);
     cedarHttpPortValuerecommender.add(SystemComponent.SERVER_VALUERECOMMENDER);
