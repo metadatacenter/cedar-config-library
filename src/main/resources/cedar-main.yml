@@ -245,6 +245,7 @@ blueprintUserProfile:
       - "filesystemAdministrator"
       - "categoryAdministrator"
       - "categoryPrivilegedAdministrator"
+      - "artifactPrivilegedAdministrator"
       - "searchReindexer"
       - "processMessageSender"
       - "monitorManager"
