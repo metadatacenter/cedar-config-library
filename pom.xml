@@ -67,6 +67,22 @@
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
 
+      <!--
+        This shaded jar bundles the classes of cedar-core-library, cedar-rest-library and
+        cedar-model-library alongside its own, so those classes exist in more than one published
+        artifact. Consumers resolve whichever copy the classpath reaches first, which is not
+        necessarily the one that was changed last.
+
+        The consequence: a change to any library shaded here is invisible until THIS library is
+        published again, and the build that fails is one that did not change. Adding a constant to
+        cedar-core-library broke cedar-microservice-libraries on develop with "cannot find symbol",
+        because the copy inside this jar predated it. Publishing is gated on a real push to develop,
+        so a workflow_dispatch rebuild verifies and does not republish.
+
+        So: after changing a library shaded here, push this repository too, before any consumer
+        merges. Removing the CEDAR artifacts from the shaded set is tracked on BACKEND-ROADMAP.md
+        under the shared-library shading item.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
