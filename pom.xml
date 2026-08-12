@@ -68,51 +68,10 @@
       </plugin>
 
       <!--
-        This shaded jar bundles the classes of cedar-core-library, cedar-rest-library and
-        cedar-model-library alongside its own, so those classes exist in more than one published
-        artifact. Consumers resolve whichever copy the classpath reaches first, which is not
-        necessarily the one that was changed last.
-
-        The consequence: a change to any library shaded here is invisible until THIS library is
-        published again, and the build that fails is one that did not change. Adding a constant to
-        cedar-core-library broke cedar-microservice-libraries on develop with "cannot find symbol",
-        because the copy inside this jar predated it. Publishing is gated on a real push to develop,
-        so a workflow_dispatch rebuild verifies and does not republish.
-
-        So: after changing a library shaded here, push this repository too, before any consumer
-        merges. Removing the CEDAR artifacts from the shaded set is tracked on BACKEND-ROADMAP.md
-        under the shared-library shading item.
+        This library publishes a thin jar. It does not shade, so its dependencies stay declared in
+        the pom it publishes and a consumer resolves each one from the artifact that owns it. Only
+        the deployable modules shade, through the cedar-shade execution in cedar-parent.
       -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <configuration>
-          <createDependencyReducedPom>true</createDependencyReducedPom>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
