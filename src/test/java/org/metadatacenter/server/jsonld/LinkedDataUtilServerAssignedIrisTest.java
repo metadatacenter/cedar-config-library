@@ -9,24 +9,32 @@ import org.metadatacenter.model.CedarResourceType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The identifiers the server assigns to the element occurrences inside an instance.
+ * The IRIs an instance can only get from the server, and the two shapes that ask for them.
  *
- * <p>An occurrence exists in a document before anything can name it: one element, filled twice, is two
- * occurrences, and neither can be identified until the instance is uploaded. So the server assigns
- * them, and a client says which ones it is asking for. Two spellings mean "not yet": the older shape
- * leaves the key out, and the shape both model libraries now write states {@code "@id": null}.
+ * <p>Both exist in a document before anything can name them. An element occurrence is one element
+ * filled once, so filling it twice makes two, and neither is identifiable until the instance is
+ * uploaded. An attribute is named by the user while filling a form, so nothing could have minted a
+ * property IRI for it earlier — the name did not exist. The server assigns both, and a client says
+ * which it is asking for: an occurrence writes {@code "@id": null} or leaves the key out, and an
+ * attribute simply carries no {@code @context} term.
  *
- * <p>Only the absent key was answered here, so a null counted as an identifier already in hand and the
- * occurrence was passed over — the null reaching storage, where nothing would fill it later.
+ * <p>Only the absent key was answered for an occurrence, so a null counted as an identifier already in
+ * hand and the null reached storage with nothing to fill it later. Attributes were not answered at
+ * all.
+ *
+ * <p>What both share: an IRI already there is left alone, whoever assigned it, because an identifier
+ * is worth having only if it is stable.
  */
-public class LinkedDataUtilElementInstanceIdTest {
+public class LinkedDataUtilServerAssignedIrisTest {
 
   private static final String BASE = "https://repo.metadatacenter.orgx/";
   private static final String OCCURRENCE_PREFIX = BASE + "template-element-instances/";
   private static final String ASSIGNED = OCCURRENCE_PREFIX + "11111111-2222-3333-4444-555555555555";
+  private static final String PROPERTY_PREFIX = "https://schema.metadatacenter.org/properties/";
 
   private ObjectMapper mapper;
   private LinkedDataUtil linkedDataUtil;
@@ -111,5 +119,60 @@ public class LinkedDataUtilElementInstanceIdTest {
     linkedDataUtil.addElementInstanceIds(instance, CedarResourceType.INSTANCE);
 
     assertFalse(instance.get("@context").has("@id"), "the context is a mapping, not a node to identify");
+  }
+
+  // ---- The property IRI an attribute is given ----
+
+  @Test public void anAttributeWithNoTermIsGivenOne() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Sizes\":[\"Height\",\"Width\"],\"Height\":{\"@value\":\"2\"},\"Width\":{\"@value\":\"3\"}}");
+
+    linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
+
+    ObjectNode context = (ObjectNode) instance.get("@context");
+    assertTrue(context.get("Height").asText().startsWith(PROPERTY_PREFIX), "an attribute is a property, and gets an IRI");
+    assertTrue(context.get("Width").asText().startsWith(PROPERTY_PREFIX));
+    assertNotEquals(context.get("Height").asText(), context.get("Width").asText(),
+      "two attributes are two properties");
+  }
+
+  @Test public void anAttributeThatAlreadyHasOneKeepsIt() throws Exception {
+    String assigned = PROPERTY_PREFIX + "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{\"Height\":\"" + assigned + "\"},\"Sizes\":[\"Height\"],\"Height\":{\"@value\":\"2\"}}");
+
+    linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
+
+    assertEquals(assigned, instance.get("@context").get("Height").asText(),
+      "an assigned IRI is never reassigned, whoever assigned it");
+  }
+
+  @Test public void anAttributeInsideAnElementIsNamedInThatElementsContext() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"An Element\":{\"@context\":{},\"Sizes\":[\"Height\"],\"Height\":{\"@value\":\"2\"}}}");
+
+    linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
+
+    assertTrue(((ObjectNode) instance.get("An Element").get("@context")).get("Height").asText().startsWith(PROPERTY_PREFIX),
+      "the term belongs to the node holding the field");
+    assertFalse(instance.get("@context").has("Height"), "and not to the root, which does not hold it");
+  }
+
+  @Test public void anAttributeWithNoNameIsNotNamed() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree("{\"@context\":{},\"Sizes\":[\"\"]}");
+
+    linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
+
+    assertFalse(instance.get("@context").has(""),
+      "an attribute with no name is a defect in whatever wrote it, not something to mint for");
+  }
+
+  @Test public void aListOfValuesIsNotAListOfAttributeNames() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"A Multi Field\":[{\"@value\":\"one\"},{\"@value\":\"two\"}]}");
+
+    linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
+
+    assertEquals(0, instance.get("@context").size(), "only a list of names names attributes");
   }
 }

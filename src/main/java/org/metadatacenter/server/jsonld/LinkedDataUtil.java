@@ -17,6 +17,9 @@ public class LinkedDataUtil {
 
   protected static final String SEPARATOR = "/";
 
+  /** The namespace every CEDAR property IRI lives in. */
+  private static final String PROPERTY_IRI_PREFIX = "https://schema.metadatacenter.org/properties/";
+
   private final LinkedDataConfig ldConfig;
   private final List<String> knownPrefixes;
 
@@ -113,6 +116,81 @@ public class LinkedDataUtil {
 
   private boolean isElementInstance(JsonNode fieldContent) {
     return fieldContent != null && fieldContent.has(LinkedData.CONTEXT);
+  }
+
+  /**
+   * Assigns a property IRI to every attribute an instance names and has none for.
+   *
+   * <p>A user names an attribute while filling a form, so nothing could have minted an IRI for it
+   * earlier: the name did not exist until then. A draft therefore carries the attribute's value at the
+   * instance root and no {@code @context} term, which the model permits — an instance's context
+   * requires the standard prefixes and the system keys, and no attribute name. This fills the term, so
+   * that what is stored says which property the value is of.
+   *
+   * <p>An attribute-value field's own value is the list of attribute names it holds, so the document
+   * enumerates the work rather than hiding it. The term goes in the {@code @context} of the node
+   * holding the field, which is the root for a field at the top level and the occurrence's own context
+   * for one inside an element.
+   *
+   * <p>A term already present is left alone, whoever assigned it: an identifier is worth having
+   * because it is stable, and re-minting on every save would take that away. A blank name is skipped
+   * rather than named — an attribute with no name is a defect in whatever wrote it, and minting for it
+   * would create a property IRI nothing can be said about.
+   */
+  public void addAttributeValuePropertyIris(JsonNode nodeContent, CedarResourceType resourceType) {
+    if (resourceType.equals(CedarResourceType.INSTANCE)) {
+      addAttributeValuePropertyIrisToNode(nodeContent);
+    }
+  }
+
+  private void addAttributeValuePropertyIrisToNode(JsonNode node) {
+    if (node.isArray()) {
+      node.forEach(this::addAttributeValuePropertyIrisToNode);
+      return;
+    }
+    if (!node.isObject()) {
+      return;
+    }
+    JsonNode context = node.get(LinkedData.CONTEXT);
+    if (context != null && context.isObject()) {
+      nameAttributesOf(node, (ObjectNode) context);
+    }
+    Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
+    while (fieldsIterator.hasNext()) {
+      Map.Entry<String, JsonNode> field = fieldsIterator.next();
+      if (!field.getKey().equals(LinkedData.CONTEXT)) {
+        addAttributeValuePropertyIrisToNode(field.getValue());
+      }
+    }
+  }
+
+  private void nameAttributesOf(JsonNode holder, ObjectNode context) {
+    Iterator<Map.Entry<String, JsonNode>> fieldsIterator = holder.fields();
+    while (fieldsIterator.hasNext()) {
+      Map.Entry<String, JsonNode> field = fieldsIterator.next();
+      if (!isAttributeValueField(field.getValue())) {
+        continue;
+      }
+      for (JsonNode attributeName : field.getValue()) {
+        String attribute = attributeName.asText();
+        if (!attribute.isBlank() && !context.has(attribute)) {
+          context.put(attribute, PROPERTY_IRI_PREFIX + UUID.randomUUID());
+        }
+      }
+    }
+  }
+
+  /** An attribute-value field is written as the list of attribute names it holds. */
+  private boolean isAttributeValueField(JsonNode value) {
+    if (!value.isArray() || value.isEmpty()) {
+      return false;
+    }
+    for (JsonNode entry : value) {
+      if (!entry.isTextual()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
