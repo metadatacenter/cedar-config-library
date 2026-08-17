@@ -2,6 +2,7 @@ package org.metadatacenter.server.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.config.LinkedDataConfig;
 import org.metadatacenter.constant.LinkedData;
@@ -12,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class LinkedDataUtil {
 
@@ -173,9 +176,17 @@ public class LinkedDataUtil {
       if (!isAttributeValueField(field.getValue())) {
         continue;
       }
-      for (JsonNode attributeName : field.getValue()) {
+      ArrayNode attributeNames = (ArrayNode) field.getValue();
+      // Blank rows exist while an editor is waiting for a user to name an
+      // attribute. They are draft UI state and cannot name a stored property.
+      for (int index = attributeNames.size() - 1; index >= 0; index--) {
+        if (attributeNames.get(index).asText().isBlank()) {
+          attributeNames.remove(index);
+        }
+      }
+      for (JsonNode attributeName : attributeNames) {
         String attribute = attributeName.asText();
-        if (!attribute.isBlank() && !context.has(attribute)) {
+        if (!context.has(attribute)) {
           context.put(attribute, PROPERTY_IRI_PREFIX + UUID.randomUUID());
         }
       }
@@ -290,6 +301,240 @@ public class LinkedDataUtil {
   private static final Set<String> UNMAPPED_INPUT_TYPES =
       Set.of("page-break", "section-break", "richtext", "image", "youtube", "attribute-value");
 
+  private static final Set<String> RESERVED_ATTRIBUTE_VALUE_NAMES = Set.of(
+      "@context", "@id", "@type", "@value", "@language",
+      "schema:isBasedOn", "schema:name", "schema:description",
+      "pav:derivedFrom", "pav:createdOn", "pav:createdBy", "pav:lastUpdatedOn",
+      "oslc:modifiedBy", "rdfs:label", "skos:prefLabel", "skos:altLabel",
+      "skos:notation", "_annotations");
+
+  /** One defect carried unchanged from storage into an ordinary update. */
+  public record LegacyArtifactRepair(String path, String issue, String previousValue) {}
+
+  /**
+   * Repairs only defects demonstrably inherited from the stored artifact. A
+   * newly introduced malformed value is left in place for validation to
+   * reject. This distinction lets an old production artifact survive an
+   * ordinary edit without turning the compatibility path into a general
+   * sanitizer for new requests.
+   */
+  public List<LegacyArtifactRepair> repairInheritedDefects(JsonNode submitted, JsonNode stored, JsonNode template,
+                                                           CedarResourceType resourceType) {
+    List<LegacyArtifactRepair> repairs = new ArrayList<>();
+    if (submitted == null || stored == null) {
+      return repairs;
+    }
+    if (resourceType == CedarResourceType.TEMPLATE || resourceType == CedarResourceType.ELEMENT) {
+      repairInheritedSchemaMappings(submitted, stored, "", repairs);
+    } else if (resourceType == CedarResourceType.INSTANCE) {
+      repairInheritedOccurrenceIds(submitted, stored, "", repairs, true);
+      if (template != null) {
+        repairInheritedAttributeNames(submitted, stored, template, "", repairs);
+      }
+    }
+    return repairs;
+  }
+
+  private void repairInheritedSchemaMappings(JsonNode submitted, JsonNode stored, String path,
+                                             List<LegacyArtifactRepair> repairs) {
+    if (!submitted.isObject() || !stored.isObject()) {
+      return;
+    }
+    JsonNode submittedProperties = submitted.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    JsonNode storedProperties = stored.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    if (submittedProperties == null || !submittedProperties.isObject()
+        || storedProperties == null || !storedProperties.isObject()) {
+      return;
+    }
+    ObjectNode submittedContext = contextPropertiesOf(submittedProperties);
+    ObjectNode storedContext = contextPropertiesOf(storedProperties);
+    for (String childName : childNames(submitted)) {
+      JsonNode submittedMapping = submittedContext == null ? null : submittedContext.get(childName);
+      JsonNode storedMapping = storedContext == null ? null : storedContext.get(childName);
+      if (submittedMapping != null && submittedMapping.equals(storedMapping)
+          && !hasUsablePropertyIri(submittedMapping)) {
+        submittedContext.remove(childName);
+        removeAllRequiredOccurrences(submittedProperties, childName);
+        repairs.add(new LegacyArtifactRepair(path + "/properties/@context/properties/" + escapePointer(childName),
+            "unusable child property IRI removed for server reminting", submittedMapping.toString()));
+      }
+      JsonNode submittedChild = childDefinition(submittedProperties.get(childName));
+      JsonNode storedChild = childDefinition(storedProperties.get(childName));
+      if (submittedChild != null && storedChild != null) {
+        repairInheritedSchemaMappings(submittedChild, storedChild,
+            path + "/properties/" + escapePointer(childName), repairs);
+      }
+    }
+  }
+
+  private void repairInheritedOccurrenceIds(JsonNode submitted, JsonNode stored, String path,
+                                            List<LegacyArtifactRepair> repairs, boolean documentRoot) {
+    if (submitted == null) {
+      return;
+    }
+    if (submitted.isArray()) {
+      for (int index = 0; index < submitted.size(); index++) {
+        JsonNode storedItem = stored != null && stored.isArray() && index < stored.size() ? stored.get(index) : null;
+        repairInheritedOccurrenceIds(submitted.get(index), storedItem, path + "/" + index, repairs, false);
+      }
+      return;
+    }
+    if (!submitted.isObject()) {
+      return;
+    }
+    if (!documentRoot && submitted.has(LinkedData.CONTEXT)) {
+      JsonNode submittedId = submitted.get(LinkedData.ID);
+      JsonNode storedId = stored != null && stored.isObject() ? stored.get(LinkedData.ID) : null;
+      if (submittedId != null && submittedId.equals(storedId) && submittedId.isTextual()
+          && !isAbsoluteIri(submittedId.asText())) {
+        ((ObjectNode) submitted).putNull(LinkedData.ID);
+        repairs.add(new LegacyArtifactRepair(path + "/@id",
+            "unusable element occurrence identifier reset for server reminting", submittedId.asText()));
+      }
+    }
+    Iterator<Map.Entry<String, JsonNode>> fields = submitted.fields();
+    while (fields.hasNext()) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      if (LinkedData.CONTEXT.equals(field.getKey()) || LinkedData.ID.equals(field.getKey())) {
+        continue;
+      }
+      JsonNode storedChild = stored != null && stored.isObject() ? stored.get(field.getKey()) : null;
+      repairInheritedOccurrenceIds(field.getValue(), storedChild,
+          path + "/" + escapePointer(field.getKey()), repairs, false);
+    }
+  }
+
+  private void repairInheritedAttributeNames(JsonNode submitted, JsonNode stored, JsonNode schema, String path,
+                                             List<LegacyArtifactRepair> repairs) {
+    if (!submitted.isObject() || !stored.isObject() || !schema.isObject()) {
+      return;
+    }
+    JsonNode schemaProperties = schema.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    if (schemaProperties == null || !schemaProperties.isObject()) {
+      return;
+    }
+    Set<String> groups = new LinkedHashSet<>();
+    Set<String> serializingChildren = new LinkedHashSet<>();
+    for (String childName : childNames(schema)) {
+      JsonNode child = childDefinition(schemaProperties.get(childName));
+      String inputType = child.path(ModelNodeNames.UI).path(ModelNodeNames.UI_FIELD_INPUT_TYPE).asText();
+      if ("attribute-value".equals(inputType)) {
+        groups.add(childName);
+      } else if (!UNMAPPED_INPUT_TYPES.contains(inputType)) {
+        serializingChildren.add(childName);
+      }
+    }
+
+    Set<String> seenNames = new LinkedHashSet<>();
+    for (String group : groups) {
+      JsonNode submittedNames = submitted.get(group);
+      JsonNode storedNames = stored.get(group);
+      if (submittedNames == null || !submittedNames.isArray()) {
+        continue;
+      }
+      Map<String, Integer> inheritedNameCounts = new HashMap<>();
+      if (storedNames != null && storedNames.isArray()) {
+        storedNames.forEach(name -> {
+          if (name.isTextual()) {
+            inheritedNameCounts.merge(name.asText(), 1, Integer::sum);
+          }
+        });
+      }
+      ArrayNode kept = JsonNodeFactory.instance.arrayNode();
+      boolean changed = false;
+      for (JsonNode nameNode : submittedNames) {
+        if (!nameNode.isTextual()) {
+          kept.add(nameNode);
+          continue;
+        }
+        String name = nameNode.asText();
+        int inheritedCount = inheritedNameCounts.getOrDefault(name, 0);
+        boolean inherited = inheritedCount > 0;
+        if (inherited) {
+          inheritedNameCounts.put(name, inheritedCount - 1);
+        }
+        boolean reserved = name.startsWith("@") || RESERVED_ATTRIBUTE_VALUE_NAMES.contains(name);
+        boolean structuralCollision = groups.contains(name) || serializingChildren.contains(name);
+        boolean duplicate = seenNames.contains(name);
+        boolean repairable = name.isBlank() || reserved || structuralCollision || duplicate;
+        if (inherited && repairable) {
+          String issue = name.isBlank() ? "blank attribute name removed"
+              : reserved ? "reserved attribute name removed"
+              : structuralCollision ? "attribute name colliding with a template child removed"
+              : "duplicate attribute name removed";
+          repairs.add(new LegacyArtifactRepair(path + "/" + escapePointer(group), issue, name));
+          changed = true;
+        } else {
+          kept.add(nameNode);
+          if (!name.isBlank()) {
+            seenNames.add(name);
+          }
+        }
+      }
+      if (changed) {
+        ((ArrayNode) submittedNames).removeAll().addAll(kept);
+      }
+    }
+
+    for (String childName : childNames(schema)) {
+      if (groups.contains(childName)) {
+        continue;
+      }
+      JsonNode childSchema = childDefinition(schemaProperties.get(childName));
+      JsonNode submittedChild = submitted.get(childName);
+      JsonNode storedChild = stored.get(childName);
+      if (submittedChild == null || storedChild == null || childSchema == null) {
+        continue;
+      }
+      String childPath = path + "/" + escapePointer(childName);
+      if (submittedChild.isArray() && storedChild.isArray()) {
+        for (int index = 0; index < submittedChild.size(); index++) {
+          JsonNode storedItem = index < storedChild.size() ? storedChild.get(index) : null;
+          if (storedItem != null) {
+            repairInheritedAttributeNames(submittedChild.get(index), storedItem, childSchema,
+                childPath + "/" + index, repairs);
+          }
+        }
+      } else {
+        repairInheritedAttributeNames(submittedChild, storedChild, childSchema, childPath, repairs);
+      }
+    }
+  }
+
+  private boolean hasUsablePropertyIri(JsonNode mapping) {
+    JsonNode values = mapping == null ? null : mapping.get(ModelNodeNames.JSON_SCHEMA_ENUM);
+    return values != null && values.isArray() && values.size() == 1 && values.get(0).isTextual()
+        && isAbsoluteIri(values.get(0).asText());
+  }
+
+  private void removeAllRequiredOccurrences(JsonNode properties, String childName) {
+    JsonNode context = properties.get(LinkedData.CONTEXT);
+    JsonNode required = context == null ? null : context.get(ModelNodeNames.JSON_SCHEMA_REQUIRED);
+    if (required == null || !required.isArray()) {
+      return;
+    }
+    for (int index = required.size() - 1; index >= 0; index--) {
+      if (required.get(index).isTextual() && childName.equals(required.get(index).asText())) {
+        ((ArrayNode) required).remove(index);
+      }
+    }
+  }
+
+  private static boolean isAbsoluteIri(String value) {
+    if (value == null || value.isBlank()) {
+      return false;
+    }
+    try {
+      return new URI(value).isAbsolute();
+    } catch (URISyntaxException e) {
+      return false;
+    }
+  }
+
+  private static String escapePointer(String component) {
+    return component.replace("~", "~0").replace("/", "~1");
+  }
+
   /**
    * Assigns a property IRI to every child of a template or element that has none.
    *
@@ -326,21 +571,33 @@ public class LinkedDataUtil {
       if (child == null || isUnmapped(child)) {
         continue;
       }
-      if (contextProperties != null && !contextProperties.has(childName)) {
-        ObjectNode mapping = contextProperties.putObject(childName);
-        mapping.putArray(ModelNodeNames.JSON_SCHEMA_ENUM).add(PROPERTY_IRI_PREFIX + UUID.randomUUID());
+      if (contextProperties != null) {
+        if (!contextProperties.has(childName)) {
+          ObjectNode mapping = contextProperties.putObject(childName);
+          mapping.putArray(ModelNodeNames.JSON_SCHEMA_ENUM).add(PROPERTY_IRI_PREFIX + UUID.randomUUID());
+        }
         requireChild(properties, childName);
       }
       addChildPropertyIrisToContainer(child); // an element maps its own children
     }
   }
 
-  /** The order a container declares is the list of its children. */
+  /**
+   * The schema properties that are actual CEDAR children. `_ui.order` is a
+   * presentation index over this structure, not the authority for whether a
+   * property exists.
+   */
   private List<String> childNames(JsonNode container) {
     List<String> names = new ArrayList<>();
-    JsonNode order = container.path(ModelNodeNames.UI).path(ModelNodeNames.UI_ORDER);
-    if (order.isArray()) {
-      order.forEach(name -> names.add(name.asText()));
+    JsonNode properties = container.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    if (properties != null && properties.isObject()) {
+      properties.fields().forEachRemaining(entry -> {
+        JsonNode child = childDefinition(entry.getValue());
+        JsonNode ui = child == null ? null : child.get(ModelNodeNames.UI);
+        if (ui != null && ui.isObject()) {
+          names.add(entry.getKey());
+        }
+      });
     }
     return names;
   }
@@ -370,10 +627,25 @@ public class LinkedDataUtil {
   /** A mapped child is required of the instance's context, as the renderer writes it. */
   private void requireChild(JsonNode properties, String childName) {
     JsonNode context = properties.get(LinkedData.CONTEXT);
+    if (context == null || !context.isObject()) {
+      return;
+    }
     JsonNode required = context.get(ModelNodeNames.JSON_SCHEMA_REQUIRED);
-    if (required != null && required.isArray()) {
+    if (required == null) {
+      required = ((ObjectNode) context).putArray(ModelNodeNames.JSON_SCHEMA_REQUIRED);
+    }
+    if (required != null && required.isArray() && !containsText(required, childName)) {
       ((ArrayNode) required).add(childName);
     }
+  }
+
+  private boolean containsText(JsonNode array, String value) {
+    for (JsonNode entry : array) {
+      if (entry.isTextual() && value.equals(entry.asText())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

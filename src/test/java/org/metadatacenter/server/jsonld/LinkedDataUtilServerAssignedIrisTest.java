@@ -1,6 +1,7 @@
 package org.metadatacenter.server.jsonld;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -158,13 +159,15 @@ public class LinkedDataUtilServerAssignedIrisTest {
     assertFalse(instance.get("@context").has("Height"), "and not to the root, which does not hold it");
   }
 
-  @Test public void anAttributeWithNoNameIsNotNamed() throws Exception {
+  @Test public void anAttributeWithNoNameIsRemovedFromTheStoredShape() throws Exception {
     ObjectNode instance = (ObjectNode) mapper.readTree("{\"@context\":{},\"Sizes\":[\"\"]}");
 
     linkedDataUtil.addAttributeValuePropertyIris(instance, CedarResourceType.INSTANCE);
 
     assertFalse(instance.get("@context").has(""),
       "an attribute with no name is a defect in whatever wrote it, not something to mint for");
+    assertTrue(instance.get("Sizes").isEmpty(),
+      "an empty UI slot is draft state, not an attribute the repository can store");
   }
 
   @Test public void aListOfValuesIsNotAListOfAttributeNames() throws Exception {
@@ -215,6 +218,39 @@ public class LinkedDataUtilServerAssignedIrisTest {
       "an author's own IRI is the point of the key, and is never replaced");
   }
 
+  @Test public void aMappedChildIsRequiredInTheInstanceContextExactlyOnce() throws Exception {
+    ObjectNode template = templateWithChild("textfield", true);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    JsonNode required = template.get("properties").get("@context").get("required");
+    assertEquals(1, required.size(), "normalization is idempotent");
+    assertEquals("A Field", required.get(0).asText(),
+      "a supplied mapping is still part of the context every instance must carry");
+  }
+
+  @Test public void aMissingContextRequiredArrayIsCreated() throws Exception {
+    ObjectNode template = templateWithChild("textfield", true);
+    ((ObjectNode) template.get("properties").get("@context")).remove("required");
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    JsonNode required = template.get("properties").get("@context").get("required");
+    assertEquals(1, required.size());
+    assertEquals("A Field", required.get(0).asText());
+  }
+
+  @Test public void aPropertyOmittedFromUiOrderIsStillMapped() throws Exception {
+    ObjectNode template = templateWithChild("textfield", false);
+    ((com.fasterxml.jackson.databind.node.ArrayNode) template.get("_ui").get("order")).removeAll();
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    assertTrue(contextProperties(template).get("A Field").get("enum").get(0).asText().startsWith(PROPERTY_PREFIX),
+      "properties is the schema structure; _ui.order is only its presentation index");
+  }
+
   @Test public void aStaticFieldIsNotMapped() throws Exception {
     ObjectNode template = templateWithChild("section-break", false);
 
@@ -263,6 +299,114 @@ public class LinkedDataUtilServerAssignedIrisTest {
     linkedDataUtil.addChildPropertyIris(template, CedarResourceType.INSTANCE);
 
     assertFalse(contextProperties(template).has("A Field"), "only a template or an element maps children");
+  }
+
+  // ---- Compatibility repairs for production artifacts ----
+
+  @Test public void anInheritedUnusableChildMappingIsReminted() throws Exception {
+    ObjectNode stored = templateWithChild("textfield", false);
+    contextProperties(stored).putObject("A Field").putArray("enum").add("");
+    ((ObjectNode) stored.get("properties").get("@context")).putArray("required")
+      .add("A Field").add("A Field");
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+    linkedDataUtil.addChildPropertyIris(submitted, CedarResourceType.TEMPLATE);
+
+    String repaired = contextProperties(submitted).get("A Field").get("enum").get(0).asText();
+    assertEquals(1, repairs.size());
+    assertTrue(repaired.startsWith(PROPERTY_PREFIX), "the inherited bad mapping is replaced server-side");
+    assertEquals(1, submitted.get("properties").get("@context").get("required").size(),
+      "reminting restores the required entry once");
+  }
+
+  @Test public void aNewlyIntroducedUnusableChildMappingIsNotSilentlyRepaired() throws Exception {
+    ObjectNode stored = templateWithChild("textfield", true);
+    ObjectNode submitted = stored.deepCopy();
+    contextProperties(submitted).putObject("A Field").putArray("enum").add("");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+    linkedDataUtil.addChildPropertyIris(submitted, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals("", contextProperties(submitted).get("A Field").get("enum").get(0).asText(),
+      "validation must see and reject a defect introduced by this request");
+  }
+
+  @Test public void anInheritedUnusableOccurrenceIdIsReminted() throws Exception {
+    ObjectNode stored = instanceWithOccurrence("", true);
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.INSTANCE);
+    linkedDataUtil.addElementInstanceIds(submitted, CedarResourceType.INSTANCE);
+
+    assertEquals(1, repairs.size());
+    assertTrue(submitted.get("An Element").get("@id").asText().startsWith(OCCURRENCE_PREFIX));
+  }
+
+  @Test public void aNewlyIntroducedUnusableOccurrenceIdIsNotSilentlyRepaired() throws Exception {
+    ObjectNode stored = instanceWithOccurrence(ASSIGNED, true);
+    ObjectNode submitted = stored.deepCopy();
+    ((ObjectNode) submitted.get("An Element")).put("@id", "");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.INSTANCE);
+    linkedDataUtil.addElementInstanceIds(submitted, CedarResourceType.INSTANCE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals("", submitted.get("An Element").get("@id").asText(),
+      "validation must see and reject a defect introduced by this request");
+  }
+
+  private ObjectNode templateWithAttributeGroup() throws Exception {
+    return (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"Attributes\",\"Name\"]},\"properties\":{" +
+        "\"Attributes\":{\"_ui\":{\"inputType\":\"attribute-value\"}},"
+        + "\"Name\":{\"_ui\":{\"inputType\":\"textfield\"}}}}" );
+  }
+
+  @Test public void inheritedUnsafeAttributeNamesAreRemoved() throws Exception {
+    ObjectNode schema = templateWithAttributeGroup();
+    ObjectNode stored = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Attributes\":[\"\",\"@context\",\"Name\",\"dup\",\"dup\"]}");
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, schema, CedarResourceType.INSTANCE);
+
+    assertEquals("[\"dup\"]", submitted.get("Attributes").toString());
+    assertEquals(4, repairs.size(), "blank, reserved, structural collision, and duplicate are repaired");
+  }
+
+  @Test public void anInheritedUnsafeAttributeNameIsStillRemovedWhenTheGroupWasEdited() throws Exception {
+    ObjectNode schema = templateWithAttributeGroup();
+    ObjectNode stored = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Attributes\":[\"@context\",\"safe\"]}");
+    ObjectNode submitted = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Attributes\":[\"new\",\"@context\",\"safe\"]}");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, schema, CedarResourceType.INSTANCE);
+
+    assertEquals("[\"new\",\"safe\"]", submitted.get("Attributes").toString());
+    assertEquals(1, repairs.size(), "editing the group must not strand an old production defect");
+  }
+
+  @Test public void newlyIntroducedUnsafeAttributeNamesAreNotSilentlyRepaired() throws Exception {
+    ObjectNode schema = templateWithAttributeGroup();
+    ObjectNode stored = (ObjectNode) mapper.readTree("{\"@context\":{},\"Attributes\":[\"safe\"]}");
+    ObjectNode submitted = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Attributes\":[\"@context\",\"Name\",\"dup\",\"dup\"]}");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, schema, CedarResourceType.INSTANCE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals("[\"@context\",\"Name\",\"dup\",\"dup\"]", submitted.get("Attributes").toString(),
+      "validation must see and reject names introduced by this request");
   }
 
   // ---- The terms that go when nothing names them any more ----
