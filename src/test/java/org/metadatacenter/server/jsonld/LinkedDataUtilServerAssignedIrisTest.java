@@ -264,4 +264,116 @@ public class LinkedDataUtilServerAssignedIrisTest {
 
     assertFalse(contextProperties(template).has("A Field"), "only a template or an element maps children");
   }
+
+  // ---- The terms that go when nothing names them any more ----
+
+  private static final String ASSIGNED_TERM = PROPERTY_PREFIX + "cccccccc-dddd-eeee-ffff-000000000000";
+
+  /** A template declaring one text field and one element, and the instance's context alongside it. */
+  private ObjectNode templateDeclaring(String... childNames) throws Exception {
+    ObjectNode template = (ObjectNode) mapper.readTree("{\"_ui\":{\"order\":[]},\"properties\":{}}");
+    ArrayNodeHelper.setOrder(template, childNames);
+    ObjectNode properties = (ObjectNode) template.get("properties");
+    for (String name : childNames) {
+      properties.putObject(name).putObject("_ui").put("inputType", "textfield");
+    }
+    return template;
+  }
+
+  private ObjectNode instanceWithTerms(java.util.Map<String, String> terms) throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree("{\"@context\":{}}");
+    ObjectNode context = (ObjectNode) instance.get("@context");
+    terms.forEach(context::put);
+    return instance;
+  }
+
+  @Test public void aTermNothingNamesIsRemoved() throws Exception {
+    ObjectNode instance = instanceWithTerms(java.util.Map.of("Sex", ASSIGNED_TERM));
+    ObjectNode template = templateDeclaring("Age");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    assertFalse(instance.get("@context").has("Sex"),
+      "an attribute the user renamed or deleted leaves a definition for a word nothing uses");
+  }
+
+  @Test public void aTermTheTemplateDeclaresStaysEvenWithNothingInTheBody() throws Exception {
+    ObjectNode instance = instanceWithTerms(java.util.Map.of("Element", ASSIGNED_TERM));
+    ObjectNode template = templateDeclaring("Element");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    assertTrue(instance.get("@context").has("Element"),
+      "an unfilled child is absent from the body and its definition still belongs there — the case "
+        + "instances/005 carries, and the one the obvious rule deletes");
+  }
+
+  @Test public void aTermAnAttributeStillUsesStays() throws Exception {
+    ObjectNode instance = instanceWithTerms(java.util.Map.of("Sex", ASSIGNED_TERM));
+    ((ObjectNode) instance).putArray("Attributes").add("Sex");
+    ObjectNode template = templateDeclaring("Attributes");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    assertTrue(instance.get("@context").has("Sex"), "an attribute-value field names it, so it is in use");
+  }
+
+  @Test public void anAuthorsOwnIriIsNeverRemoved() throws Exception {
+    ObjectNode instance = instanceWithTerms(java.util.Map.of("Sex", "http://purl.obolibrary.org/obo/PATO_0000047"));
+    ObjectNode template = templateDeclaring("Age");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    assertTrue(instance.get("@context").has("Sex"),
+      "a term from a real vocabulary is the author's choice and the point of the key");
+  }
+
+  @Test public void thePrefixesAndSystemKeysAreUntouched() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{\"xsd\":\"http://www.w3.org/2001/XMLSchema#\","
+        + "\"schema:name\":{\"@type\":\"xsd:string\"},\"Sex\":\"" + ASSIGNED_TERM + "\"}}");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, templateDeclaring("Age"), CedarResourceType.INSTANCE);
+
+    ObjectNode context = (ObjectNode) instance.get("@context");
+    assertTrue(context.has("xsd"), "a prefix is not a property IRI this server assigned");
+    assertTrue(context.has("schema:name"), "nor is a system key's datatype mapping");
+    assertFalse(context.has("Sex"));
+  }
+
+  @Test public void anOrphanInsideAnElementOccurrenceIsRemoved() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"An Element\":{\"@context\":{\"Sex\":\"" + ASSIGNED_TERM + "\"}}}");
+    ObjectNode template = (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"An Element\"]},\"properties\":{\"An Element\":"
+        + "{\"_ui\":{\"order\":[\"Inner\"]},\"properties\":{\"Inner\":{\"_ui\":{\"inputType\":\"textfield\"}}}}}}");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    assertFalse(instance.get("An Element").get("@context").has("Sex"),
+      "a term belongs to the node holding it, and so does the question of whether anything names it");
+  }
+
+  @Test public void everyOccurrenceOfAMultiInstanceElementIsPruned() throws Exception {
+    ObjectNode instance = (ObjectNode) mapper.readTree(
+      "{\"@context\":{},\"Many\":[{\"@context\":{\"Sex\":\"" + ASSIGNED_TERM + "\"}},"
+        + "{\"@context\":{\"Sex\":\"" + ASSIGNED_TERM + "\"}}]}");
+    ObjectNode template = (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"Many\"]},\"properties\":{\"Many\":{\"type\":\"array\",\"items\":"
+        + "{\"_ui\":{\"order\":[]},\"properties\":{}}}}}");
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, template, CedarResourceType.INSTANCE);
+
+    instance.get("Many").forEach(occurrence ->
+      assertFalse(occurrence.get("@context").has("Sex"), "each occurrence carries its own context"));
+  }
+
+  @Test public void withoutATemplateNothingIsRemoved() throws Exception {
+    ObjectNode instance = instanceWithTerms(java.util.Map.of("Sex", ASSIGNED_TERM));
+
+    linkedDataUtil.pruneOrphanPropertyIris(instance, null, CedarResourceType.INSTANCE);
+
+    assertTrue(instance.get("@context").has("Sex"),
+      "the template is what tells an orphan from a child, so without one nothing is decided");
+  }
 }

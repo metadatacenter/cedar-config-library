@@ -195,6 +195,97 @@ public class LinkedDataUtil {
     return true;
   }
 
+  /**
+   * Removes the {@code @context} terms of attributes nothing names any more.
+   *
+   * <p>The server assigns a property IRI to every attribute a user names, and leaves an assigned one
+   * alone. Nothing removed one, so a context kept a definition for every attribute a user ever renamed
+   * or deleted — a term for a word the document no longer uses.
+   *
+   * <p>Three questions decide each term, and two of them need the template, which is why this is given
+   * one rather than working on the document alone:
+   *
+   * <ul>
+   *   <li>Does the template declare a child of that name? Then it is structure. It stays whether the
+   *       instance carries the child or not — an unfilled child is absent from the body and its
+   *       definition still belongs there. {@code instances/005} in the shared corpus carries two.</li>
+   *   <li>Does an attribute-value field name it? Then it is in use, and stays.</li>
+   *   <li>Otherwise it is the orphan, and goes — but only if the IRI is one the repository assigned.
+   *       An author who mapped a child to a term from a real vocabulary chose that IRI deliberately,
+   *       and it is the point of the key.</li>
+   * </ul>
+   *
+   * <p>An orphan and a structural term are indistinguishable inside the document: both are a name in
+   * the context, mapped to a {@code .../properties/...} address, used nowhere in the body. Only the
+   * template tells them apart, which is why the obvious rule — drop what the body does not use —
+   * deletes an author's work.
+   */
+  public void pruneOrphanPropertyIris(JsonNode instance, JsonNode template, CedarResourceType resourceType) {
+    if (resourceType.equals(CedarResourceType.INSTANCE) && instance != null && template != null) {
+      pruneNode(instance, template);
+    }
+  }
+
+  private void pruneNode(JsonNode instanceNode, JsonNode schemaNode) {
+    if (instanceNode == null || !instanceNode.isObject() || schemaNode == null || !schemaNode.isObject()) {
+      return;
+    }
+    Set<String> declared = declaredChildNames(schemaNode);
+    ObjectNode context = contextOf(instanceNode);
+    if (context != null) {
+      Set<String> inUse = attributeNamesIn(instanceNode);
+      List<String> orphans = new ArrayList<>();
+      Iterator<Map.Entry<String, JsonNode>> terms = context.fields();
+      while (terms.hasNext()) {
+        Map.Entry<String, JsonNode> term = terms.next();
+        JsonNode iri = term.getValue();
+        boolean assignedHere = iri.isTextual() && iri.asText().startsWith(PROPERTY_IRI_PREFIX);
+        if (assignedHere && !declared.contains(term.getKey()) && !inUse.contains(term.getKey())) {
+          orphans.add(term.getKey());
+        }
+      }
+      orphans.forEach(context::remove);
+    }
+    JsonNode schemaProperties = schemaNode.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    if (schemaProperties == null || !schemaProperties.isObject()) {
+      return;
+    }
+    for (String childName : declared) {
+      JsonNode childSchema = childDefinition(schemaProperties.get(childName));
+      JsonNode childInstance = instanceNode.get(childName);
+      if (childSchema == null || childInstance == null) {
+        continue;
+      }
+      if (childInstance.isArray()) {
+        childInstance.forEach(occurrence -> pruneNode(occurrence, childSchema));
+      } else {
+        pruneNode(childInstance, childSchema);
+      }
+    }
+  }
+
+  /** Every attribute name the attribute-value fields of this node currently hold. */
+  private Set<String> attributeNamesIn(JsonNode node) {
+    Set<String> names = new LinkedHashSet<>();
+    Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
+    while (fieldsIterator.hasNext()) {
+      Map.Entry<String, JsonNode> field = fieldsIterator.next();
+      if (isAttributeValueField(field.getValue())) {
+        field.getValue().forEach(name -> names.add(name.asText()));
+      }
+    }
+    return names;
+  }
+
+  private Set<String> declaredChildNames(JsonNode schemaNode) {
+    return new LinkedHashSet<>(childNames(schemaNode));
+  }
+
+  private ObjectNode contextOf(JsonNode node) {
+    JsonNode context = node.get(LinkedData.CONTEXT);
+    return context != null && context.isObject() ? (ObjectNode) context : null;
+  }
+
   /** Field kinds a container gives no property IRI: they carry no value a property could name. */
   private static final Set<String> UNMAPPED_INPUT_TYPES =
       Set.of("page-break", "section-break", "richtext", "image", "youtube", "attribute-value");
