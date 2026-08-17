@@ -88,7 +88,7 @@ public class LinkedDataUtil {
       // Check that it is an element instance
       if (isElementInstance(fieldContent)) {
         //  and has no id
-        if (!fieldContent.has(LinkedData.ID)) {
+        if (needsId(fieldContent)) {
           String id = buildNewLinkedDataId(CedarResourceType.ELEMENT_INSTANCE);
           ((ObjectNode) fieldContent).put(LinkedData.ID, id);
           addElementInstanceIds(fieldContent, CedarResourceType.INSTANCE);
@@ -113,6 +113,26 @@ public class LinkedDataUtil {
 
   private boolean isElementInstance(JsonNode fieldContent) {
     return fieldContent != null && fieldContent.has(LinkedData.CONTEXT);
+  }
+
+  /**
+   * Whether an element occurrence is asking for an identifier.
+   *
+   * <p>Two spellings mean the same thing, and both have to be answered. A client that leaves the key
+   * out is the older shape. A client that writes {@code "@id": null} is saying so explicitly, which is
+   * what the model libraries now write for a node that has no identity yet: an occurrence exists in a
+   * document before anything can name it, and null is the honest value until the server assigns one.
+   * Only {@code has} was checked here, so a null-valued key counted as an identifier already present
+   * and the occurrence was passed over — the null then survived into storage.
+   *
+   * <p>An empty string is deliberately not treated as absent. It is not an identifier and not an
+   * honest absence of one, and both model libraries now refuse to read it, so quietly minting over it
+   * would hide whoever writes it. Stored artifacts carrying one are patched rather than repaired in
+   * passing; see the backend roadmap.
+   */
+  private boolean needsId(JsonNode fieldContent) {
+    JsonNode id = fieldContent.get(LinkedData.ID);
+    return id == null || id.isNull();
   }
 
   public boolean isValidId(String id) {
