@@ -175,4 +175,93 @@ public class LinkedDataUtilServerAssignedIrisTest {
 
     assertEquals(0, instance.get("@context").size(), "only a list of names names attributes");
   }
+
+  // ---- The property IRI a template child is given ----
+
+  /** A template declaring one child of the given input type, with the context mapping the caller decides. */
+  private ObjectNode templateWithChild(String inputType, boolean mapped) throws Exception {
+    ObjectNode template = (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"A Field\"]},\"properties\":{\"@context\":{\"properties\":{},\"required\":[]},"
+        + "\"A Field\":{\"_ui\":{\"inputType\":\"" + inputType + "\"}}}}");
+    if (mapped) {
+      ObjectNode contextProperties = (ObjectNode) template.get("properties").get("@context").get("properties");
+      contextProperties.putObject("A Field").putArray("enum").add("http://example.org/chosen-by-the-author");
+    }
+    return template;
+  }
+
+  private ObjectNode contextProperties(ObjectNode template) {
+    return (ObjectNode) template.get("properties").get("@context").get("properties");
+  }
+
+  @Test public void aChildWithNoMappingIsGivenOne() throws Exception {
+    ObjectNode template = templateWithChild("textfield", false);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    String iri = contextProperties(template).get("A Field").get("enum").get(0).asText();
+    assertTrue(iri.startsWith(PROPERTY_PREFIX), "a child's name is mapped to a property the repository assigns");
+    assertTrue(template.get("properties").get("@context").get("required").toString().contains("A Field"),
+      "and the instance is required to carry the mapping");
+  }
+
+  @Test public void aChildThatAlreadyHasOneKeepsIt() throws Exception {
+    ObjectNode template = templateWithChild("textfield", true);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    assertEquals("http://example.org/chosen-by-the-author",
+      contextProperties(template).get("A Field").get("enum").get(0).asText(),
+      "an author's own IRI is the point of the key, and is never replaced");
+  }
+
+  @Test public void aStaticFieldIsNotMapped() throws Exception {
+    ObjectNode template = templateWithChild("section-break", false);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    assertFalse(contextProperties(template).has("A Field"),
+      "a static field displays something and holds nothing, so no property names its value");
+  }
+
+  @Test public void anAttributeValueFieldIsNotMappedHere() throws Exception {
+    ObjectNode template = templateWithChild("attribute-value", false);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    assertFalse(contextProperties(template).has("A Field"),
+      "its attributes are named in the instance, where the user names them");
+  }
+
+  @Test public void aChildOfAChildElementIsMappedToo() throws Exception {
+    ObjectNode template = (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"An Element\"]},\"properties\":{\"@context\":{\"properties\":{},\"required\":[]},"
+        + "\"An Element\":{\"_ui\":{\"order\":[\"Inner\"]},\"properties\":{\"@context\":{\"properties\":{},\"required\":[]},"
+        + "\"Inner\":{\"_ui\":{\"inputType\":\"textfield\"}}}}}}");
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    ObjectNode inner = (ObjectNode) template.get("properties").get("An Element").get("properties").get("@context").get("properties");
+    assertTrue(inner.get("Inner").get("enum").get(0).asText().startsWith(PROPERTY_PREFIX),
+      "an element maps its own children");
+  }
+
+  @Test public void aMultiInstanceChildIsReadThroughItsItems() throws Exception {
+    ObjectNode template = (ObjectNode) mapper.readTree(
+      "{\"_ui\":{\"order\":[\"Many\"]},\"properties\":{\"@context\":{\"properties\":{},\"required\":[]},"
+        + "\"Many\":{\"type\":\"array\",\"items\":{\"_ui\":{\"inputType\":\"section-break\"}}}}}");
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.TEMPLATE);
+
+    assertFalse(contextProperties(template).has("Many"),
+      "what the array holds decides, so a repeated static field is still static");
+  }
+
+  @Test public void anInstanceIsNotAContainerOfChildren() throws Exception {
+    ObjectNode template = templateWithChild("textfield", false);
+
+    linkedDataUtil.addChildPropertyIris(template, CedarResourceType.INSTANCE);
+
+    assertFalse(contextProperties(template).has("A Field"), "only a template or an element maps children");
+  }
 }

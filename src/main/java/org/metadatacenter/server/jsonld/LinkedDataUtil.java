@@ -1,11 +1,13 @@
 package org.metadatacenter.server.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.config.LinkedDataConfig;
 import org.metadatacenter.constant.LinkedData;
 import org.metadatacenter.id.CedarResourceId;
 import org.metadatacenter.model.CedarResourceType;
+import org.metadatacenter.model.ModelNodeNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,6 +193,96 @@ public class LinkedDataUtil {
       }
     }
     return true;
+  }
+
+  /** Field kinds a container gives no property IRI: they carry no value a property could name. */
+  private static final Set<String> UNMAPPED_INPUT_TYPES =
+      Set.of("page-break", "section-break", "richtext", "image", "youtube", "attribute-value");
+
+  /**
+   * Assigns a property IRI to every child of a template or element that has none.
+   *
+   * <p>A container maps each child's name to the property the child's value is of, in the `@context`
+   * block of the schema it renders. The name is the author's and can change; the property IRI is the
+   * identity underneath it, so it is the repository's to assign, exactly as an attribute's is. Both
+   * model libraries used to derive one from the child's name — reproducible, but an identity nothing
+   * assigned, and one that would change the moment the author renamed the child.
+   *
+   * <p>Only a child that carries a value is mapped. A static field displays something and holds
+   * nothing, and an attribute-value field's names are mapped in the instance rather than here, so
+   * neither takes an entry — which is what both libraries have always done.
+   *
+   * <p>A mapping already present is left alone, whoever wrote it: most carry an IRI the author chose
+   * from a real vocabulary, and that is the point of the key.
+   */
+  public void addChildPropertyIris(JsonNode nodeContent, CedarResourceType resourceType) {
+    if (resourceType.equals(CedarResourceType.TEMPLATE) || resourceType.equals(CedarResourceType.ELEMENT)) {
+      addChildPropertyIrisToContainer(nodeContent);
+    }
+  }
+
+  private void addChildPropertyIrisToContainer(JsonNode container) {
+    if (!container.isObject()) {
+      return;
+    }
+    JsonNode properties = container.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    if (properties == null || !properties.isObject()) {
+      return;
+    }
+    ObjectNode contextProperties = contextPropertiesOf(properties);
+    for (String childName : childNames(container)) {
+      JsonNode child = childDefinition(properties.get(childName));
+      if (child == null || isUnmapped(child)) {
+        continue;
+      }
+      if (contextProperties != null && !contextProperties.has(childName)) {
+        ObjectNode mapping = contextProperties.putObject(childName);
+        mapping.putArray(ModelNodeNames.JSON_SCHEMA_ENUM).add(PROPERTY_IRI_PREFIX + UUID.randomUUID());
+        requireChild(properties, childName);
+      }
+      addChildPropertyIrisToContainer(child); // an element maps its own children
+    }
+  }
+
+  /** The order a container declares is the list of its children. */
+  private List<String> childNames(JsonNode container) {
+    List<String> names = new ArrayList<>();
+    JsonNode order = container.path(ModelNodeNames.UI).path(ModelNodeNames.UI_ORDER);
+    if (order.isArray()) {
+      order.forEach(name -> names.add(name.asText()));
+    }
+    return names;
+  }
+
+  /** A multi-instance child is an array; the child itself is what the array holds. */
+  private JsonNode childDefinition(JsonNode declared) {
+    if (declared == null || !declared.isObject()) {
+      return null;
+    }
+    JsonNode items = declared.get(ModelNodeNames.JSON_SCHEMA_ITEMS);
+    return items != null && items.isObject() ? items : declared;
+  }
+
+  private boolean isUnmapped(JsonNode child) {
+    return UNMAPPED_INPUT_TYPES.contains(child.path(ModelNodeNames.UI).path(ModelNodeNames.UI_FIELD_INPUT_TYPE).asText());
+  }
+
+  private ObjectNode contextPropertiesOf(JsonNode properties) {
+    JsonNode context = properties.get(LinkedData.CONTEXT);
+    if (context == null || !context.isObject()) {
+      return null;
+    }
+    JsonNode contextProperties = context.get(ModelNodeNames.JSON_SCHEMA_PROPERTIES);
+    return contextProperties != null && contextProperties.isObject() ? (ObjectNode) contextProperties : null;
+  }
+
+  /** A mapped child is required of the instance's context, as the renderer writes it. */
+  private void requireChild(JsonNode properties, String childName) {
+    JsonNode context = properties.get(LinkedData.CONTEXT);
+    JsonNode required = context.get(ModelNodeNames.JSON_SCHEMA_REQUIRED);
+    if (required != null && required.isArray()) {
+      ((ArrayNode) required).add(childName);
+    }
   }
 
   /**
