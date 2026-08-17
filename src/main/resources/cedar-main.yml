@@ -346,9 +346,6 @@ cache:
   terminology:
     folder: "${CEDAR_HOME}/cache/terminology"
 
-validation:
-  enabled: "${CEDAR_VALIDATION_ENABLED}"
-
 submission:
   ncbi:
     sra:

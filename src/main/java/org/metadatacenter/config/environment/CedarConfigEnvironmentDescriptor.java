@@ -215,9 +215,6 @@ public class CedarConfigEnvironmentDescriptor {
     cedarLoggingMysqlPassword.add(SystemComponent.SERVER_WORKER);
     cedarLoggingMysqlPassword.add(SystemComponent.SERVER_MONITOR);
 
-    Set<SystemComponent> cedarValidationEnabled = variableToComponent.get(CedarEnvironmentVariable.CEDAR_VALIDATION_ENABLED);
-    cedarValidationEnabled.add(SystemComponent.SERVER_ARTIFACT);
-
     Set<SystemComponent> submissionTemplateId1 = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SUBMISSION_TEMPLATE_ID_1);
     submissionTemplateId1.add(SystemComponent.SERVER_WORKER);
     submissionTemplateId1.add(SystemComponent.SERVER_RESOURCE);
