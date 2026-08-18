@@ -335,6 +335,43 @@ public class LinkedDataUtilServerAssignedIrisTest {
       "validation must see and reject a defect introduced by this request");
   }
 
+  @Test public void inheritedEmptyDerivedFromIsRemovedRecursively() throws Exception {
+    ObjectNode stored = (ObjectNode) mapper.readTree(
+      "{\"pav:derivedFrom\":\"\",\"properties\":{\"A Field\":{\"pav:derivedFrom\":\"\"}}}");
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertFalse(submitted.has("pav:derivedFrom"));
+    assertFalse(submitted.path("properties").path("A Field").has("pav:derivedFrom"));
+    assertEquals(2, repairs.size());
+  }
+
+  @Test public void newlyIntroducedEmptyDerivedFromIsLeftForValidation() throws Exception {
+    ObjectNode stored = (ObjectNode) mapper.readTree("{\"properties\":{}}");
+    ObjectNode submitted = stored.deepCopy();
+    submitted.put("pav:derivedFrom", "");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals("", submitted.path("pav:derivedFrom").asText());
+  }
+
+  @Test public void absoluteDerivedFromIsPreserved() throws Exception {
+    String source = "https://repo.metadatacenter.org/templates/source";
+    ObjectNode stored = (ObjectNode) mapper.readTree("{\"pav:derivedFrom\":\"" + source + "\"}");
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals(source, submitted.path("pav:derivedFrom").asText());
+  }
+
   @Test public void anInheritedUnusableOccurrenceIdIsReminted() throws Exception {
     ObjectNode stored = instanceWithOccurrence("", true);
     ObjectNode submitted = stored.deepCopy();

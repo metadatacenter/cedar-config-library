@@ -324,6 +324,7 @@ public class LinkedDataUtil {
     if (submitted == null || stored == null) {
       return repairs;
     }
+    repairInheritedDerivedFrom(submitted, stored, "", repairs);
     if (resourceType == CedarResourceType.TEMPLATE || resourceType == CedarResourceType.ELEMENT) {
       repairInheritedSchemaMappings(submitted, stored, "", repairs);
     } else if (resourceType == CedarResourceType.INSTANCE) {
@@ -333,6 +334,45 @@ public class LinkedDataUtil {
       }
     }
     return repairs;
+  }
+
+  /**
+   * Removes only an unusable provenance value carried unchanged from storage.
+   * The optional key is omitted when there is no source artifact. A new empty
+   * or relative value remains in the request so persistence validation can
+   * reject it.
+   */
+  private void repairInheritedDerivedFrom(JsonNode submitted, JsonNode stored, String path,
+                                          List<LegacyArtifactRepair> repairs) {
+    if (submitted == null) {
+      return;
+    }
+    if (submitted.isArray()) {
+      for (int index = 0; index < submitted.size(); index++) {
+        JsonNode storedItem = stored != null && stored.isArray() && index < stored.size() ? stored.get(index) : null;
+        repairInheritedDerivedFrom(submitted.get(index), storedItem, path + "/" + index, repairs);
+      }
+      return;
+    }
+    if (!submitted.isObject()) {
+      return;
+    }
+    JsonNode submittedDerivedFrom = submitted.get(ModelNodeNames.PAV_DERIVED_FROM);
+    JsonNode storedDerivedFrom = stored != null && stored.isObject()
+        ? stored.get(ModelNodeNames.PAV_DERIVED_FROM) : null;
+    if (submittedDerivedFrom != null && submittedDerivedFrom.equals(storedDerivedFrom)
+        && submittedDerivedFrom.isTextual() && !isAbsoluteIri(submittedDerivedFrom.asText())) {
+      ((ObjectNode) submitted).remove(ModelNodeNames.PAV_DERIVED_FROM);
+      repairs.add(new LegacyArtifactRepair(path + "/" + ModelNodeNames.PAV_DERIVED_FROM,
+          "unusable inherited pav:derivedFrom removed", submittedDerivedFrom.asText()));
+    }
+    Iterator<Map.Entry<String, JsonNode>> fields = submitted.fields();
+    while (fields.hasNext()) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      JsonNode storedChild = stored != null && stored.isObject() ? stored.get(field.getKey()) : null;
+      repairInheritedDerivedFrom(field.getValue(), storedChild,
+          path + "/" + escapePointer(field.getKey()), repairs);
+    }
   }
 
   private void repairInheritedSchemaMappings(JsonNode submitted, JsonNode stored, String path,
