@@ -398,9 +398,20 @@ public class LinkedDataUtil {
         repairs.add(new LegacyArtifactRepair(path + "/properties/@context/properties/" + escapePointer(childName),
             "unusable child property IRI removed for server reminting", submittedMapping.toString()));
       }
-      JsonNode submittedChild = childDefinition(submittedProperties.get(childName));
-      JsonNode storedChild = childDefinition(storedProperties.get(childName));
+      JsonNode submittedDeclaration = submittedProperties.get(childName);
+      JsonNode storedDeclaration = storedProperties.get(childName);
+      JsonNode submittedChild = childDefinition(submittedDeclaration);
+      JsonNode storedChild = childDefinition(storedDeclaration);
       if (submittedChild != null && storedChild != null) {
+        String childPath = path + "/properties/" + escapePointer(childName)
+            + (isArrayDeclaration(submittedDeclaration) ? "/items" : "");
+        if (!submittedChild.has(ModelNodeNames.JSON_SCHEMA_SCHEMA)
+            && !storedChild.has(ModelNodeNames.JSON_SCHEMA_SCHEMA)) {
+          ((ObjectNode) submittedChild).put(ModelNodeNames.JSON_SCHEMA_SCHEMA,
+              ModelNodeNames.JSON_SCHEMA_SCHEMA_IRI);
+          repairs.add(new LegacyArtifactRepair(childPath + "/" + ModelNodeNames.JSON_SCHEMA_SCHEMA,
+              "missing child $schema restored", "<missing>"));
+        }
         repairInheritedSchemaMappings(submittedChild, storedChild,
             path + "/properties/" + escapePointer(childName), repairs);
       }
@@ -649,6 +660,11 @@ public class LinkedDataUtil {
     }
     JsonNode items = declared.get(ModelNodeNames.JSON_SCHEMA_ITEMS);
     return items != null && items.isObject() ? items : declared;
+  }
+
+  private boolean isArrayDeclaration(JsonNode declared) {
+    return declared != null && declared.isObject()
+        && declared.path(ModelNodeNames.JSON_SCHEMA_ITEMS).isObject();
   }
 
   private boolean isUnmapped(JsonNode child) {

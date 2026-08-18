@@ -185,7 +185,8 @@ public class LinkedDataUtilServerAssignedIrisTest {
   private ObjectNode templateWithChild(String inputType, boolean mapped) throws Exception {
     ObjectNode template = (ObjectNode) mapper.readTree(
       "{\"_ui\":{\"order\":[\"A Field\"]},\"properties\":{\"@context\":{\"properties\":{},\"required\":[]},"
-        + "\"A Field\":{\"_ui\":{\"inputType\":\"" + inputType + "\"}}}}");
+        + "\"A Field\":{\"$schema\":\"http://json-schema.org/draft-04/schema#\","
+        + "\"_ui\":{\"inputType\":\"" + inputType + "\"}}}}");
     if (mapped) {
       ObjectNode contextProperties = (ObjectNode) template.get("properties").get("@context").get("properties");
       contextProperties.putObject("A Field").putArray("enum").add("http://example.org/chosen-by-the-author");
@@ -302,6 +303,76 @@ public class LinkedDataUtilServerAssignedIrisTest {
   }
 
   // ---- Compatibility repairs for production artifacts ----
+
+  @Test public void inheritedMissingChildSchemasAreRestoredRecursively() throws Exception {
+    ObjectNode stored = (ObjectNode) mapper.readTree("""
+      {
+        "_ui": { "order": ["An Element", "Many"] },
+        "properties": {
+          "@context": { "properties": {}, "required": [] },
+          "An Element": {
+            "_ui": { "order": ["Inner"] },
+            "properties": {
+              "@context": { "properties": {}, "required": [] },
+              "Inner": { "_ui": { "inputType": "textfield" } }
+            }
+          },
+          "Many": {
+            "type": "array",
+            "items": { "_ui": { "inputType": "textfield" } }
+          }
+        }
+      }
+      """);
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertEquals("http://json-schema.org/draft-04/schema#",
+      submitted.at("/properties/An Element/$schema").asText());
+    assertEquals("http://json-schema.org/draft-04/schema#",
+      submitted.at("/properties/An Element/properties/Inner/$schema").asText());
+    assertEquals("http://json-schema.org/draft-04/schema#",
+      submitted.at("/properties/Many/items/$schema").asText());
+    assertEquals(3, repairs.size());
+  }
+
+  @Test public void newlyIntroducedMissingChildSchemaIsLeftForValidation() throws Exception {
+    ObjectNode stored = templateWithChild("textfield", true);
+    ObjectNode submitted = stored.deepCopy();
+    ((ObjectNode) submitted.at("/properties/A Field")).remove("$schema");
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertFalse(submitted.at("/properties/A Field").has("$schema"),
+      "validation must see and reject a child declaration removed by this request");
+  }
+
+  @Test public void explicitBadInheritedChildSchemaIsLeftForValidation() throws Exception {
+    ObjectNode stored = templateWithChild("textfield", true);
+    ((ObjectNode) stored.at("/properties/A Field")).put("$schema", "not-a-schema");
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertEquals("not-a-schema", submitted.at("/properties/A Field/$schema").asText());
+  }
+
+  @Test public void aMissingRootSchemaIsNeverRepaired() throws Exception {
+    ObjectNode stored = templateWithChild("textfield", true);
+    ObjectNode submitted = stored.deepCopy();
+
+    java.util.List<LinkedDataUtil.LegacyArtifactRepair> repairs = linkedDataUtil.repairInheritedDefects(
+      submitted, stored, null, CedarResourceType.TEMPLATE);
+
+    assertTrue(repairs.isEmpty());
+    assertFalse(submitted.has("$schema"));
+  }
 
   @Test public void anInheritedUnusableChildMappingIsReminted() throws Exception {
     ObjectNode stored = templateWithChild("textfield", false);
