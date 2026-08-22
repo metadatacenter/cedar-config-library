@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.metadatacenter</groupId>
     <artifactId>cedar-parent</artifactId>
-    <version>2.9.1</version>
+    <version>2.9.2</version>
   </parent>
 
   <groupId>org.metadatacenter</groupId>
   <artifactId>cedar-config-library</artifactId>
-  <version>2.9.1</version>
+  <version>2.9.2</version>
   <packaging>jar</packaging>
 
   <name>CEDAR Config Library</name>
@@ -67,36 +67,11 @@
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <configuration>
-          <createDependencyReducedPom>true</createDependencyReducedPom>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      <!--
+        This library publishes a thin jar. It does not shade, so its dependencies stay declared in
+        the pom it publishes and a consumer resolves each one from the artifact that owns it. Only
+        the deployable modules shade, through the cedar-shade execution in cedar-parent.
+      -->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

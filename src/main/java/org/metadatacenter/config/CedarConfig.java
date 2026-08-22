@@ -105,9 +105,6 @@ public class CedarConfig extends Configuration {
   @JsonProperty("cache")
   private CacheConfig cacheConfig;
 
-  @JsonProperty("validation")
-  private ValidationConfig validationConfig;
-
   @JsonProperty("bridge")
   private BridgeConfig bridgeConfig;
 
@@ -332,10 +329,6 @@ public class CedarConfig extends Configuration {
 
   public CacheConfig getCacheConfig() {
     return cacheConfig;
-  }
-
-  public ValidationConfig getValidationConfig() {
-    return validationConfig;
   }
 
   public BridgeConfig getBridgeConfig() { return bridgeConfig; }

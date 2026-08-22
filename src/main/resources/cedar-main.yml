@@ -245,6 +245,7 @@ blueprintUserProfile:
       - "filesystemAdministrator"
       - "categoryAdministrator"
       - "categoryPrivilegedAdministrator"
+      - "artifactPrivilegedAdministrator"
       - "searchReindexer"
       - "processMessageSender"
       - "monitorManager"
@@ -344,9 +345,6 @@ cache:
       timeout: 2000
   terminology:
     folder: "${CEDAR_HOME}/cache/terminology"
-
-validation:
-  enabled: "${CEDAR_VALIDATION_ENABLED}"
 
 submission:
   ncbi:
