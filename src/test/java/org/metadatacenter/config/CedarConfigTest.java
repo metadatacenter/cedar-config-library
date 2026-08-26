@@ -197,6 +197,24 @@ assertNotNull(instance);
   }
 
   @Test
+  public void testKeycloakTlsVerificationIsEnabledByDefault() {
+    CedarConfig instance = getCedarConfig();
+
+    assertFalse(instance.getKeycloakConfig().isAllowInsecureTls());
+  }
+
+  @Test
+  public void testKeycloakInsecureTlsRequiresExplicitOptIn() {
+    Map<String, String> environment = new HashMap<>(CedarEnvironmentSource.getAll());
+    environment.put(CedarEnvironmentVariable.CEDAR_KEYCLOAK_ALLOW_INSECURE_TLS.getName(), "true");
+    CedarEnvironmentSource.setOverride(environment);
+
+    CedarConfig instance = getCedarConfig();
+
+    assertTrue(instance.getKeycloakConfig().isAllowInsecureTls());
+  }
+
+  @Test
   public void testGetInstanceIsCachedForTheSameEnvironment() throws Exception {
     CedarConfig first = getCedarConfig();
     CedarConfig second = getCedarConfig();

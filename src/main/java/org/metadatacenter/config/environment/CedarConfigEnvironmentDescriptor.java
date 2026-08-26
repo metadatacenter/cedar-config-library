@@ -44,6 +44,11 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> keycloakHome = variableToComponent.get(CedarEnvironmentVariable.CEDAR_KEYCLOAK_HOME);
     keycloakHome.add(SystemComponent.UTIL_BIN); // utility shell scrips
 
+    Set<SystemComponent> keycloakAllowInsecureTls =
+        variableToComponent.get(CedarEnvironmentVariable.CEDAR_KEYCLOAK_ALLOW_INSECURE_TLS);
+    keycloakAllowInsecureTls.add(SystemComponent.ADMIN_TOOL);
+    keycloakAllowInsecureTls.addAll(allMicroservices);
+
     Set<SystemComponent> cedarFrontendBeh = variableToComponent.get(CedarEnvironmentVariable.CEDAR_FRONTEND_BEHAVIOR);
     // gulpfile.js decides that it should or not start a server for the front end code
     cedarFrontendBeh.add(SystemComponent.FRONTEND_DEVELOPMENT);

@@ -23,6 +23,8 @@ keycloak:
   sslRequired: "ALL"
   resource: "cedar-angular-app"
   publicClient: true
+  # Development escape hatch only. Certificate and hostname verification are enabled by default.
+  allowInsecureTls: "${CEDAR_KEYCLOAK_ALLOW_INSECURE_TLS}"
 
 #MongoDB settings
 artifactServer:
