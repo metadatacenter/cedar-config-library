@@ -33,7 +33,7 @@
 
     <dependency>
       <groupId>org.metadatacenter</groupId>
-      <artifactId>cedar-rest-library</artifactId>
+      <artifactId>cedar-model-library</artifactId>
     </dependency>
 
     <dependency>
