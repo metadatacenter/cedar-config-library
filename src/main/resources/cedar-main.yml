@@ -176,6 +176,7 @@ servers:
     httpPort: "${CEDAR_TERMINOLOGY_HTTP_PORT}"
     adminPort: "${CEDAR_TERMINOLOGY_ADMIN_PORT}"
     stopPort: "${CEDAR_TERMINOLOGY_STOP_PORT}"
+    base: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_HTTP_PORT}/"
     apiDoc: true
     adminBase: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_ADMIN_PORT}/"
   user:
@@ -403,4 +404,3 @@ externalAuthorities:
     apiKey: "${CEDAR_RRID_API_KEY}"
   pubMed:
     apiKey: "${CEDAR_PUBMED_API_KEY}"
-

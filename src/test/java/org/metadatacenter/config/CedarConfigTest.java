@@ -140,6 +140,7 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT.getName(), "9004");
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT.getName(), "9104");
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_STOP_PORT.getName(), "9204");
+    env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_USER_HTTP_PORT.getName(), "9005");
     env.put(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT.getName(), "9105");
@@ -263,6 +264,13 @@ assertEquals("cedar", userServerConfig.getDatabaseName());
 assertNotNull(userServerCollections);
 
 assertEquals("users", userServerCollections.get("user"));
+  }
+
+  @Test
+  public void testTerminologyServerBase() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    assertEquals("http://127.0.0.1:9004/", instance.getServers().getTerminology().getBase());
   }
 
   @Test
