@@ -28,6 +28,7 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_HOME.getName(), "/home/cedar");
     env.put(CedarEnvironmentVariable.CEDAR_KEYCLOAK_HOME.getName(), "/home/cedar/keycloak");
+    env.put(CedarEnvironmentVariable.CEDAR_KEYCLOAK_ALLOW_INSECURE_TLS.getName(), "false");
 
     env.put(CedarEnvironmentVariable.CEDAR_NET_GATEWAY.getName(), "127.0.0.1");
 
