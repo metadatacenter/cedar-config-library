@@ -14,6 +14,8 @@ public class KeycloakConfig {
 
   private boolean publicClient;
 
+  private boolean allowInsecureTls;
+
   public String getClientId() {
     return clientId;
   }
@@ -36,5 +38,9 @@ public class KeycloakConfig {
 
   public boolean isPublicClient() {
     return publicClient;
+  }
+
+  public boolean isAllowInsecureTls() {
+    return allowInsecureTls;
   }
 }

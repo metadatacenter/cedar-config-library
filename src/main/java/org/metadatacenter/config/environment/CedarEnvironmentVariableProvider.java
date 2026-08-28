@@ -18,6 +18,10 @@ public class CedarEnvironmentVariableProvider {
     for (CedarEnvironmentVariable variable : CedarEnvironmentVariable.values()) {
       if (neededVariables.contains(variable)) {
         String value = CedarEnvironmentSource.get(variable.getName());
+        if (value == null && variable.isBoolean()) {
+          value = "false";
+          log.info("Setting default boolean value false for                               : " + variable.getName());
+        }
         env.put(variable.getName(), value);
       } else {
         if (variable.isNumeric()) {
