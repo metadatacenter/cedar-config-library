@@ -61,6 +61,7 @@ messagingServer:
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
+    hibernate.default_catalog: "${CEDAR_MESSAGING_MYSQL_DB}"
 
 dbLogging:
   url: "jdbc:mysql://${CEDAR_LOG_MYSQL_HOST}:${CEDAR_LOG_MYSQL_PORT}/${CEDAR_LOG_MYSQL_DB}"
@@ -73,6 +74,7 @@ dbLogging:
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
+    hibernate.default_catalog: "${CEDAR_LOG_MYSQL_DB}"
 
 #Neo4J settings
 neo4j:
