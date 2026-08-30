@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.metadatacenter.config.environment.CedarEnvironmentSource;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
 import org.metadatacenter.config.environment.CedarEnvironmentVariableProvider;
+import org.metadatacenter.model.ServerName;
 import org.metadatacenter.model.SystemComponent;
 
 import java.util.HashMap;
@@ -290,6 +291,15 @@ assertEquals("users", userServerCollections.get("user"));
     CedarConfig instance = getCedarConfig();
 
     assertEquals("http://127.0.0.1:9004/", instance.getServers().getTerminology().getBase());
+  }
+
+  @Test
+  public void testBridgeServerGetter() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    assertSame(instance.getServers().get(ServerName.BRIDGE), instance.getServers().getBridge());
+    assertEquals(9015, instance.getServers().getBridge().getHttpPort());
+    assertEquals("http://127.0.0.1:9115/", instance.getServers().getBridge().getAdminBase());
   }
 
   @Test

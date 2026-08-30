@@ -91,7 +91,7 @@ public class ServersConfig {
   }
 
   public ServerConfig getBridge() {
-    return impex;
+    return bridge;
   }
 
   public ServerConfig get(ServerName serverName) {
