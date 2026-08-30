@@ -151,7 +151,6 @@ servers:
     httpPort: "${CEDAR_RESOURCE_HTTP_PORT}"
     adminPort: "${CEDAR_RESOURCE_ADMIN_PORT}"
     stopPort: "${CEDAR_RESOURCE_STOP_PORT}"
-    apiDoc: true
     base: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/"
     adminBase: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_ADMIN_PORT}/"
     loadValueSetsOntology: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/load-valuesets-ontology"
@@ -181,7 +180,6 @@ servers:
     adminPort: "${CEDAR_TERMINOLOGY_ADMIN_PORT}"
     stopPort: "${CEDAR_TERMINOLOGY_STOP_PORT}"
     base: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_HTTP_PORT}/"
-    apiDoc: true
     adminBase: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_ADMIN_PORT}/"
   user:
     httpPort: "${CEDAR_USER_HTTP_PORT}"
@@ -195,7 +193,6 @@ servers:
     stopPort: "${CEDAR_VALUERECOMMENDER_STOP_PORT}"
     base: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_ADMIN_PORT}/"
-    apiDoc: true
   worker:
     httpPort: "${CEDAR_WORKER_HTTP_PORT}"
     adminPort: "${CEDAR_WORKER_ADMIN_PORT}"
