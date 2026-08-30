@@ -248,7 +248,7 @@ assertNotNull(first.getMicroserviceUrlUtil());
   }
 
   @Test
-  @Disabled // TODO: the env variables can not changed
+  @Disabled("Assertions use fixed Keycloak values that are not derived from the test environment")
   public void testKeycloakConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     KeycloakConfig keycloakConfig = instance.getKeycloakConfig();
