@@ -298,6 +298,12 @@ resourceRESTAPI:
   pagination:
     defaultPageSize: 100
     maxPageSize: 500
+    #The deepest offset /search-deep will walk to. The walk costs one OpenSearch round trip per page,
+    #so this bounds the work one request can ask for. Past it, a caller wants a cursor, not a number.
+    maxOffset: 250000
+    #Mirrors the OpenSearch index.max_result_window that /search asks for in one request and cannot
+    #page beyond.
+    maxResultWindow: 10000
 
 artifactRESTAPI:
   pagination:
