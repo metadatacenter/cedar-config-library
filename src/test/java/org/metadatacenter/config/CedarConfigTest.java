@@ -313,6 +313,17 @@ assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
+  public void testOpensearchConfigBindsToTheKeysCedarMainYmlStates() throws Exception {
+    CedarConfig instance = getCedarConfig();
+    OpensearchConfig opensearchConfig = instance.getElasticsearchConfig();
+
+    // These bind by name alone, so a key renamed on one side only leaves Jackson with the int
+    // default and no error: a keep alive of 0 expires every search context between round trips.
+    assertEquals(1000, opensearchConfig.getSize());
+    assertEquals(60000, opensearchConfig.getSearchContextKeepAlive());
+  }
+
+  @Test
   public void testElasticSearchSearchConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     OpensearchSettingsMappingsConfig searchSettingsMappingsConfig = instance

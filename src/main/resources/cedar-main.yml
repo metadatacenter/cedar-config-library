@@ -103,7 +103,9 @@ elasticsearch:
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
   size: 1000
-  scrollKeepAlive: 60000
+  #How long, in milliseconds, OpenSearch holds a search context open between the round trips of one
+  #paged read. The shallow value read holds a scroll context, the deep search a point in time.
+  searchContextKeepAlive: 60000
   #The index's own index.max_result_window. Two things read it: the shallow search, which cannot ask
   #for a wider window in one request, and the deep search, which skips to its offset a window at a
   #time. Raise it here only after raising it on the index.
