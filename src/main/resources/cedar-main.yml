@@ -349,8 +349,6 @@ cache:
       host: "${CEDAR_REDIS_NONPERSISTENT_HOST}"
       port: "${CEDAR_REDIS_NONPERSISTENT_PORT}"
       timeout: 2000
-  terminology:
-    folder: "${CEDAR_HOME}/cache/terminology"
 
 submission:
   ncbi:
