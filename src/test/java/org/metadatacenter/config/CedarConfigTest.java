@@ -331,7 +331,31 @@ assertEquals("users", userServerCollections.get("user"));
 
     assertSame(instance.getServers().get(ServerName.BRIDGE), instance.getServers().getBridge());
     assertEquals(9015, instance.getServers().getBridge().getHttpPort());
-    assertEquals("http://127.0.0.1:9115/", instance.getServers().getBridge().getAdminBase());
+    // The host comes from the environment the build runs in — 127.0.0.1 under the native profile, a
+    // container address under the Docker one — so asserting it made this suite pass only in native
+    // mode. The port is what this configuration decides.
+    assertTrue(instance.getServers().getBridge().getAdminBase().endsWith(":9115/"),
+        "the bridge admin base should address the admin port");
+  }
+
+  /**
+   * The Monitor reads every other server's health over its application base URL, because the admin
+   * connector it used to call is bound to loopback and answers no other host. Ten of the fifteen
+   * declared only an admin base, which left that page reaching nothing under Compose, so the
+   * presence of a base on all fifteen is the thing to hold.
+   */
+  @Test
+  public void testEveryServerDeclaresAnApplicationBase() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    for (ServerName serverName : ServerName.values()) {
+      ServerConfig serverConfig = instance.getServers().get(serverName);
+      assertNotNull(serverConfig, serverName + " has no server configuration");
+      assertNotNull(serverConfig.getBase(),
+          serverName + " has no application base URL, so its health cannot be read");
+      assertTrue(serverConfig.getBase().endsWith(":" + serverConfig.getHttpPort() + "/"),
+          serverName + " addresses " + serverConfig.getBase() + " rather than its application port");
+    }
   }
 
   @Test

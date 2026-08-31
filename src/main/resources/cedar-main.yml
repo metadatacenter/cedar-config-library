@@ -145,6 +145,7 @@ servers:
     httpPort: "${CEDAR_GROUP_HTTP_PORT}"
     adminPort: "${CEDAR_GROUP_ADMIN_PORT}"
     stopPort: "${CEDAR_GROUP_STOP_PORT}"
+    base: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_HTTP_PORT}/"
     adminBase: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_ADMIN_PORT}/"
   messaging:
     httpPort: "${CEDAR_MESSAGING_HTTP_PORT}"
@@ -156,6 +157,7 @@ servers:
     httpPort: "${CEDAR_REPO_HTTP_PORT}"
     adminPort: "${CEDAR_REPO_ADMIN_PORT}"
     stopPort: "${CEDAR_REPO_STOP_PORT}"
+    base: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_HTTP_PORT}/"
     adminBase: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_ADMIN_PORT}/"
   resource:
     httpPort: "${CEDAR_RESOURCE_HTTP_PORT}"
@@ -173,11 +175,13 @@ servers:
     httpPort: "${CEDAR_SCHEMA_HTTP_PORT}"
     adminPort: "${CEDAR_SCHEMA_ADMIN_PORT}"
     stopPort: "${CEDAR_SCHEMA_STOP_PORT}"
+    base: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_HTTP_PORT}/"
     adminBase: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_ADMIN_PORT}/"
   submission:
     httpPort: "${CEDAR_SUBMISSION_HTTP_PORT}"
     adminPort: "${CEDAR_SUBMISSION_ADMIN_PORT}"
     stopPort: "${CEDAR_SUBMISSION_STOP_PORT}"
+    base: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_HTTP_PORT}/"
     adminBase: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_ADMIN_PORT}/"
   artifact:
     httpPort: "${CEDAR_ARTIFACT_HTTP_PORT}"
@@ -196,6 +200,7 @@ servers:
     adminPort: "${CEDAR_USER_ADMIN_PORT}"
     stopPort: "${CEDAR_USER_STOP_PORT}"
     usersBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/users/"
+    base: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_ADMIN_PORT}/"
   valuerecommender:
     httpPort: "${CEDAR_VALUERECOMMENDER_HTTP_PORT}"
@@ -207,27 +212,32 @@ servers:
     httpPort: "${CEDAR_WORKER_HTTP_PORT}"
     adminPort: "${CEDAR_WORKER_ADMIN_PORT}"
     stopPort: "${CEDAR_WORKER_STOP_PORT}"
+    base: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_ADMIN_PORT}/"
   openview:
     httpPort: "${CEDAR_OPENVIEW_HTTP_PORT}"
     adminPort: "${CEDAR_OPENVIEW_ADMIN_PORT}"
     stopPort: "${CEDAR_OPENVIEW_STOP_PORT}"
+    base: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_HTTP_PORT}/"
     adminBase: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_ADMIN_PORT}/"
     uriBase: "https://openview.${CEDAR_HOST}/"
   monitor:
     httpPort: "${CEDAR_MONITOR_HTTP_PORT}"
     adminPort: "${CEDAR_MONITOR_ADMIN_PORT}"
     stopPort: "${CEDAR_MONITOR_STOP_PORT}"
+    base: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_HTTP_PORT}/"
     adminBase: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_ADMIN_PORT}/"
   impex:
     httpPort: "${CEDAR_IMPEX_HTTP_PORT}"
     adminPort: "${CEDAR_IMPEX_ADMIN_PORT}"
     stopPort: "${CEDAR_IMPEX_STOP_PORT}"
+    base: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_HTTP_PORT}/"
     adminBase: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_ADMIN_PORT}/"
   bridge:
     httpPort: "${CEDAR_BRIDGE_HTTP_PORT}"
     adminPort: "${CEDAR_BRIDGE_ADMIN_PORT}"
     stopPort: "${CEDAR_BRIDGE_STOP_PORT}"
+    base: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_HTTP_PORT}/"
     adminBase: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_ADMIN_PORT}/"
 
 
