@@ -287,6 +287,16 @@ assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
+  public void testNeo4jBoltPoolSizeIsConfigurable() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    // The value stated in cedar-main.yml is the driver's own default, so declaring it changes
+    // nothing; what it changes is that a deployment can now lower it. Before the setting existed
+    // the pool ceiling was the driver's to choose and no configuration could reach it.
+    assertEquals(Integer.valueOf(100), instance.getNeo4jConfig().getBolt().getMaxConnectionPoolSize());
+  }
+
+  @Test
   public void testTerminologyServerBase() throws Exception {
     CedarConfig instance = getCedarConfig();
 

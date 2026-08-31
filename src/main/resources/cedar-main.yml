@@ -82,6 +82,10 @@ neo4j:
     uri: "bolt://${CEDAR_NEO4J_HOST}:${CEDAR_NEO4J_BOLT_PORT}"
     userName: "${CEDAR_NEO4J_USER_NAME}"
     userPassword: "${CEDAR_NEO4J_USER_PASSWORD}"
+    # Bolt connections one server may hold open. This is the driver's own default, stated here so a
+    # deployment running fifteen services against one database can lower the total rather than
+    # inherit whatever the driver chooses. Each server opens one pool, shared by all its proxies.
+    maxConnectionPoolSize: 100
 
 searchSettings:
   searchRetrieveSettings:
