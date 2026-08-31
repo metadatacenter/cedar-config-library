@@ -104,6 +104,10 @@ elasticsearch:
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
   size: 1000
   scrollKeepAlive: 60000
+  #The index's own index.max_result_window. Two things read it: the shallow search, which cannot ask
+  #for a wider window in one request, and the deep search, which skips to its offset a window at a
+  #time. Raise it here only after raising it on the index.
+  maxResultWindow: 10000
 
 #Linked data settings
 #For ID generation
@@ -298,12 +302,10 @@ resourceRESTAPI:
   pagination:
     defaultPageSize: 100
     maxPageSize: 500
-    #The deepest offset /search-deep will walk to. The walk costs one OpenSearch round trip per page,
-    #so this bounds the work one request can ask for. Past it, a caller wants a cursor, not a number.
-    maxOffset: 250000
-    #Mirrors the OpenSearch index.max_result_window that /search asks for in one request and cannot
-    #page beyond.
-    maxResultWindow: 10000
+    #The deepest offset /search-deep will walk to. The walk costs one OpenSearch round trip per window
+    #skipped, so this bounds the work one request can ask for. It has to stay above the largest result
+    #set anyone enumerates, or a full pass stops partway through: production holds 400,000 instances.
+    maxOffset: 500000
 
 artifactRESTAPI:
   pagination:

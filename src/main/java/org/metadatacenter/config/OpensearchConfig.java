@@ -16,6 +16,8 @@ public class OpensearchConfig {
 
   private int scrollKeepAlive;
 
+  private int maxResultWindow;
+
   public String getClusterName() {
     return clusterName;
   }
@@ -42,5 +44,9 @@ public class OpensearchConfig {
 
   public int getScrollKeepAlive() {
     return scrollKeepAlive;
+  }
+
+  public int getMaxResultWindow() {
+    return maxResultWindow;
   }
 }

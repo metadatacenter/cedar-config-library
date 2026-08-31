@@ -8,8 +8,6 @@ public class PaginationConfig {
 
   private int maxOffset;
 
-  private int maxResultWindow;
-
   public int getDefaultPageSize() {
     return defaultPageSize;
   }
@@ -20,9 +18,5 @@ public class PaginationConfig {
 
   public int getMaxOffset() {
     return maxOffset;
-  }
-
-  public int getMaxResultWindow() {
-    return maxResultWindow;
   }
 }
