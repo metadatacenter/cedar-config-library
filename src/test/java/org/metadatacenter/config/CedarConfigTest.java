@@ -236,6 +236,28 @@ assertNotSame(before, after);
 assertEquals("changed.metadatacenter.orgx", after.getHost());
   }
 
+  /**
+   * A value that breaks the configuration file used to end the JVM: the load logged one line and
+   * called {@code System.exit}, so a test could only die alongside it. The quotes below are the case
+   * that provokes it, and the reason the shell profile and the CI workflows escape them. The variable
+   * substitutes into a double-quoted YAML scalar, so a bare quote closes the scalar early and leaves
+   * the rest of the line as a stray token.
+   */
+  @Test
+  public void testAValueThatBreaksTheConfigurationFileThrows() {
+    Map<String, String> environment = new HashMap<>(CedarEnvironmentSource.getAll());
+    environment.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(), "{\"caDSR\":[]}");
+    CedarEnvironmentSource.setOverride(environment);
+
+    Map<String, String> sandbox = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
+
+    CedarConfigurationException thrown =
+        assertThrows(CedarConfigurationException.class, () -> CedarConfig.buildForEnvironment(sandbox));
+    assertTrue(thrown.getMessage().contains("cedar-main.yml"),
+        "the failure should name the file that could not be read, but said: " + thrown.getMessage());
+    assertNotNull(thrown.getCause(), "the parser's own account of the failure should be attached");
+  }
+
   @Test
   public void testBuildForEnvironmentDoesNotCache() throws Exception {
     Map<String, String> environment = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);

@@ -118,7 +118,7 @@ public class CedarConfig extends Configuration {
 
   private static CedarConfig buildInstance(Map<String, String> environment) {
 
-    CedarConfig config = null;
+    final CedarConfig config;
 
     final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -134,8 +134,7 @@ public class CedarConfig extends Configuration {
     try {
       config = mainConfigurationFactory.build(substitutingSourceProvider, mainConfigFileName);
     } catch (IOException | ConfigurationException e) {
-      log.error("Error while reading main config file", e);
-      System.exit(-1);
+      throw new CedarConfigurationException(mainConfigFileName, e);
     }
 
     // Read search config
@@ -158,19 +157,15 @@ public class CedarConfig extends Configuration {
   private static OpensearchSettingsMappingsConfig getSettingsMappingsConfigFromFile(String configFileName,
                                                                                     Validator validator,
                                                                                     SubstitutingSourceProvider substitutingSourceProvider) {
-    OpensearchSettingsMappingsConfig settingsMappingsConfig = null;
-
     final ConfigurationFactory<OpensearchSettingsMappingsConfig> configurationFactory = new
         YamlConfigurationFactory<>(
         OpensearchSettingsMappingsConfig.class, validator, Jackson.newObjectMapper(), "cedar");
 
     try {
-      settingsMappingsConfig = configurationFactory.build(substitutingSourceProvider, configFileName);
+      return configurationFactory.build(substitutingSourceProvider, configFileName);
     } catch (IOException | ConfigurationException e) {
-      log.error("Error while reading config file", e);
-      System.exit(-2);
+      throw new CedarConfigurationException(configFileName, e);
     }
-    return settingsMappingsConfig;
   }
 
   /**
