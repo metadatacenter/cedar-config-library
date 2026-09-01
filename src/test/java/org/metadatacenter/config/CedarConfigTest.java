@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.metadatacenter.config.environment.CedarEnvironmentSource;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
 import org.metadatacenter.config.environment.CedarEnvironmentVariableProvider;
+import org.metadatacenter.model.ServerName;
 import org.metadatacenter.model.SystemComponent;
 
 import java.util.HashMap;
@@ -235,6 +236,28 @@ assertNotSame(before, after);
 assertEquals("changed.metadatacenter.orgx", after.getHost());
   }
 
+  /**
+   * A value that breaks the configuration file used to end the JVM: the load logged one line and
+   * called {@code System.exit}, so a test could only die alongside it. The quotes below are the case
+   * that provokes it, and the reason the shell profile and the CI workflows escape them. The variable
+   * substitutes into a double-quoted YAML scalar, so a bare quote closes the scalar early and leaves
+   * the rest of the line as a stray token.
+   */
+  @Test
+  public void testAValueThatBreaksTheConfigurationFileThrows() {
+    Map<String, String> environment = new HashMap<>(CedarEnvironmentSource.getAll());
+    environment.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(), "{\"caDSR\":[]}");
+    CedarEnvironmentSource.setOverride(environment);
+
+    Map<String, String> sandbox = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
+
+    CedarConfigurationException thrown =
+        assertThrows(CedarConfigurationException.class, () -> CedarConfig.buildForEnvironment(sandbox));
+    assertTrue(thrown.getMessage().contains("cedar-main.yml"),
+        "the failure should name the file that could not be read, but said: " + thrown.getMessage());
+    assertNotNull(thrown.getCause(), "the parser's own account of the failure should be attached");
+  }
+
   @Test
   public void testBuildForEnvironmentDoesNotCache() throws Exception {
     Map<String, String> environment = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
@@ -247,7 +270,7 @@ assertNotNull(first.getMicroserviceUrlUtil());
   }
 
   @Test
-  @Disabled // TODO: the env variables can not changed
+  @Disabled("Assertions use fixed Keycloak values that are not derived from the test environment")
   public void testKeycloakConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     KeycloakConfig keycloakConfig = instance.getKeycloakConfig();
@@ -286,10 +309,64 @@ assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
+  public void testNeo4jBoltPoolSizeIsConfigurable() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    // The value stated in cedar-main.yml is the driver's own default, so declaring it changes
+    // nothing; what it changes is that a deployment can now lower it. Before the setting existed
+    // the pool ceiling was the driver's to choose and no configuration could reach it.
+    assertEquals(Integer.valueOf(100), instance.getNeo4jConfig().getBolt().getMaxConnectionPoolSize());
+  }
+
+  @Test
   public void testTerminologyServerBase() throws Exception {
     CedarConfig instance = getCedarConfig();
 
     assertEquals("http://127.0.0.1:9004/", instance.getServers().getTerminology().getBase());
+  }
+
+  @Test
+  public void testBridgeServerGetter() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    assertSame(instance.getServers().get(ServerName.BRIDGE), instance.getServers().getBridge());
+    assertEquals(9015, instance.getServers().getBridge().getHttpPort());
+    // The host comes from the environment the build runs in — 127.0.0.1 under the native profile, a
+    // container address under the Docker one — so asserting it made this suite pass only in native
+    // mode. The port is what this configuration decides.
+    assertTrue(instance.getServers().getBridge().getAdminBase().endsWith(":9115/"),
+        "the bridge admin base should address the admin port");
+  }
+
+  /**
+   * The Monitor reads every other server's health over its application base URL, because the admin
+   * connector it used to call is bound to loopback and answers no other host. Ten of the fifteen
+   * declared only an admin base, which left that page reaching nothing under Compose, so the
+   * presence of a base on all fifteen is the thing to hold.
+   */
+  @Test
+  public void testEveryServerDeclaresAnApplicationBase() throws Exception {
+    CedarConfig instance = getCedarConfig();
+
+    for (ServerName serverName : ServerName.values()) {
+      ServerConfig serverConfig = instance.getServers().get(serverName);
+      assertNotNull(serverConfig, serverName + " has no server configuration");
+      assertNotNull(serverConfig.getBase(),
+          serverName + " has no application base URL, so its health cannot be read");
+      assertTrue(serverConfig.getBase().endsWith(":" + serverConfig.getHttpPort() + "/"),
+          serverName + " addresses " + serverConfig.getBase() + " rather than its application port");
+    }
+  }
+
+  @Test
+  public void testOpensearchConfigBindsToTheKeysCedarMainYmlStates() throws Exception {
+    CedarConfig instance = getCedarConfig();
+    OpensearchConfig opensearchConfig = instance.getElasticsearchConfig();
+
+    // These bind by name alone, so a key renamed on one side only leaves Jackson with the int
+    // default and no error: a keep alive of 0 expires every search context between round trips.
+    assertEquals(1000, opensearchConfig.getSize());
+    assertEquals(60000, opensearchConfig.getSearchContextKeepAlive());
   }
 
   @Test

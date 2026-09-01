@@ -6,17 +6,11 @@ public class CacheConfig {
 
   private CacheServerNonPersistent nonPersistent;
 
-  private TerminologyCache terminology;
-
   public CacheServerPersistent getPersistent() {
     return persistent;
   }
 
   public CacheServerNonPersistent getNonPersistent() {
     return nonPersistent;
-  }
-
-  public TerminologyCache getTerminology() {
-    return terminology;
   }
 }

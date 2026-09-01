@@ -12,8 +12,6 @@ public class ServerConfig {
 
   private String adminBase;
 
-  private boolean apiDoc;
-
   public int getHttpPort() {
     return httpPort;
   }
@@ -32,9 +30,5 @@ public class ServerConfig {
 
   public String getAdminBase() {
     return adminBase;
-  }
-
-  public boolean isApiDoc() {
-    return apiDoc;
   }
 }

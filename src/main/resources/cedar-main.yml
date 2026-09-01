@@ -61,6 +61,7 @@ messagingServer:
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
+    hibernate.default_catalog: "${CEDAR_MESSAGING_MYSQL_DB}"
 
 dbLogging:
   url: "jdbc:mysql://${CEDAR_LOG_MYSQL_HOST}:${CEDAR_LOG_MYSQL_PORT}/${CEDAR_LOG_MYSQL_DB}"
@@ -73,6 +74,7 @@ dbLogging:
     useSSL: "false"
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
+    hibernate.default_catalog: "${CEDAR_LOG_MYSQL_DB}"
 
 #Neo4J settings
 neo4j:
@@ -80,6 +82,10 @@ neo4j:
     uri: "bolt://${CEDAR_NEO4J_HOST}:${CEDAR_NEO4J_BOLT_PORT}"
     userName: "${CEDAR_NEO4J_USER_NAME}"
     userPassword: "${CEDAR_NEO4J_USER_PASSWORD}"
+    # Bolt connections one server may hold open. This is the driver's own default, stated here so a
+    # deployment running fifteen services against one database can lower the total rather than
+    # inherit whatever the driver chooses. Each server opens one pool, shared by all its proxies.
+    maxConnectionPoolSize: 100
 
 searchSettings:
   searchRetrieveSettings:
@@ -97,7 +103,13 @@ elasticsearch:
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
   size: 1000
-  scrollKeepAlive: 60000
+  #How long, in milliseconds, OpenSearch holds a search context open between the round trips of one
+  #paged read. The shallow value read holds a scroll context, the deep search a point in time.
+  searchContextKeepAlive: 60000
+  #The index's own index.max_result_window. Two things read it: the shallow search, which cannot ask
+  #for a wider window in one request, and the deep search, which skips to its offset a window at a
+  #time. Raise it here only after raising it on the index.
+  maxResultWindow: 10000
 
 #Linked data settings
 #For ID generation
@@ -133,6 +145,7 @@ servers:
     httpPort: "${CEDAR_GROUP_HTTP_PORT}"
     adminPort: "${CEDAR_GROUP_ADMIN_PORT}"
     stopPort: "${CEDAR_GROUP_STOP_PORT}"
+    base: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_HTTP_PORT}/"
     adminBase: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_ADMIN_PORT}/"
   messaging:
     httpPort: "${CEDAR_MESSAGING_HTTP_PORT}"
@@ -144,12 +157,12 @@ servers:
     httpPort: "${CEDAR_REPO_HTTP_PORT}"
     adminPort: "${CEDAR_REPO_ADMIN_PORT}"
     stopPort: "${CEDAR_REPO_STOP_PORT}"
+    base: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_HTTP_PORT}/"
     adminBase: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_ADMIN_PORT}/"
   resource:
     httpPort: "${CEDAR_RESOURCE_HTTP_PORT}"
     adminPort: "${CEDAR_RESOURCE_ADMIN_PORT}"
     stopPort: "${CEDAR_RESOURCE_STOP_PORT}"
-    apiDoc: true
     base: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/"
     adminBase: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_ADMIN_PORT}/"
     loadValueSetsOntology: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/load-valuesets-ontology"
@@ -162,11 +175,13 @@ servers:
     httpPort: "${CEDAR_SCHEMA_HTTP_PORT}"
     adminPort: "${CEDAR_SCHEMA_ADMIN_PORT}"
     stopPort: "${CEDAR_SCHEMA_STOP_PORT}"
+    base: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_HTTP_PORT}/"
     adminBase: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_ADMIN_PORT}/"
   submission:
     httpPort: "${CEDAR_SUBMISSION_HTTP_PORT}"
     adminPort: "${CEDAR_SUBMISSION_ADMIN_PORT}"
     stopPort: "${CEDAR_SUBMISSION_STOP_PORT}"
+    base: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_HTTP_PORT}/"
     adminBase: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_ADMIN_PORT}/"
   artifact:
     httpPort: "${CEDAR_ARTIFACT_HTTP_PORT}"
@@ -179,13 +194,13 @@ servers:
     adminPort: "${CEDAR_TERMINOLOGY_ADMIN_PORT}"
     stopPort: "${CEDAR_TERMINOLOGY_STOP_PORT}"
     base: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_HTTP_PORT}/"
-    apiDoc: true
     adminBase: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_ADMIN_PORT}/"
   user:
     httpPort: "${CEDAR_USER_HTTP_PORT}"
     adminPort: "${CEDAR_USER_ADMIN_PORT}"
     stopPort: "${CEDAR_USER_STOP_PORT}"
     usersBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/users/"
+    base: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_ADMIN_PORT}/"
   valuerecommender:
     httpPort: "${CEDAR_VALUERECOMMENDER_HTTP_PORT}"
@@ -193,32 +208,36 @@ servers:
     stopPort: "${CEDAR_VALUERECOMMENDER_STOP_PORT}"
     base: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_ADMIN_PORT}/"
-    apiDoc: true
   worker:
     httpPort: "${CEDAR_WORKER_HTTP_PORT}"
     adminPort: "${CEDAR_WORKER_ADMIN_PORT}"
     stopPort: "${CEDAR_WORKER_STOP_PORT}"
+    base: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_ADMIN_PORT}/"
   openview:
     httpPort: "${CEDAR_OPENVIEW_HTTP_PORT}"
     adminPort: "${CEDAR_OPENVIEW_ADMIN_PORT}"
     stopPort: "${CEDAR_OPENVIEW_STOP_PORT}"
+    base: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_HTTP_PORT}/"
     adminBase: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_ADMIN_PORT}/"
     uriBase: "https://openview.${CEDAR_HOST}/"
   monitor:
     httpPort: "${CEDAR_MONITOR_HTTP_PORT}"
     adminPort: "${CEDAR_MONITOR_ADMIN_PORT}"
     stopPort: "${CEDAR_MONITOR_STOP_PORT}"
+    base: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_HTTP_PORT}/"
     adminBase: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_ADMIN_PORT}/"
   impex:
     httpPort: "${CEDAR_IMPEX_HTTP_PORT}"
     adminPort: "${CEDAR_IMPEX_ADMIN_PORT}"
     stopPort: "${CEDAR_IMPEX_STOP_PORT}"
+    base: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_HTTP_PORT}/"
     adminBase: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_ADMIN_PORT}/"
   bridge:
     httpPort: "${CEDAR_BRIDGE_HTTP_PORT}"
     adminPort: "${CEDAR_BRIDGE_ADMIN_PORT}"
     stopPort: "${CEDAR_BRIDGE_STOP_PORT}"
+    base: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_HTTP_PORT}/"
     adminBase: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_ADMIN_PORT}/"
 
 
@@ -295,6 +314,10 @@ resourceRESTAPI:
   pagination:
     defaultPageSize: 100
     maxPageSize: 500
+    #The deepest offset /search-deep will walk to. The walk costs one OpenSearch round trip per window
+    #skipped, so this bounds the work one request can ask for. It has to stay above the largest result
+    #set anyone enumerates, or a full pass stops partway through: production holds 400,000 instances.
+    maxOffset: 500000
 
 artifactRESTAPI:
   pagination:
@@ -346,8 +369,6 @@ cache:
       host: "${CEDAR_REDIS_NONPERSISTENT_HOST}"
       port: "${CEDAR_REDIS_NONPERSISTENT_PORT}"
       timeout: 2000
-  terminology:
-    folder: "${CEDAR_HOME}/cache/terminology"
 
 submission:
   ncbi:

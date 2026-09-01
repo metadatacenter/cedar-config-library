@@ -258,6 +258,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortGroup = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GROUP_HTTP_PORT);
     cedarHttpPortGroup.add(SystemComponent.SERVER_GROUP);
+    cedarHttpPortGroup.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortGroup = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GROUP_ADMIN_PORT);
     cedarAdminPortGroup.add(SystemComponent.SERVER_GROUP);
     cedarAdminPortGroup.add(SystemComponent.SERVER_MONITOR);
@@ -269,6 +270,7 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarHttpPortMessaging = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_HTTP_PORT);
     cedarHttpPortMessaging.add(SystemComponent.SERVER_MESSAGING);
     cedarHttpPortMessaging.add(SystemComponent.SERVER_SUBMISSION);
+    cedarHttpPortMessaging.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortMessaging = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_ADMIN_PORT);
     cedarAdminPortMessaging.add(SystemComponent.SERVER_MESSAGING);
     cedarAdminPortMessaging.add(SystemComponent.SERVER_MONITOR);
@@ -279,6 +281,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarServerHostMessaging.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarHttpPortUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_USER_HTTP_PORT);
+    cedarHttpPortUser.add(SystemComponent.SERVER_MONITOR);
     cedarHttpPortUser.addAll(allMicroservices);
     Set<SystemComponent> cedarAdminPortUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT);
     cedarAdminPortUser.add(SystemComponent.SERVER_USER);
@@ -293,6 +296,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortRepo = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REPO_HTTP_PORT);
     cedarHttpPortRepo.add(SystemComponent.SERVER_REPO);
+    cedarHttpPortRepo.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortRepo = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REPO_ADMIN_PORT);
     cedarAdminPortRepo.add(SystemComponent.SERVER_REPO);
     cedarAdminPortRepo.add(SystemComponent.SERVER_MONITOR);
@@ -306,6 +310,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarHttpPortResource.add(SystemComponent.SERVER_BRIDGE);
     cedarHttpPortResource.add(SystemComponent.ADMIN_TOOL);
     cedarHttpPortResource.add(SystemComponent.CADSR_TOOL);
+    cedarHttpPortResource.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT);
     cedarAdminPortResource.add(SystemComponent.SERVER_RESOURCE);
     cedarAdminPortResource.add(SystemComponent.SERVER_MONITOR);
@@ -319,6 +324,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortSchema = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SCHEMA_HTTP_PORT);
     cedarHttpPortSchema.add(SystemComponent.SERVER_SCHEMA);
+    cedarHttpPortSchema.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortSchema = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SCHEMA_ADMIN_PORT);
     cedarAdminPortSchema.add(SystemComponent.SERVER_SCHEMA);
     cedarAdminPortSchema.add(SystemComponent.SERVER_MONITOR);
@@ -332,6 +338,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarPortArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarPortArtifact.add(SystemComponent.SERVER_WORKER);
     cedarPortArtifact.add(SystemComponent.SERVER_BRIDGE);
+    cedarPortArtifact.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_MONITOR);
@@ -346,6 +353,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT);
     cedarHttpPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
+    cedarHttpPortTerminology.add(SystemComponent.SERVER_MONITOR);
     // The resource server resolves every controlled-term constraint to its current version through
     // the terminology server when a template is published. Undeclared, the two variables that say
     // where that server is were simply absent from the containerized resource server, and the freeze
@@ -365,6 +373,7 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarHttpPortValuerecommender = variableToComponent.get(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_HTTP_PORT);
     cedarHttpPortValuerecommender.add(SystemComponent.SERVER_VALUERECOMMENDER);
     cedarHttpPortValuerecommender.add(SystemComponent.SERVER_WORKER);
+    cedarHttpPortValuerecommender.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortValuerecommender = variableToComponent.get(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_ADMIN_PORT);
     cedarAdminPortValuerecommender.add(SystemComponent.SERVER_VALUERECOMMENDER);
     cedarAdminPortValuerecommender.add(SystemComponent.SERVER_MONITOR);
@@ -377,6 +386,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortSubmission = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SUBMISSION_HTTP_PORT);
     cedarHttpPortSubmission.add(SystemComponent.SERVER_SUBMISSION);
+    cedarHttpPortSubmission.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortSubmission = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SUBMISSION_ADMIN_PORT);
     cedarAdminPortSubmission.add(SystemComponent.SERVER_SUBMISSION);
     cedarAdminPortSubmission.add(SystemComponent.SERVER_MONITOR);
@@ -387,6 +397,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_HTTP_PORT);
     cedarHttpPortWorker.add(SystemComponent.SERVER_WORKER);
+    cedarHttpPortWorker.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_ADMIN_PORT);
     cedarAdminPortWorker.add(SystemComponent.SERVER_WORKER);
     cedarAdminPortWorker.add(SystemComponent.SERVER_MONITOR);
@@ -442,6 +453,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_HTTP_PORT);
     cedarHttpPortOpenview.add(SystemComponent.SERVER_OPENVIEW);
+    cedarHttpPortOpenview.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_ADMIN_PORT);
     cedarAdminPortOpenview.add(SystemComponent.SERVER_OPENVIEW);
     cedarAdminPortOpenview.add(SystemComponent.SERVER_MONITOR);
@@ -461,6 +473,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_HTTP_PORT);
     cedarHttpPortImpex.add(SystemComponent.SERVER_IMPEX);
+    cedarHttpPortImpex.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_ADMIN_PORT);
     cedarAdminPortImpex.add(SystemComponent.SERVER_IMPEX);
     cedarAdminPortImpex.add(SystemComponent.SERVER_MONITOR);
@@ -471,6 +484,7 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarHttpPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT);
     cedarHttpPortBridge.add(SystemComponent.SERVER_BRIDGE);
+    cedarHttpPortBridge.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT);
     cedarAdminPortBridge.add(SystemComponent.SERVER_BRIDGE);
     cedarAdminPortBridge.add(SystemComponent.SERVER_MONITOR);
