@@ -180,25 +180,33 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarOpenSearchTransportPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT);
     cedarOpenSearchTransportPort.addAll(cedarOpensearchHost);
 
+    // The monitor reads this datasource to report what the messaging database holds, alongside the
+    // log database it already declares below. Reporting a datasource means connecting to it, and a
+    // component that has not declared these sees the template's placeholders instead of a server.
     Set<SystemComponent> cedarMessagingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_HOST);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlHost.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PORT);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlPort.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlDb = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_DB);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlDb.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_USER);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlUser.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PASSWORD);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarLoggingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_HOST);
     cedarLoggingMysqlHost.add(SystemComponent.SERVER_WORKER);
