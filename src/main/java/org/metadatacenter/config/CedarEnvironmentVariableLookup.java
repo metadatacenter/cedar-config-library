@@ -3,6 +3,7 @@ package org.metadatacenter.config;
 import io.dropwizard.configuration.UndefinedEnvironmentVariableException;
 import org.apache.commons.text.lookup.StringLookup;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
+import org.metadatacenter.config.environment.CedarSecretMasker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 public class CedarEnvironmentVariableLookup implements StringLookup {
 
   private enum VariableStatus {
-    PRESENT_WITH_VALUE, PRESENT_WITHOUT_VALUE, NEEDED_NOT_INCLUDED
+    PRESENT_WITH_VALUE, PRESENT_WITHOUT_VALUE, NEEDED_NOT_INCLUDED, OPTIONAL_NOT_SUPPLIED
   }
 
   private static final Logger log = LoggerFactory.getLogger(CedarEnvironmentVariableLookup.class);
@@ -22,8 +23,6 @@ public class CedarEnvironmentVariableLookup implements StringLookup {
   private final boolean strict;
   private final Map<String, String> environment;
   private static final String SPACES = "                                        ";
-  private static final String STAR = "*";
-  private static final int SHOW_SECURE_CHARS = 2;
 
   public CedarEnvironmentVariableLookup(Map<String, String> environment, boolean strict) {
     this.environment = environment;
@@ -34,7 +33,11 @@ public class CedarEnvironmentVariableLookup implements StringLookup {
     for (CedarEnvironmentVariable ev : CedarEnvironmentVariable.values()) {
       String name = ev.getName();
       if (!environment.containsKey(name)) {
-        status.put(name, VariableStatus.NEEDED_NOT_INCLUDED);
+        // An optional variable the provider left out is the component falling back to its own
+        // default, not a variable that failed to arrive, so it is not reported as missing here.
+        status.put(name, ev.isOptional()
+            ? VariableStatus.OPTIONAL_NOT_SUPPLIED
+            : VariableStatus.NEEDED_NOT_INCLUDED);
       } else {
         String v = environment.get(name);
         if (v == null) {
@@ -63,23 +66,10 @@ public class CedarEnvironmentVariableLookup implements StringLookup {
         String value = environment.get(name);
         CedarEnvironmentVariable var = CedarEnvironmentVariable.forName(name);
         if (var != null) {
-          if (!var.isSecure()) {
-            sb.append(value);
-          } else {
-            int pos1 = SHOW_SECURE_CHARS;
-            if (pos1 > value.length()) {
-              pos1 = value.length();
-            }
-            int pos2 = value.length() - SHOW_SECURE_CHARS;
-            if (pos2 < pos1) {
-              pos2 = pos1;
-            }
-            sb.append(value.substring(0, pos1));
-            for (int i = 0; i < pos2 - pos1; i++) {
-              sb.append(STAR);
-            }
-            sb.append(value.substring(pos2));
-          }
+          // Masked by the shared masker rather than here. This loop kept the first and last two
+          // characters of a secret whatever its length, which on a value of three characters or
+          // fewer is the whole value; the masker refuses to reveal anything that short.
+          sb.append(CedarSecretMasker.maskIf(var.isSecure(), value));
         }
         log.info(sb.toString());
       }
@@ -88,6 +78,12 @@ public class CedarEnvironmentVariableLookup implements StringLookup {
     for (String name : status.keySet()) {
       VariableStatus stat = status.get(name);
       if (stat == VariableStatus.PRESENT_WITHOUT_VALUE) {
+        log.info("---- " + name);
+      }
+    }
+    log.info("Optional, not supplied - the component's own default applies: --------------------------");
+    for (String name : status.keySet()) {
+      if (status.get(name) == VariableStatus.OPTIONAL_NOT_SUPPLIED) {
         log.info("---- " + name);
       }
     }

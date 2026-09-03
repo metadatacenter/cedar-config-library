@@ -46,6 +46,14 @@
       <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
 
+    <!-- Reads cedar-main.yml back as a tree, so the resolved configuration can be reported with
+         its secrets masked. Dropwizard already brings this in transitively; declared here because
+         this module now uses it directly. -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.dropwizard</groupId>
       <artifactId>dropwizard-core</artifactId>

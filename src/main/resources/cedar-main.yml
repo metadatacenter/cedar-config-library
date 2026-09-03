@@ -369,11 +369,6 @@ cache:
       appLog: "CEDAR-QUEUE-app-log"
       valuerecommender: "CEDAR-QUEUE-valuerecommender"
       cloneInstances: "CEDAR-QUEUE-cloneInstances"
-  nonPersistent:
-    connection:
-      host: "${CEDAR_REDIS_NONPERSISTENT_HOST}"
-      port: "${CEDAR_REDIS_NONPERSISTENT_PORT}"
-      timeout: 2000
 
 submission:
   ncbi:
