@@ -75,6 +75,11 @@ dbLogging:
     allowPublicKeyRetrieval: "true"
     hibernate.dialect: "org.hibernate.dialect.MySQLDialect"
     hibernate.default_catalog: "${CEDAR_LOG_MYSQL_DB}"
+    # NOTE: deliberately NOT forcing hibernate.jdbc.time_zone=UTC. The aggregator is self-consistent
+    # under serverTimezone above (reads, writes and range-bounds all pass through the same connection
+    # tz, so instants and rollups are correct). Forcing UTC would make the connection misread the YEARS
+    # of existing LA-stored rows in log_request/log_cypher and *_pre284 (+7/8h, DST-dependent), so it
+    # is a prod landmine. hourUtc physically stores connection-tz wall-clock but is queried consistently.
 
 #Neo4J settings
 neo4j:
@@ -364,11 +369,6 @@ cache:
       appLog: "CEDAR-QUEUE-app-log"
       valuerecommender: "CEDAR-QUEUE-valuerecommender"
       cloneInstances: "CEDAR-QUEUE-cloneInstances"
-  nonPersistent:
-    connection:
-      host: "${CEDAR_REDIS_NONPERSISTENT_HOST}"
-      port: "${CEDAR_REDIS_NONPERSISTENT_PORT}"
-      timeout: 2000
 
 submission:
   ncbi:

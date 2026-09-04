@@ -108,8 +108,6 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_HOST.getName(), "127.0.0.1");
     env.put(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_PORT.getName(), "6379");
-    env.put(CedarEnvironmentVariable.CEDAR_REDIS_NONPERSISTENT_HOST.getName(), "127.0.0.1");
-    env.put(CedarEnvironmentVariable.CEDAR_REDIS_NONPERSISTENT_PORT.getName(), "6380");
 
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_HTTP_PORT.getName(), "9009");
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_ADMIN_PORT.getName(), "9109");

@@ -60,6 +60,155 @@ public enum CedarEnvironmentVariable {
   CEDAR_LOG_MYSQL_USER("CEDAR_LOG_MYSQL_USER"),
   CEDAR_LOG_MYSQL_PASSWORD("CEDAR_LOG_MYSQL_PASSWORD", CedarEnvironmentVariableSecure.YES),
 
+  // The log aggregation jobs in the worker: LiveAggregatorJob, HistoricalBackfillJob, LogPruneJob.
+  // Every one is optional and carries a default in the job that reads it, which is why they were read
+  // with System.getenv straight past this model — declaring a variable makes it mandatory, and a batch
+  // size that stops a service from booting is worse than one that is merely unset. Declared here as
+  // optional so the environment report can show them, and the jobs read them from the sandbox.
+  CEDAR_LOG_LIVE_AGG_ENABLED("CEDAR_LOG_LIVE_AGG_ENABLED", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_LIVE_AGG_BATCH("CEDAR_LOG_LIVE_AGG_BATCH", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_LIVE_AGG_PAUSE_MS("CEDAR_LOG_LIVE_AGG_PAUSE_MS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_LIVE_AGG_POLL_MS("CEDAR_LOG_LIVE_AGG_POLL_MS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_LIVE_AGG_MARGIN_HOURS("CEDAR_LOG_LIVE_AGG_MARGIN_HOURS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+
+  CEDAR_LOG_BACKFILL_ENABLED("CEDAR_LOG_BACKFILL_ENABLED", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_BACKFILL_BATCH("CEDAR_LOG_BACKFILL_BATCH", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_BACKFILL_PAUSE_MS("CEDAR_LOG_BACKFILL_PAUSE_MS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  // A UTC hour range such as "2-6", so it stays a string rather than a number.
+  CEDAR_LOG_BACKFILL_WINDOW_UTC("CEDAR_LOG_BACKFILL_WINDOW_UTC", CedarEnvironmentVariableOptional.YES),
+
+  CEDAR_LOG_PRUNE_ENABLED("CEDAR_LOG_PRUNE_ENABLED", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_PRUNE_RETENTION_DAYS("CEDAR_LOG_PRUNE_RETENTION_DAYS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_PRUNE_BATCH("CEDAR_LOG_PRUNE_BATCH", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_PRUNE_PAUSE_MS("CEDAR_LOG_PRUNE_PAUSE_MS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_LOG_PRUNE_IDLE_MS("CEDAR_LOG_PRUNE_IDLE_MS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+
+  // Keycloak the server, as distinct from the event listener CEDAR ships into it. It reads these from
+  // standalone.xml, so nothing in a JVM resolves them and they appear as declarations only.
+  CEDAR_KEYCLOAK_HOST("CEDAR_KEYCLOAK_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_HTTP_PORT("CEDAR_KEYCLOAK_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_HTTPS_PORT("CEDAR_KEYCLOAK_HTTPS_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_ADMIN_USER("CEDAR_KEYCLOAK_ADMIN_USER", CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_ADMIN_PASSWORD("CEDAR_KEYCLOAK_ADMIN_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_MYSQL_HOST("CEDAR_KEYCLOAK_MYSQL_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_MYSQL_PORT("CEDAR_KEYCLOAK_MYSQL_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_MYSQL_DB("CEDAR_KEYCLOAK_MYSQL_DB", CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_MYSQL_USER("CEDAR_KEYCLOAK_MYSQL_USER", CedarEnvironmentVariableOptional.YES),
+  CEDAR_KEYCLOAK_MYSQL_PASSWORD("CEDAR_KEYCLOAK_MYSQL_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA("CEDAR_CA", CedarEnvironmentVariableOptional.YES),
+
+  // The infrastructure layer. Every one is optional: no JVM resolves any of them, so requiring one
+  // would fail a boot over a variable that boot never reads. They are declared so the environment page
+  // can account for them, which is the only thing that was missing.
+  //
+  // nginx: the reverse proxy in front of everything, whose config is generated from these.
+  CEDAR_NGINX_HOST("CEDAR_NGINX_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_NGINX_HTTP_PORT("CEDAR_NGINX_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_NGINX_HTTPS_PORT("CEDAR_NGINX_HTTPS_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_MICROSERVICE_HOST("CEDAR_MICROSERVICE_HOST", CedarEnvironmentVariableOptional.YES),
+
+  // Where nginx proxies each frontend. Distinct from CEDAR_FRONTEND_TARGET and from the
+  // CEDAR_FRONTEND_<target>_* family the gulp build generates, which cannot be enumerated here because
+  // their names are built from the target at build time.
+  CEDAR_FRONTEND_EDITOR_HOST("CEDAR_FRONTEND_EDITOR_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_EDITOR_PORT("CEDAR_FRONTEND_EDITOR_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_WORKSPACE_HOST("CEDAR_FRONTEND_WORKSPACE_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_WORKSPACE_PORT("CEDAR_FRONTEND_WORKSPACE_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_DESIGNER_HOST("CEDAR_FRONTEND_DESIGNER_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_DESIGNER_PORT("CEDAR_FRONTEND_DESIGNER_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_OPENVIEW_HOST("CEDAR_FRONTEND_OPENVIEW_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_OPENVIEW_PORT("CEDAR_FRONTEND_OPENVIEW_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_CONTENT_HOST("CEDAR_FRONTEND_CONTENT_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_CONTENT_PORT("CEDAR_FRONTEND_CONTENT_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_MONITORING_HOST("CEDAR_FRONTEND_MONITORING_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_MONITORING_PORT("CEDAR_FRONTEND_MONITORING_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_BRIDGING_HOST("CEDAR_FRONTEND_BRIDGING_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_FRONTEND_BRIDGING_PORT("CEDAR_FRONTEND_BRIDGING_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+
+  // Mongo's container init: the root account provisions the application account.
+  CEDAR_MONGO_ROOT_USER_NAME("CEDAR_MONGO_ROOT_USER_NAME", CedarEnvironmentVariableOptional.YES),
+  CEDAR_MONGO_ROOT_USER_PASSWORD("CEDAR_MONGO_ROOT_USER_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_MONGO_APP_DATABASE_NAME("CEDAR_MONGO_APP_DATABASE_NAME", CedarEnvironmentVariableOptional.YES),
+
+  CEDAR_MYSQL_ROOT_PASSWORD("CEDAR_MYSQL_ROOT_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+
+  CEDAR_NEO4J_HOME("CEDAR_NEO4J_HOME", CedarEnvironmentVariableOptional.YES),
+  CEDAR_NEO4J_REST_PORT("CEDAR_NEO4J_REST_PORT", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+
+  // The local certificate authority the development and server profiles generate TLS material from.
+  CEDAR_CA_HOME("CEDAR_CA_HOME", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_PASSWORD("CEDAR_CA_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_COMMON_NAME("CEDAR_CA_COMMON_NAME", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_COUNTRY("CEDAR_CA_COUNTRY", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_STATE("CEDAR_CA_STATE", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_LOC("CEDAR_CA_LOC", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_ORG("CEDAR_CA_ORG", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_ORG_UNIT("CEDAR_CA_ORG_UNIT", CedarEnvironmentVariableOptional.YES),
+  CEDAR_CA_EMAIL("CEDAR_CA_EMAIL", CedarEnvironmentVariableOptional.YES),
+
+  CEDAR_NET_SUBNET("CEDAR_NET_SUBNET", CedarEnvironmentVariableOptional.YES),
+
+  // Read by CedarMicroserviceApplication through System.getenv, with "*" as its default - the same
+  // shape as the log aggregation settings, and modelled for the same reason.
+  CEDAR_CORS_ALLOWED_ORIGINS("CEDAR_CORS_ALLOWED_ORIGINS", CedarEnvironmentVariableOptional.YES),
+
+  // The terminology server's local ontology store. cedar-services.sh turns these into -D properties
+  // only when CEDAR_TERMINOLOGY_STORE_CATALOG is set, so each one is optional.
+  CEDAR_TERMINOLOGY_LOCAL_ONTOLOGIES("CEDAR_TERMINOLOGY_LOCAL_ONTOLOGIES", CedarEnvironmentVariableOptional.YES),
+  CEDAR_TERMINOLOGY_LOCAL_ROOTS_ONTOLOGIES("CEDAR_TERMINOLOGY_LOCAL_ROOTS_ONTOLOGIES",
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_TERMINOLOGY_LOCAL_ONLY("CEDAR_TERMINOLOGY_LOCAL_ONLY", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+
+  // The caDSR importer and the production cron that drives it.
+  CEDAR_NCI_CADSR_FTP_HOST("CEDAR_NCI_CADSR_FTP_HOST", CedarEnvironmentVariableOptional.YES),
+  CEDAR_NCI_CADSR_FTP_USER("CEDAR_NCI_CADSR_FTP_USER", CedarEnvironmentVariableOptional.YES),
+  CEDAR_NCI_CADSR_FTP_PASSWORD("CEDAR_NCI_CADSR_FTP_PASSWORD", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_NCI_CADSR_FTP_CDES_DIRECTORY("CEDAR_NCI_CADSR_FTP_CDES_DIRECTORY", CedarEnvironmentVariableOptional.YES),
+  CEDAR_NCI_CADSR_FTP_CLASSIFICATIONS_DIRECTORY("CEDAR_NCI_CADSR_FTP_CLASSIFICATIONS_DIRECTORY",
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_CDE_FOLDER_ID("CEDAR_CDE_FOLDER_ID", CedarEnvironmentVariableOptional.YES),
+
+  // cedarcli, which is Python and reads these directly.
+  CEDAR_DEVELOP_HOME("CEDAR_DEVELOP_HOME", CedarEnvironmentVariableOptional.YES),
+  CEDAR_UTIL_BIN("CEDAR_UTIL_BIN", CedarEnvironmentVariableOptional.YES),
+  CEDAR_DEV_BUILD_FRONTENDS("CEDAR_DEV_BUILD_FRONTENDS", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+  CEDAR_DEV_USE_PRIVATE_REPOS("CEDAR_DEV_USE_PRIVATE_REPOS", CedarEnvironmentVariableType.BOOLEAN,
+      CedarEnvironmentVariableOptional.YES),
+
 
   CEDAR_SUBMISSION_TEMPLATE_ID_1("CEDAR_SUBMISSION_TEMPLATE_ID_1"),
   CEDAR_SUBMISSION_TEMPLATE_ID_2("CEDAR_SUBMISSION_TEMPLATE_ID_2"),
@@ -90,8 +239,6 @@ public enum CedarEnvironmentVariable {
 
   CEDAR_REDIS_PERSISTENT_HOST("CEDAR_REDIS_PERSISTENT_HOST"),
   CEDAR_REDIS_PERSISTENT_PORT("CEDAR_REDIS_PERSISTENT_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_REDIS_NONPERSISTENT_HOST("CEDAR_REDIS_NONPERSISTENT_HOST"),
-  CEDAR_REDIS_NONPERSISTENT_PORT("CEDAR_REDIS_NONPERSISTENT_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_GROUP_SERVER_HOST("CEDAR_GROUP_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_GROUP_HTTP_PORT("CEDAR_GROUP_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
@@ -171,23 +318,37 @@ public enum CedarEnvironmentVariable {
   private final String name;
   private final CedarEnvironmentVariableSecure secure;
   private final CedarEnvironmentVariableType type;
+  private final CedarEnvironmentVariableOptional optional;
 
   CedarEnvironmentVariable(String name) {
-    this.name = name;
-    this.secure = CedarEnvironmentVariableSecure.NO;
-    this.type = CedarEnvironmentVariableType.STRING;
+    this(name, CedarEnvironmentVariableSecure.NO, CedarEnvironmentVariableType.STRING,
+        CedarEnvironmentVariableOptional.NO);
   }
 
   CedarEnvironmentVariable(String name, CedarEnvironmentVariableType type) {
-    this.name = name;
-    this.secure = CedarEnvironmentVariableSecure.NO;
-    this.type = type;
+    this(name, CedarEnvironmentVariableSecure.NO, type, CedarEnvironmentVariableOptional.NO);
   }
 
   CedarEnvironmentVariable(String name, CedarEnvironmentVariableSecure secure) {
+    this(name, secure, CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.NO);
+  }
+
+  CedarEnvironmentVariable(String name, CedarEnvironmentVariableOptional optional) {
+    this(name, CedarEnvironmentVariableSecure.NO, CedarEnvironmentVariableType.STRING, optional);
+  }
+
+  CedarEnvironmentVariable(String name, CedarEnvironmentVariableType type,
+                           CedarEnvironmentVariableOptional optional) {
+    this(name, CedarEnvironmentVariableSecure.NO, type, optional);
+  }
+
+  CedarEnvironmentVariable(String name, CedarEnvironmentVariableSecure secure,
+                           CedarEnvironmentVariableType type,
+                           CedarEnvironmentVariableOptional optional) {
     this.name = name;
     this.secure = secure;
-    this.type = CedarEnvironmentVariableType.STRING;
+    this.type = type;
+    this.optional = optional;
   }
 
   public String getName() {
@@ -200,6 +361,14 @@ public enum CedarEnvironmentVariable {
 
   public boolean isBoolean() {
     return type == CedarEnvironmentVariableType.BOOLEAN;
+  }
+
+  /**
+   * Whether the component that declares it can run without it, falling back to its own default.
+   * An optional variable is reported like any other and simply may be absent.
+   */
+  public boolean isOptional() {
+    return optional == CedarEnvironmentVariableOptional.YES;
   }
 
   public boolean isSecure() {

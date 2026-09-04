@@ -29,17 +29,30 @@ public class CedarConfigEnvironmentDescriptor {
     cedarVersion.add(SystemComponent.FRONTEND_DEVELOPMENT);
     cedarVersion.add(SystemComponent.FRONTEND_TEST);
     cedarVersion.add(SystemComponent.FRONTEND_PRODUCTION);
+    // Every service reports its own version on /server-report/build, which the monitoring Deploy page
+    // reads to find the service that a deploy missed. The variable was declared by the frontends
+    // alone, so it was set on the box and in no server's sandbox: each one reported a null version
+    // while the shell two directories away could print it.
+    cedarVersion.addAll(allMicroservices);
 
     Set<SystemComponent> cedarVersionModifier = variableToComponent.get(CedarEnvironmentVariable.CEDAR_VERSION_MODIFIER);
     // gulpfile.js replaces in version.js
     cedarVersionModifier.add(SystemComponent.FRONTEND_DEVELOPMENT);
     cedarVersionModifier.add(SystemComponent.FRONTEND_TEST);
     cedarVersionModifier.add(SystemComponent.FRONTEND_PRODUCTION);
+    // Reported beside the version for the same reason. On prod the modifier is what distinguishes two
+    // payloads built from one source commit, so a deploy check that omits it can agree on the version
+    // and still be comparing different things.
+    cedarVersionModifier.addAll(allMicroservices);
 
     Set<SystemComponent> cedarHome = variableToComponent.get(CedarEnvironmentVariable.CEDAR_HOME);
     cedarHome.add(SystemComponent.ADMIN_TOOL); // generate-nginx-config, export dir
     cedarHome.add(SystemComponent.CADSR_TOOL);
     cedarHome.add(SystemComponent.UTIL_BIN); // utility shell scrips
+    // The monitoring server's /host routes read the checkout and the log directory under CEDAR_HOME.
+    // Only the monitor declares it: no other service has business looking at the box's filesystem, and
+    // widening the sandbox past what a component actually reads is what the sandbox exists to prevent.
+    cedarHome.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> keycloakHome = variableToComponent.get(CedarEnvironmentVariable.CEDAR_KEYCLOAK_HOME);
     keycloakHome.add(SystemComponent.UTIL_BIN); // utility shell scrips
@@ -180,25 +193,33 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarOpenSearchTransportPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT);
     cedarOpenSearchTransportPort.addAll(cedarOpensearchHost);
 
+    // The monitor reads this datasource to report what the messaging database holds, alongside the
+    // log database it already declares below. Reporting a datasource means connecting to it, and a
+    // component that has not declared these sees the template's placeholders instead of a server.
     Set<SystemComponent> cedarMessagingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_HOST);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlHost.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PORT);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlPort.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlDb = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_DB);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlDb.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_USER);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlUser.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PASSWORD);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MESSAGING);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_WORKER);
+    cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarLoggingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_HOST);
     cedarLoggingMysqlHost.add(SystemComponent.SERVER_WORKER);
@@ -245,6 +266,12 @@ public class CedarConfigEnvironmentDescriptor {
     dataCiteTemplateId.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> dataCiteEnabled = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_ENABLED);
     dataCiteEnabled.add(SystemComponent.SERVER_BRIDGE);
+    // cedar-template-editor's gulpfile reads this and bakes the answer into the built payload, so the
+    // frontends consume it as surely as the bridge server does. The declaration was missing, which made
+    // the descriptor disagree with the build about who reads the variable.
+    dataCiteEnabled.add(SystemComponent.FRONTEND_DEVELOPMENT);
+    dataCiteEnabled.add(SystemComponent.FRONTEND_TEST);
+    dataCiteEnabled.add(SystemComponent.FRONTEND_PRODUCTION);
 
     Set<SystemComponent> redisPersistentHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_HOST);
     redisPersistentHost.addAll(allMicroservices);
@@ -492,6 +519,155 @@ public class CedarConfigEnvironmentDescriptor {
     cedarStopPortBridge.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> cedarServerHostBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST);
     cedarServerHostBridge.add(SystemComponent.SERVER_MONITOR);
+
+    // The worker runs the three log aggregation jobs, and every knob they read is optional, so the
+    // worker still boots on a host that sets none of them.
+    for (CedarEnvironmentVariable logVariable : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_LOG_LIVE_AGG_ENABLED,
+        CedarEnvironmentVariable.CEDAR_LOG_LIVE_AGG_BATCH,
+        CedarEnvironmentVariable.CEDAR_LOG_LIVE_AGG_PAUSE_MS,
+        CedarEnvironmentVariable.CEDAR_LOG_LIVE_AGG_POLL_MS,
+        CedarEnvironmentVariable.CEDAR_LOG_LIVE_AGG_MARGIN_HOURS,
+        CedarEnvironmentVariable.CEDAR_LOG_BACKFILL_ENABLED,
+        CedarEnvironmentVariable.CEDAR_LOG_BACKFILL_BATCH,
+        CedarEnvironmentVariable.CEDAR_LOG_BACKFILL_PAUSE_MS,
+        CedarEnvironmentVariable.CEDAR_LOG_BACKFILL_WINDOW_UTC,
+        CedarEnvironmentVariable.CEDAR_LOG_PRUNE_ENABLED,
+        CedarEnvironmentVariable.CEDAR_LOG_PRUNE_RETENTION_DAYS,
+        CedarEnvironmentVariable.CEDAR_LOG_PRUNE_BATCH,
+        CedarEnvironmentVariable.CEDAR_LOG_PRUNE_PAUSE_MS,
+        CedarEnvironmentVariable.CEDAR_LOG_PRUNE_IDLE_MS}) {
+      variableToComponent.get(logVariable).add(SystemComponent.SERVER_WORKER);
+    }
+
+    // Keycloak the server. Nothing in a JVM resolves these — Keycloak reads them itself — so they
+    // appear on the environment page as declarations without values, like the frontends.
+    for (CedarEnvironmentVariable keycloakVariable : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_HOST,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_HTTP_PORT,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_HTTPS_PORT,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_ADMIN_USER,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_ADMIN_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_HOST,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_PORT,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_DB,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_USER,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_CA,
+        CedarEnvironmentVariable.CEDAR_HOME,
+        CedarEnvironmentVariable.CEDAR_HOST}) {
+      variableToComponent.get(keycloakVariable).add(SystemComponent.KEYCLOAK_SERVER);
+    }
+
+    // The infrastructure layer, mapped from what each component's own files actually reference:
+    // cedar-docker-build/cedar-infra-*/ for the container images, the nginx config includes, and the
+    // profile scripts that generate certificates.
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_HOST,
+        CedarEnvironmentVariable.CEDAR_NGINX_HOST,
+        CedarEnvironmentVariable.CEDAR_NGINX_HTTP_PORT,
+        CedarEnvironmentVariable.CEDAR_NGINX_HTTPS_PORT,
+        CedarEnvironmentVariable.CEDAR_MICROSERVICE_HOST,
+        CedarEnvironmentVariable.CEDAR_KEYCLOAK_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_EDITOR_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_EDITOR_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_WORKSPACE_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_WORKSPACE_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_DESIGNER_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_DESIGNER_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_OPENVIEW_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_OPENVIEW_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_CONTENT_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_CONTENT_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_MONITORING_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_MONITORING_PORT,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_BRIDGING_HOST,
+        CedarEnvironmentVariable.CEDAR_FRONTEND_BRIDGING_PORT}) {
+      variableToComponent.get(v).add(SystemComponent.INFRA_NGINX);
+    }
+
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_MONGO_HOST,
+        CedarEnvironmentVariable.CEDAR_MONGO_PORT,
+        CedarEnvironmentVariable.CEDAR_MONGO_ROOT_USER_NAME,
+        CedarEnvironmentVariable.CEDAR_MONGO_ROOT_USER_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_NAME,
+        CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_MONGO_APP_DATABASE_NAME}) {
+      variableToComponent.get(v).add(SystemComponent.INFRA_MONGO);
+    }
+
+    // One variable, and it is the root password. MySQL's image provisions the per-database accounts the
+    // services declare separately.
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_MYSQL_ROOT_PASSWORD).add(SystemComponent.INFRA_MYSQL);
+
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_HOST,
+        CedarEnvironmentVariable.CEDAR_NEO4J_HOST,
+        CedarEnvironmentVariable.CEDAR_NEO4J_HOME,
+        CedarEnvironmentVariable.CEDAR_NEO4J_BOLT_PORT,
+        CedarEnvironmentVariable.CEDAR_NEO4J_REST_PORT,
+        CedarEnvironmentVariable.CEDAR_NEO4J_USER_NAME,
+        CedarEnvironmentVariable.CEDAR_NEO4J_USER_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_ADMIN_USER_API_KEY}) {
+      variableToComponent.get(v).add(SystemComponent.INFRA_NEO4J);
+    }
+
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_CA,
+        CedarEnvironmentVariable.CEDAR_CA_HOME,
+        CedarEnvironmentVariable.CEDAR_CA_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_CA_COMMON_NAME,
+        CedarEnvironmentVariable.CEDAR_CA_COUNTRY,
+        CedarEnvironmentVariable.CEDAR_CA_STATE,
+        CedarEnvironmentVariable.CEDAR_CA_LOC,
+        CedarEnvironmentVariable.CEDAR_CA_ORG,
+        CedarEnvironmentVariable.CEDAR_CA_ORG_UNIT,
+        CedarEnvironmentVariable.CEDAR_CA_EMAIL}) {
+      variableToComponent.get(v).add(SystemComponent.INFRA_CA);
+    }
+
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_NET_GATEWAY,
+        CedarEnvironmentVariable.CEDAR_NET_SUBNET}) {
+      variableToComponent.get(v).add(SystemComponent.INFRA_DOCKER);
+    }
+
+    // Every microservice reads this when it configures CORS, so it is declared by all of them. Optional
+    // because the code falls back to "*" when it is unset.
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_CORS_ALLOWED_ORIGINS).addAll(allMicroservices);
+
+    // The terminology server's local ontology store, handed to it as -D properties by the service
+    // script when a catalog is configured.
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_TERMINOLOGY_LOCAL_ONTOLOGIES,
+        CedarEnvironmentVariable.CEDAR_TERMINOLOGY_LOCAL_ROOTS_ONTOLOGIES,
+        CedarEnvironmentVariable.CEDAR_TERMINOLOGY_LOCAL_ONLY}) {
+      variableToComponent.get(v).add(SystemComponent.SERVER_TERMINOLOGY);
+    }
+
+    // The caDSR importer, and the production cron that drives it.
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_NCI_CADSR_FTP_HOST,
+        CedarEnvironmentVariable.CEDAR_NCI_CADSR_FTP_USER,
+        CedarEnvironmentVariable.CEDAR_NCI_CADSR_FTP_PASSWORD,
+        CedarEnvironmentVariable.CEDAR_NCI_CADSR_FTP_CDES_DIRECTORY,
+        CedarEnvironmentVariable.CEDAR_NCI_CADSR_FTP_CLASSIFICATIONS_DIRECTORY,
+        CedarEnvironmentVariable.CEDAR_CDE_FOLDER_ID}) {
+      variableToComponent.get(v).add(SystemComponent.CADSR_TOOL);
+    }
+
+    // cedarcli.
+    for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
+        CedarEnvironmentVariable.CEDAR_HOME,
+        CedarEnvironmentVariable.CEDAR_DEVELOP_HOME,
+        CedarEnvironmentVariable.CEDAR_UTIL_BIN,
+        CedarEnvironmentVariable.CEDAR_DEV_BUILD_FRONTENDS,
+        CedarEnvironmentVariable.CEDAR_DEV_USE_PRIVATE_REPOS,
+        CedarEnvironmentVariable.CEDAR_VERSION,
+        CedarEnvironmentVariable.CEDAR_VERSION_MODIFIER}) {
+      variableToComponent.get(v).add(SystemComponent.CEDAR_CLI);
+    }
 
     // Compute the reverse map
     componentToVariable = new LinkedHashMap<>();

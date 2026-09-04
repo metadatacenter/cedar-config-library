@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.metadatacenter</groupId>
     <artifactId>cedar-parent</artifactId>
-    <version>2.9.6</version>
+    <version>2.9.7</version>
   </parent>
 
   <groupId>org.metadatacenter</groupId>
   <artifactId>cedar-config-library</artifactId>
-  <version>2.9.6</version>
+  <version>2.9.7</version>
   <packaging>jar</packaging>
 
   <name>CEDAR Config Library</name>
@@ -44,6 +44,14 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+
+    <!-- Reads cedar-main.yml back as a tree, so the resolved configuration can be reported with
+         its secrets masked. Dropwizard already brings this in transitively; declared here because
+         this module now uses it directly. -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
     </dependency>
 
     <dependency>

@@ -29,6 +29,14 @@ public class CedarEnvironmentVariableProvider {
           value = "false";
           log.info("{} is declared by {} but unset, so it defaults to false", variable.getName(), useCase);
         }
+        if (value == null && variable.isOptional()) {
+          // Left out rather than entered as null. A null entry is what the lookup refuses to build a
+          // configuration from, and an optional variable's whole point is that the component carries
+          // its own default for exactly this case.
+          log.debug("{} is declared by {} and unset; the component's own default applies",
+              variable.getName(), useCase);
+          continue;
+        }
         env.put(variable.getName(), value);
       } else {
         if (variable.isNumeric()) {

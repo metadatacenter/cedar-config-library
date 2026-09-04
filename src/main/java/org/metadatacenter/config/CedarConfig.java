@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CedarConfig extends Configuration {
@@ -202,6 +204,24 @@ public class CedarConfig extends Configuration {
       instanceEnvironment = snapshot;
     }
     return instance;
+  }
+
+  /**
+   * The environment the shared configuration was built from.
+   *
+   * <p>Served by the monitoring server so that one page can show what every service resolved, and
+   * so no value leaves without passing a masker. The map is the sandbox
+   * {@link org.metadatacenter.config.environment.CedarEnvironmentVariableProvider} produced for
+   * this component, not the host's environment: a variable this component does not declare is
+   * absent from it however the host is set, which is what makes the sandbox a boundary.
+   *
+   * <p>Empty until a configuration has been built. Entries whose value was {@code null} are absent,
+   * which is the same thing to every reader — a service with one would have failed to boot.
+   */
+  public static synchronized Map<String, String> getInstanceEnvironment() {
+    return instanceEnvironment == null
+        ? Map.of()
+        : Collections.unmodifiableMap(new LinkedHashMap<>(instanceEnvironment));
   }
 
   private static Map<String, String> nonNullEntries(Map<String, String> environment) {
