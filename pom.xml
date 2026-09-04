@@ -81,11 +81,6 @@
         the deployable modules shade, through the cedar-shade execution in cedar-parent.
       -->
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-      </plugin>
-
     </plugins>
 
   </build>
