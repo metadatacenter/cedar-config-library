@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.metadatacenter</groupId>
     <artifactId>cedar-parent</artifactId>
-    <version>2.9.7</version>
+    <version>2.9.8</version>
   </parent>
 
   <groupId>org.metadatacenter</groupId>
   <artifactId>cedar-config-library</artifactId>
-  <version>2.9.7</version>
+  <version>2.9.8</version>
   <packaging>jar</packaging>
 
   <name>CEDAR Config Library</name>
@@ -80,11 +80,6 @@
         the pom it publishes and a consumer resolves each one from the artifact that owns it. Only
         the deployable modules shade, through the cedar-shade execution in cedar-parent.
       -->
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-      </plugin>
 
     </plugins>
 
