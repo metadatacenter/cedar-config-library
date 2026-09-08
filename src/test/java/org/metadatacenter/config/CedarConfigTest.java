@@ -299,6 +299,12 @@ assertEquals(CEDAR_ADMIN_USER_API_KEY, adminUser.getApiKey());
     MongoConfig artifactServerConfig = instance.getArtifactServerConfig();
 assertNotNull(artifactServerConfig);
 assertEquals("cedar", artifactServerConfig.getDatabaseName());
+    MongoConnection artifactMongo = artifactServerConfig.getMongoConnection();
+    assertEquals(30000, artifactMongo.getServerSelectionTimeoutMillis());
+    assertEquals(10000, artifactMongo.getConnectTimeoutMillis());
+    assertEquals(60000, artifactMongo.getReadTimeoutMillis());
+    assertEquals(120000, artifactMongo.getPoolWaitTimeoutMillis());
+    assertEquals(100, artifactMongo.getMaxPoolSize());
 
     Map<String, String> artifactServerCollections = artifactServerConfig.getCollections();
 assertNotNull(artifactServerCollections);

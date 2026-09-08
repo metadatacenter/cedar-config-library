@@ -34,6 +34,11 @@ artifactServer:
     user: "${CEDAR_MONGO_APP_USER_NAME}"
     password: "${CEDAR_MONGO_APP_USER_PASSWORD}"
     databaseName: "cedar"
+    serverSelectionTimeoutMillis: 30000
+    connectTimeoutMillis: 10000
+    readTimeoutMillis: 60000
+    poolWaitTimeoutMillis: 120000
+    maxPoolSize: 100
   collections:
     field: "template-fields"
     element: "template-elements"
@@ -47,6 +52,11 @@ userServer:
     user: "${CEDAR_MONGO_APP_USER_NAME}"
     password: "${CEDAR_MONGO_APP_USER_PASSWORD}"
     databaseName: "cedar"
+    serverSelectionTimeoutMillis: 30000
+    connectTimeoutMillis: 10000
+    readTimeoutMillis: 60000
+    poolWaitTimeoutMillis: 120000
+    maxPoolSize: 100
   collections:
     user: "users"
 
