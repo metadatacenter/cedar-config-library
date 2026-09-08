@@ -324,6 +324,23 @@ assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
+  public void testMySqlPoolBudgetsAreExplicitPerService() {
+    HibernateConfig messaging = getCedarConfig().getMessagingServerConfig();
+    HibernateConfig logging = getCedarConfig().getDBLoggingConfig();
+
+    for (HibernateConfig config : new HibernateConfig[]{messaging, logging}) {
+      assertEquals(2, config.getMinSize());
+      assertEquals(2, config.getInitialSize());
+      assertEquals(20, config.getMaxSize());
+      assertEquals(30000, config.getMaxWaitForConnectionMillis());
+      assertEquals("/* Health Check */ SELECT 1", config.getValidationQuery());
+      assertTrue(config.isCheckConnectionWhileIdle());
+      assertTrue(config.isCheckConnectionOnConnect());
+      assertEquals(30000, config.getValidationIntervalMillis());
+    }
+  }
+
+  @Test
   public void testNeo4jBoltPoolSizeIsConfigurable() throws Exception {
     CedarConfig instance = getCedarConfig();
 

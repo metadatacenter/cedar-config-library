@@ -65,6 +65,16 @@ messagingServer:
   user: "${CEDAR_MESSAGING_MYSQL_USER}"
   password: "${CEDAR_MESSAGING_MYSQL_PASSWORD}"
   driverClass: "com.mysql.cj.jdbc.Driver"
+  # Messaging owns one pool: at most 20 connections. With the two dbLogging consumers below, a
+  # one-replica estate can hold at most 60 application connections; multiply by replica count.
+  minSize: 2
+  initialSize: 2
+  maxSize: 20
+  maxWaitForConnectionMillis: 30000
+  validationQuery: "/* Health Check */ SELECT 1"
+  checkConnectionWhileIdle: true
+  checkConnectionOnConnect: true
+  validationIntervalMillis: 30000
   properties:
     createDatabaseIfNotExist: "true"
     serverTimezone: "America/Los_Angeles"
@@ -78,6 +88,15 @@ dbLogging:
   user: "${CEDAR_LOG_MYSQL_USER}"
   password: "${CEDAR_LOG_MYSQL_PASSWORD}"
   driverClass: "com.mysql.cj.jdbc.Driver"
+  # Monitor and Worker each own one pool with these limits: 40 connections total at one replica.
+  minSize: 2
+  initialSize: 2
+  maxSize: 20
+  maxWaitForConnectionMillis: 30000
+  validationQuery: "/* Health Check */ SELECT 1"
+  checkConnectionWhileIdle: true
+  checkConnectionOnConnect: true
+  validationIntervalMillis: 30000
   properties:
     createDatabaseIfNotExist: "true"
     serverTimezone: "America/Los_Angeles"
