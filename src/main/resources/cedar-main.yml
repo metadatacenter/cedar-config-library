@@ -107,6 +107,13 @@ elasticsearch:
   host: "${CEDAR_OPENSEARCH_HOST}"
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
+  # One process-wide REST client serves every OpenSearch operation in a service. These values make
+  # the OpenSearch client's previous defaults explicit and bound both connection acquisition and I/O.
+  maxConnections: 30
+  maxConnectionsPerRoute: 10
+  connectionRequestTimeoutMillis: 1000
+  connectTimeoutMillis: 1000
+  socketTimeoutMillis: 30000
   size: 1000
   #How long, in milliseconds, OpenSearch holds a search context open between the round trips of one
   #paged read. The shallow value read holds a scroll context, the deep search a point in time.
