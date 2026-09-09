@@ -215,6 +215,17 @@ assertNotNull(instance);
   }
 
   @Test
+  public void testOpenSearchClientResourceBoundsAreExplicit() {
+    OpensearchConfig opensearch = getCedarConfig().getElasticsearchConfig();
+
+    assertEquals(30, opensearch.getMaxConnections());
+    assertEquals(10, opensearch.getMaxConnectionsPerRoute());
+    assertEquals(1000, opensearch.getConnectionRequestTimeoutMillis());
+    assertEquals(1000, opensearch.getConnectTimeoutMillis());
+    assertEquals(30000, opensearch.getSocketTimeoutMillis());
+  }
+
+  @Test
   public void testGetInstanceIsCachedForTheSameEnvironment() throws Exception {
     CedarConfig first = getCedarConfig();
     CedarConfig second = getCedarConfig();
@@ -288,6 +299,12 @@ assertEquals(CEDAR_ADMIN_USER_API_KEY, adminUser.getApiKey());
     MongoConfig artifactServerConfig = instance.getArtifactServerConfig();
 assertNotNull(artifactServerConfig);
 assertEquals("cedar", artifactServerConfig.getDatabaseName());
+    MongoConnection artifactMongo = artifactServerConfig.getMongoConnection();
+    assertEquals(30000, artifactMongo.getServerSelectionTimeoutMillis());
+    assertEquals(10000, artifactMongo.getConnectTimeoutMillis());
+    assertEquals(60000, artifactMongo.getReadTimeoutMillis());
+    assertEquals(120000, artifactMongo.getPoolWaitTimeoutMillis());
+    assertEquals(100, artifactMongo.getMaxPoolSize());
 
     Map<String, String> artifactServerCollections = artifactServerConfig.getCollections();
 assertNotNull(artifactServerCollections);
@@ -304,6 +321,23 @@ assertEquals("cedar", userServerConfig.getDatabaseName());
 assertNotNull(userServerCollections);
 
 assertEquals("users", userServerCollections.get("user"));
+  }
+
+  @Test
+  public void testMySqlPoolBudgetsAreExplicitPerService() {
+    HibernateConfig messaging = getCedarConfig().getMessagingServerConfig();
+    HibernateConfig logging = getCedarConfig().getDBLoggingConfig();
+
+    for (HibernateConfig config : new HibernateConfig[]{messaging, logging}) {
+      assertEquals(2, config.getMinSize());
+      assertEquals(2, config.getInitialSize());
+      assertEquals(20, config.getMaxSize());
+      assertEquals(30000, config.getMaxWaitForConnectionMillis());
+      assertEquals("/* Health Check */ SELECT 1", config.getValidationQuery());
+      assertTrue(config.isCheckConnectionWhileIdle());
+      assertTrue(config.isCheckConnectionOnConnect());
+      assertEquals(30000, config.getValidationIntervalMillis());
+    }
   }
 
   @Test

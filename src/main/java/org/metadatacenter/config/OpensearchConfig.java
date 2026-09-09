@@ -12,6 +12,16 @@ public class OpensearchConfig {
 
   private int transportPort;
 
+  private int maxConnections;
+
+  private int maxConnectionsPerRoute;
+
+  private int connectionRequestTimeoutMillis;
+
+  private int connectTimeoutMillis;
+
+  private int socketTimeoutMillis;
+
   private int size;
 
   private int searchContextKeepAlive;
@@ -36,6 +46,26 @@ public class OpensearchConfig {
 
   public int getTransportPort() {
     return transportPort;
+  }
+
+  public int getMaxConnections() {
+    return maxConnections;
+  }
+
+  public int getMaxConnectionsPerRoute() {
+    return maxConnectionsPerRoute;
+  }
+
+  public int getConnectionRequestTimeoutMillis() {
+    return connectionRequestTimeoutMillis;
+  }
+
+  public int getConnectTimeoutMillis() {
+    return connectTimeoutMillis;
+  }
+
+  public int getSocketTimeoutMillis() {
+    return socketTimeoutMillis;
   }
 
   public int getSize() {

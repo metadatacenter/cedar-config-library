@@ -34,6 +34,11 @@ artifactServer:
     user: "${CEDAR_MONGO_APP_USER_NAME}"
     password: "${CEDAR_MONGO_APP_USER_PASSWORD}"
     databaseName: "cedar"
+    serverSelectionTimeoutMillis: 30000
+    connectTimeoutMillis: 10000
+    readTimeoutMillis: 60000
+    poolWaitTimeoutMillis: 120000
+    maxPoolSize: 100
   collections:
     field: "template-fields"
     element: "template-elements"
@@ -47,6 +52,11 @@ userServer:
     user: "${CEDAR_MONGO_APP_USER_NAME}"
     password: "${CEDAR_MONGO_APP_USER_PASSWORD}"
     databaseName: "cedar"
+    serverSelectionTimeoutMillis: 30000
+    connectTimeoutMillis: 10000
+    readTimeoutMillis: 60000
+    poolWaitTimeoutMillis: 120000
+    maxPoolSize: 100
   collections:
     user: "users"
 
@@ -55,6 +65,16 @@ messagingServer:
   user: "${CEDAR_MESSAGING_MYSQL_USER}"
   password: "${CEDAR_MESSAGING_MYSQL_PASSWORD}"
   driverClass: "com.mysql.cj.jdbc.Driver"
+  # Messaging owns one pool: at most 20 connections. With the two dbLogging consumers below, a
+  # one-replica estate can hold at most 60 application connections; multiply by replica count.
+  minSize: 2
+  initialSize: 2
+  maxSize: 20
+  maxWaitForConnectionMillis: 30000
+  validationQuery: "/* Health Check */ SELECT 1"
+  checkConnectionWhileIdle: true
+  checkConnectionOnConnect: true
+  validationIntervalMillis: 30000
   properties:
     createDatabaseIfNotExist: "true"
     serverTimezone: "America/Los_Angeles"
@@ -68,6 +88,15 @@ dbLogging:
   user: "${CEDAR_LOG_MYSQL_USER}"
   password: "${CEDAR_LOG_MYSQL_PASSWORD}"
   driverClass: "com.mysql.cj.jdbc.Driver"
+  # Monitor and Worker each own one pool with these limits: 40 connections total at one replica.
+  minSize: 2
+  initialSize: 2
+  maxSize: 20
+  maxWaitForConnectionMillis: 30000
+  validationQuery: "/* Health Check */ SELECT 1"
+  checkConnectionWhileIdle: true
+  checkConnectionOnConnect: true
+  validationIntervalMillis: 30000
   properties:
     createDatabaseIfNotExist: "true"
     serverTimezone: "America/Los_Angeles"
@@ -107,6 +136,13 @@ elasticsearch:
   host: "${CEDAR_OPENSEARCH_HOST}"
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
+  # One process-wide REST client serves every OpenSearch operation in a service. These values make
+  # the OpenSearch client's previous defaults explicit and bound both connection acquisition and I/O.
+  maxConnections: 30
+  maxConnectionsPerRoute: 10
+  connectionRequestTimeoutMillis: 1000
+  connectTimeoutMillis: 1000
+  socketTimeoutMillis: 30000
   size: 1000
   #How long, in milliseconds, OpenSearch holds a search context open between the round trips of one
   #paged read. The shallow value read holds a scroll context, the deep search a point in time.

@@ -14,6 +14,22 @@ public class HibernateConfig {
 
   private Map<String, String> properties;
 
+  private int minSize;
+
+  private int initialSize;
+
+  private int maxSize;
+
+  private long maxWaitForConnectionMillis;
+
+  private String validationQuery;
+
+  private boolean checkConnectionWhileIdle;
+
+  private boolean checkConnectionOnConnect;
+
+  private long validationIntervalMillis;
+
   public String getUrl() {
     return url;
   }
@@ -32,5 +48,37 @@ public class HibernateConfig {
 
   public Map<String, String> getProperties() {
     return properties;
+  }
+
+  public int getMinSize() {
+    return minSize;
+  }
+
+  public int getInitialSize() {
+    return initialSize;
+  }
+
+  public int getMaxSize() {
+    return maxSize;
+  }
+
+  public long getMaxWaitForConnectionMillis() {
+    return maxWaitForConnectionMillis;
+  }
+
+  public String getValidationQuery() {
+    return validationQuery;
+  }
+
+  public boolean isCheckConnectionWhileIdle() {
+    return checkConnectionWhileIdle;
+  }
+
+  public boolean isCheckConnectionOnConnect() {
+    return checkConnectionOnConnect;
+  }
+
+  public long getValidationIntervalMillis() {
+    return validationIntervalMillis;
   }
 }
