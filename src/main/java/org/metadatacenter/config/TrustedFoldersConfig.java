@@ -47,7 +47,7 @@ class TrustedFoldersConfigConverter extends StdConverter<TrustedFoldersConfig, T
         trustedFoldersConfig.getFoldersStr().length() > 0 &&
         trustedFoldersConfig.getFoldersStr().charAt(0) != '$') {
       try {
-        Map<String, List<String>> map = JsonMapper.MAPPER.readValue(trustedFoldersConfig.getFoldersStr(), Map.class);
+        Map<String, List<String>> map = JsonMapper.STRICT_MAPPER.readValue(trustedFoldersConfig.getFoldersStr(), Map.class);
         Map<String, String> folderToEntityMap = new HashMap<>();
         for (String entityName : map.keySet()) {
           for (String folderId : map.get(entityName)) {
