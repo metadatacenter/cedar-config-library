@@ -336,6 +336,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarHttpPortResource.add(SystemComponent.SERVER_RESOURCE);
     cedarHttpPortResource.add(SystemComponent.SERVER_BRIDGE);
     cedarHttpPortResource.add(SystemComponent.SERVER_REPO);
+    cedarHttpPortResource.add(SystemComponent.SERVER_OPENVIEW);
     cedarHttpPortResource.add(SystemComponent.ADMIN_TOOL);
     cedarHttpPortResource.add(SystemComponent.CADSR_TOOL);
     cedarHttpPortResource.add(SystemComponent.SERVER_MONITOR);
@@ -347,6 +348,7 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarServerHostResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_SERVER_HOST);
     cedarServerHostResource.add(SystemComponent.SERVER_BRIDGE);
     cedarServerHostResource.add(SystemComponent.SERVER_REPO);
+    cedarServerHostResource.add(SystemComponent.SERVER_OPENVIEW);
     cedarServerHostResource.add(SystemComponent.SERVER_MONITOR);
     cedarServerHostResource.add(SystemComponent.KEYCLOAK_EVENT_LISTENER);
     cedarServerHostResource.add(SystemComponent.ADMIN_TOOL);
@@ -379,7 +381,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarServerHostArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVER_HOST);
     cedarServerHostArtifact.add(SystemComponent.SERVER_WORKER);
     cedarServerHostArtifact.add(SystemComponent.SERVER_RESOURCE);
-    cedarServerHostArtifact.add(SystemComponent.SERVER_OPENVIEW);
     cedarServerHostArtifact.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarHttpPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT);

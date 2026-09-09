@@ -32,6 +32,10 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
     return getArtifactTypeWithId(resourceType, id.getId(), Optional.empty());
   }
 
+  public String getOpenArtifact(CedarResourceType resourceType, String id) {
+    return base + "open/" + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(id);
+  }
+
   public String getCommandDOIUpdate() {
     return base + "/command/annotations/doi";
   }
