@@ -22,6 +22,11 @@ import java.util.Map;
 
 public class CedarConfig extends Configuration {
 
+  @JsonProperty("artifactService")
+  private ArtifactServiceConfig artifactService;
+
+  public ArtifactServiceConfig getArtifactService() { return artifactService; }
+
   @JsonProperty("home")
   private String home;
 

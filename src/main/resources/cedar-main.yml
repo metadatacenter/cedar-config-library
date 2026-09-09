@@ -1,6 +1,10 @@
 home: "${CEDAR_HOME}"
 host: "${CEDAR_HOST}"
 
+artifactService:
+  apiKey: "${CEDAR_ARTIFACT_SERVICE_API_KEY}"
+  previousApiKey: "${CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY:-}"
+
 adminUser:
   userName: "cedar-admin"
   #Plain text password of "cedar-admin" user

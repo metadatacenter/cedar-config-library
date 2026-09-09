@@ -3,6 +3,9 @@ package org.metadatacenter.config.environment;
 public enum CedarEnvironmentVariable {
 
   CEDAR_VERSION("CEDAR_VERSION"),
+  CEDAR_ARTIFACT_SERVICE_API_KEY("CEDAR_ARTIFACT_SERVICE_API_KEY", CedarEnvironmentVariableSecure.YES),
+  CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY("CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY", CedarEnvironmentVariableSecure.YES,
+      CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
   CEDAR_VERSION_MODIFIER("CEDAR_VERSION_MODIFIER"),
 
   CEDAR_HOME("CEDAR_HOME"),

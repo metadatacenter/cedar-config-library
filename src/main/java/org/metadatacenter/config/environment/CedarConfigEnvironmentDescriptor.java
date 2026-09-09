@@ -363,6 +363,10 @@ public class CedarConfigEnvironmentDescriptor {
     cedarServerHostSchema.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarPortArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_HTTP_PORT);
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_API_KEY).addAll(Set.of(
+        SystemComponent.SERVER_ARTIFACT, SystemComponent.SERVER_RESOURCE, SystemComponent.SERVER_WORKER));
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY)
+        .add(SystemComponent.SERVER_ARTIFACT);
     cedarPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarPortArtifact.add(SystemComponent.SERVER_RESOURCE);
     cedarPortArtifact.add(SystemComponent.SERVER_WORKER);

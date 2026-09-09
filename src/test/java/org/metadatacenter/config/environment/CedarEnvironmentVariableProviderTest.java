@@ -49,4 +49,20 @@ class CedarEnvironmentVariableProviderTest {
     assertFalse(environment.containsKey("CEDAR_ARTIFACT_SERVER_HOST"));
     assertEquals("0", environment.get("CEDAR_ARTIFACT_HTTP_PORT"));
   }
+
+  @Test
+  void onlyArtifactAndItsTrustedCallersReceiveTheServiceCredential() {
+    for (var component : java.util.List.of(SystemComponent.SERVER_ARTIFACT, SystemComponent.SERVER_RESOURCE,
+        SystemComponent.SERVER_WORKER, SystemComponent.SERVER_BRIDGE, SystemComponent.SERVER_REPO,
+        SystemComponent.SERVER_OPENVIEW, SystemComponent.SERVER_MONITOR)) {
+      var needed = CedarConfigEnvironmentDescriptor.getVariableNamesFor(component);
+      boolean trusted = component == SystemComponent.SERVER_ARTIFACT || component == SystemComponent.SERVER_RESOURCE
+          || component == SystemComponent.SERVER_WORKER;
+      assertEquals(trusted, needed.contains(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_API_KEY), component.name());
+      assertEquals(component == SystemComponent.SERVER_ARTIFACT,
+          needed.contains(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY), component.name());
+    }
+    assertTrue(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_API_KEY.isSecure());
+    assertTrue(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_PREVIOUS_API_KEY.isSecure());
+  }
 }
