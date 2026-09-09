@@ -8,6 +8,7 @@ import org.metadatacenter.util.http.UrlUtil;
 import java.util.Optional;
 
 import static org.metadatacenter.constant.CedarQueryParameters.QP_FORMAT;
+import static org.metadatacenter.constant.CedarQueryParameters.QP_RESOURCE_TYPE;
 
 public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
@@ -33,6 +34,10 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
   public String getCommandDOIUpdate() {
     return base + "/command/annotations/doi";
+  }
+
+  public String getValidateCommand(String resourceType) {
+    return base + "command/validate?" + QP_RESOURCE_TYPE + "=" + UrlUtil.urlEncode(resourceType);
   }
 
 }
