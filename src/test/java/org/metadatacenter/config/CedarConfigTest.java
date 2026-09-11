@@ -51,6 +51,7 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_IMMPORT_SUBMISSION_PASSWORD.getName(), "submissionPassword");
 
     env.put(CedarEnvironmentVariable.CEDAR_ADMIN_USER_PASSWORD.getName(), CEDAR_ADMIN_USER_PASSWORD);
+    env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_API_KEY.getName(), "test-only-artifact-service-key-not-for-prod");
     env.put(CedarEnvironmentVariable.CEDAR_ADMIN_USER_API_KEY.getName(), CEDAR_ADMIN_USER_API_KEY);
 
     env.put(CedarEnvironmentVariable.CEDAR_CADSR_ADMIN_USER_API_KEY.getName(), CEDAR_CADSR_ADMIN_USER_API_KEY);
