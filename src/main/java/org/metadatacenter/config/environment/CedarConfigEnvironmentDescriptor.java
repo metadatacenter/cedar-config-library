@@ -674,6 +674,14 @@ public class CedarConfigEnvironmentDescriptor {
       variableToComponent.get(v).add(SystemComponent.CEDAR_CLI);
     }
 
+    // Every component validates the same YAML, including tools without HTTP admission.
+    // Declare these optional settings everywhere so numeric defaults are not replaced with zero.
+    for (CedarEnvironmentVariable variable : CedarEnvironmentVariable.values()) {
+      if (variable.getName().startsWith("CEDAR_RATE_LIMIT_")) {
+        variableToComponent.get(variable).addAll(java.util.Arrays.asList(SystemComponent.values()));
+      }
+    }
+
     // Compute the reverse map
     componentToVariable = new LinkedHashMap<>();
     for (SystemComponent component : SystemComponent.values()) {

@@ -27,6 +27,13 @@ public class CedarConfig extends Configuration {
 
   public ArtifactServiceConfig getArtifactService() { return artifactService; }
 
+  @JsonProperty("rateLimits")
+  @jakarta.validation.Valid
+  @jakarta.validation.constraints.NotNull
+  private RateLimitConfig rateLimits = new RateLimitConfig();
+
+  public RateLimitConfig getRateLimits() { return rateLimits; }
+
   @JsonProperty("home")
   private String home;
 
