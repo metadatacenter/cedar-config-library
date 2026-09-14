@@ -1,3 +1,21 @@
+# Shared per-user quotas. Start in observation mode; changes take effect on service restart.
+rateLimits:
+  mode: "${CEDAR_RATE_LIMIT_MODE:-observe}"
+  redisKeyPrefix: "${CEDAR_RATE_LIMIT_REDIS_PREFIX:-CEDAR-RATE-LIMIT}"
+  redisTimeoutMillis: ${CEDAR_RATE_LIMIT_REDIS_TIMEOUT_MS:-100}
+  total:
+    requestsPerMinute: ${CEDAR_RATE_LIMIT_TOTAL_PER_MINUTE:-720}
+    burst: ${CEDAR_RATE_LIMIT_TOTAL_BURST:-40}
+    failureMode: "${CEDAR_RATE_LIMIT_TOTAL_FAILURE_MODE:-open}"
+  reads:
+    requestsPerMinute: ${CEDAR_RATE_LIMIT_READS_PER_MINUTE:-600}
+    burst: ${CEDAR_RATE_LIMIT_READS_BURST:-30}
+    failureMode: "${CEDAR_RATE_LIMIT_READS_FAILURE_MODE:-open}"
+  writes:
+    requestsPerMinute: ${CEDAR_RATE_LIMIT_WRITES_PER_MINUTE:-120}
+    burst: ${CEDAR_RATE_LIMIT_WRITES_BURST:-10}
+    failureMode: "${CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE:-closed}"
+
 home: "${CEDAR_HOME}"
 host: "${CEDAR_HOST}"
 

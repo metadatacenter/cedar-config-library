@@ -192,6 +192,39 @@ public class CedarConfigTest {
   }
 
   @Test
+  public void rateLimitDefaultsAndEnvironmentOverridesAreValidated() {
+    Map<String, String> env = new HashMap<>(CedarEnvironmentSource.getAll());
+    env.keySet().removeIf(k -> k.startsWith("CEDAR_RATE_LIMIT_"));
+    CedarEnvironmentSource.setOverride(env);
+    assertEquals("observe", getCedarConfig().getRateLimits().getMode());
+    assertEquals(600, getCedarConfig().getRateLimits().getReads().getRequestsPerMinute());
+    env.put("CEDAR_RATE_LIMIT_MODE", "enforce");
+    env.put("CEDAR_RATE_LIMIT_READS_PER_MINUTE", "42");
+    CedarEnvironmentSource.setOverride(env);
+    assertEquals("enforce", getCedarConfig().getRateLimits().getMode());
+    assertEquals(42, getCedarConfig().getRateLimits().getReads().getRequestsPerMinute());
+    env.put("CEDAR_RATE_LIMIT_READS_BURST", "0");
+    CedarEnvironmentSource.setOverride(env);
+    assertThrows(CedarConfigurationException.class, this::getCedarConfig);
+    env.put("CEDAR_RATE_LIMIT_READS_BURST", "4");
+    env.put("CEDAR_RATE_LIMIT_MODE", "enfroce");
+    CedarEnvironmentSource.setOverride(env);
+    assertThrows(CedarConfigurationException.class, this::getCedarConfig);
+  }
+
+  @Test
+  public void rateLimitSettingsReachEverySharedConfigurationEnvironment() {
+    for (SystemComponent component : SystemComponent.values()) {
+      for (CedarEnvironmentVariable variable : CedarEnvironmentVariable.values()) {
+        if (variable.getName().startsWith("CEDAR_RATE_LIMIT_")) {
+          assertTrue(org.metadatacenter.config.environment.CedarConfigEnvironmentDescriptor
+              .getVariableNamesFor(component).contains(variable), component + ": " + variable);
+        }
+      }
+    }
+  }
+
+  @Test
   public void testGetInstance() throws Exception {
     CedarConfig instance = getCedarConfig();
 assertNotNull(instance);

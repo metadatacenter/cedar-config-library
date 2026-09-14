@@ -316,7 +316,19 @@ public enum CedarEnvironmentVariable {
   CEDAR_BRIDGE_SERVER_HOST("CEDAR_BRIDGE_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_BRIDGE_HTTP_PORT("CEDAR_BRIDGE_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_BRIDGE_ADMIN_PORT("CEDAR_BRIDGE_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_BRIDGE_STOP_PORT("CEDAR_BRIDGE_STOP_PORT", CedarEnvironmentVariableType.NUMERIC);
+  CEDAR_BRIDGE_STOP_PORT("CEDAR_BRIDGE_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
+  CEDAR_RATE_LIMIT_MODE("CEDAR_RATE_LIMIT_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_REDIS_PREFIX("CEDAR_RATE_LIMIT_REDIS_PREFIX", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_REDIS_TIMEOUT_MS("CEDAR_RATE_LIMIT_REDIS_TIMEOUT_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_TOTAL_PER_MINUTE("CEDAR_RATE_LIMIT_TOTAL_PER_MINUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_TOTAL_BURST("CEDAR_RATE_LIMIT_TOTAL_BURST", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_TOTAL_FAILURE_MODE("CEDAR_RATE_LIMIT_TOTAL_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_READS_PER_MINUTE("CEDAR_RATE_LIMIT_READS_PER_MINUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_READS_BURST("CEDAR_RATE_LIMIT_READS_BURST", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_READS_FAILURE_MODE("CEDAR_RATE_LIMIT_READS_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_WRITES_PER_MINUTE("CEDAR_RATE_LIMIT_WRITES_PER_MINUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_WRITES_BURST("CEDAR_RATE_LIMIT_WRITES_BURST", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE("CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES);
 
   private final String name;
   private final CedarEnvironmentVariableSecure secure;
