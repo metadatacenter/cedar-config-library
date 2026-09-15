@@ -106,6 +106,12 @@ public enum CedarEnvironmentVariable {
   // every Cypher message, or "none" for no exclusions.
   CEDAR_LOG_CYPHER_EXCLUDED_METHODS("CEDAR_LOG_CYPHER_EXCLUDED_METHODS", CedarEnvironmentVariableOptional.YES),
 
+  // How long a service may reuse the user record an API key resolved to, read by ApiKeyLookupCache
+  // in every service. Optional and short-defaulted for the same reason as the variables above, and
+  // 0 disables the cache: an authentication cache has to be switchable off without a rebuild.
+  CEDAR_API_KEY_CACHE_TTL_SECONDS("CEDAR_API_KEY_CACHE_TTL_SECONDS", CedarEnvironmentVariableType.NUMERIC,
+      CedarEnvironmentVariableOptional.YES),
+
   // Keycloak the server, as distinct from the event listener CEDAR ships into it. It reads these from
   // standalone.xml, so nothing in a JVM resolves them and they appear as declarations only.
   CEDAR_KEYCLOAK_HOST("CEDAR_KEYCLOAK_HOST", CedarEnvironmentVariableOptional.YES),

@@ -551,6 +551,11 @@ public class CedarConfigEnvironmentDescriptor {
     variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_CYPHER_EXCLUDED_METHODS)
         .addAll(allMicroservices);
 
+    // Every service resolves the API key on its own request path and so keeps its own cache of the
+    // answer. Declared for all of them, because a value set for one leaves the rest on the default.
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_API_KEY_CACHE_TTL_SECONDS)
+        .addAll(allMicroservices);
+
     // Keycloak the server. Nothing in a JVM resolves these — Keycloak reads them itself — so they
     // appear on the environment page as declarations without values, like the frontends.
     for (CedarEnvironmentVariable keycloakVariable : new CedarEnvironmentVariable[]{
