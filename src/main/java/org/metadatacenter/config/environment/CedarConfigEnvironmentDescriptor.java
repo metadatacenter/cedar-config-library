@@ -545,6 +545,12 @@ public class CedarConfigEnvironmentDescriptor {
       variableToComponent.get(logVariable).add(SystemComponent.SERVER_WORKER);
     }
 
+    // The Cypher log filter is the exception among the log variables: it is read on the enqueue path,
+    // which every service has, rather than by the worker's jobs. A host that sets it for the worker
+    // alone would still log the excluded queries from the other fourteen.
+    variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_CYPHER_EXCLUDED_METHODS)
+        .addAll(allMicroservices);
+
     // Keycloak the server. Nothing in a JVM resolves these — Keycloak reads them itself — so they
     // appear on the environment page as declarations without values, like the frontends.
     for (CedarEnvironmentVariable keycloakVariable : new CedarEnvironmentVariable[]{

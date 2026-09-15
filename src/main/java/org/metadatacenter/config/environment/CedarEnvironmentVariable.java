@@ -99,6 +99,13 @@ public enum CedarEnvironmentVariable {
   CEDAR_LOG_PRUNE_IDLE_MS("CEDAR_LOG_PRUNE_IDLE_MS", CedarEnvironmentVariableType.NUMERIC,
       CedarEnvironmentVariableOptional.YES),
 
+  // Which Cypher queries are excluded from the application log, read by CypherLogFilter on the
+  // enqueue path of every service rather than by a worker job. Optional for the same reason as the
+  // jobs above - the filter carries its own default, and a logging preference must not be able to
+  // stop a service from booting. A comma-separated list of SimpleClassName.methodName, or "*" for
+  // every Cypher message, or "none" for no exclusions.
+  CEDAR_LOG_CYPHER_EXCLUDED_METHODS("CEDAR_LOG_CYPHER_EXCLUDED_METHODS", CedarEnvironmentVariableOptional.YES),
+
   // Keycloak the server, as distinct from the event listener CEDAR ships into it. It reads these from
   // standalone.xml, so nothing in a JVM resolves them and they appear as declarations only.
   CEDAR_KEYCLOAK_HOST("CEDAR_KEYCLOAK_HOST", CedarEnvironmentVariableOptional.YES),
