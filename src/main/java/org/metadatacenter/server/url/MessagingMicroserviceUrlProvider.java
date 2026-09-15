@@ -6,7 +6,7 @@ import org.metadatacenter.model.CedarResourceType;
 public class MessagingMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
   public MessagingMicroserviceUrlProvider(ServerConfig server) {
-    super(server.getBase());
+    super(server.getBase(), server.getTimeouts());
   }
 
   public String getMessages() {

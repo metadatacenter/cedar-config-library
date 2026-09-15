@@ -34,6 +34,13 @@ public class CedarConfig extends Configuration {
 
   public RateLimitConfig getRateLimits() { return rateLimits; }
 
+  @JsonProperty("http")
+  @jakarta.validation.Valid
+  @jakarta.validation.constraints.NotNull
+  private OutboundHttpConfig outboundHttp = new OutboundHttpConfig();
+
+  public OutboundHttpConfig getOutboundHttp() { return outboundHttp; }
+
   @JsonProperty("home")
   private String home;
 

@@ -328,7 +328,24 @@ public enum CedarEnvironmentVariable {
   CEDAR_RATE_LIMIT_READS_FAILURE_MODE("CEDAR_RATE_LIMIT_READS_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
   CEDAR_RATE_LIMIT_WRITES_PER_MINUTE("CEDAR_RATE_LIMIT_WRITES_PER_MINUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
   CEDAR_RATE_LIMIT_WRITES_BURST("CEDAR_RATE_LIMIT_WRITES_BURST", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
-  CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE("CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES);
+  CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE("CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_INTERACTIVE_CONNECT_MS("CEDAR_HTTP_INTERACTIVE_CONNECT_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_INTERACTIVE_LEASE_MS("CEDAR_HTTP_INTERACTIVE_LEASE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_INTERACTIVE_RESPONSE_MS("CEDAR_HTTP_INTERACTIVE_RESPONSE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_INTERACTIVE_MAX_PER_ROUTE("CEDAR_HTTP_INTERACTIVE_MAX_PER_ROUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_INTERACTIVE_MAX_TOTAL("CEDAR_HTTP_INTERACTIVE_MAX_TOTAL", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_BATCH_CONNECT_MS("CEDAR_HTTP_BATCH_CONNECT_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_BATCH_LEASE_MS("CEDAR_HTTP_BATCH_LEASE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_BATCH_RESPONSE_MS("CEDAR_HTTP_BATCH_RESPONSE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_BATCH_MAX_PER_ROUTE("CEDAR_HTTP_BATCH_MAX_PER_ROUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_BATCH_MAX_TOTAL("CEDAR_HTTP_BATCH_MAX_TOTAL", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_EXTERNAL_CONNECT_MS("CEDAR_HTTP_EXTERNAL_CONNECT_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_EXTERNAL_LEASE_MS("CEDAR_HTTP_EXTERNAL_LEASE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_EXTERNAL_RESPONSE_MS("CEDAR_HTTP_EXTERNAL_RESPONSE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_EXTERNAL_MAX_PER_ROUTE("CEDAR_HTTP_EXTERNAL_MAX_PER_ROUTE", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_EXTERNAL_MAX_TOTAL("CEDAR_HTTP_EXTERNAL_MAX_TOTAL", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_ARTIFACT_RESPONSE_MS("CEDAR_HTTP_ARTIFACT_RESPONSE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
+  CEDAR_HTTP_AUTHORITIES_RESPONSE_MS("CEDAR_HTTP_AUTHORITIES_RESPONSE_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES);
 
   private final String name;
   private final CedarEnvironmentVariableSecure secure;
