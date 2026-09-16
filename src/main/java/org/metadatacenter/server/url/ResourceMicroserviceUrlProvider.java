@@ -13,7 +13,7 @@ import static org.metadatacenter.constant.CedarQueryParameters.QP_RESOURCE_TYPE;
 public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
   public ResourceMicroserviceUrlProvider(ServerConfig server) {
-    super(server.getBase());
+    super(server.getBase(), server.getTimeouts());
   }
 
   public String getResourceType(CedarResourceType resourceType) {

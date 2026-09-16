@@ -7,7 +7,7 @@ public class UserMicroserviceUrlProvider extends MicroserviceUrlProvider {
   protected final String usersBase;
 
   public UserMicroserviceUrlProvider(UserServerConfig server) {
-    super(server.getBase());
+    super(server.getBase(), server.getTimeouts());
     usersBase = server.getUsersBase();
   }
 

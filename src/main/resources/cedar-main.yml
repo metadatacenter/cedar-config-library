@@ -252,6 +252,8 @@ servers:
     stopPort: "${CEDAR_ARTIFACT_STOP_PORT}"
     base: "http://${CEDAR_ARTIFACT_SERVER_HOST}:${CEDAR_ARTIFACT_HTTP_PORT}/"
     adminBase: "http://${CEDAR_ARTIFACT_SERVER_HOST}:${CEDAR_ARTIFACT_ADMIN_PORT}/"
+    timeouts:
+      responseMillis: ${CEDAR_HTTP_ARTIFACT_RESPONSE_MS:-20000}
   terminology:
     httpPort: "${CEDAR_TERMINOLOGY_HTTP_PORT}"
     adminPort: "${CEDAR_TERMINOLOGY_ADMIN_PORT}"
@@ -472,7 +474,29 @@ testUsers:
 trustedFolders:
   foldersStr: "${CEDAR_TRUSTED_FOLDERS}"
 
+http:
+  interactive:
+    connectMillis: ${CEDAR_HTTP_INTERACTIVE_CONNECT_MS:-1000}
+    leaseMillis: ${CEDAR_HTTP_INTERACTIVE_LEASE_MS:-1000}
+    responseMillis: ${CEDAR_HTTP_INTERACTIVE_RESPONSE_MS:-20000}
+    maxConnectionsPerRoute: ${CEDAR_HTTP_INTERACTIVE_MAX_PER_ROUTE:-100}
+    maxConnectionsTotal: ${CEDAR_HTTP_INTERACTIVE_MAX_TOTAL:-200}
+  batch:
+    connectMillis: ${CEDAR_HTTP_BATCH_CONNECT_MS:-3000}
+    leaseMillis: ${CEDAR_HTTP_BATCH_LEASE_MS:-5000}
+    responseMillis: ${CEDAR_HTTP_BATCH_RESPONSE_MS:-120000}
+    maxConnectionsPerRoute: ${CEDAR_HTTP_BATCH_MAX_PER_ROUTE:-10}
+    maxConnectionsTotal: ${CEDAR_HTTP_BATCH_MAX_TOTAL:-20}
+  external:
+    connectMillis: ${CEDAR_HTTP_EXTERNAL_CONNECT_MS:-5000}
+    leaseMillis: ${CEDAR_HTTP_EXTERNAL_LEASE_MS:-2000}
+    responseMillis: ${CEDAR_HTTP_EXTERNAL_RESPONSE_MS:-20000}
+    maxConnectionsPerRoute: ${CEDAR_HTTP_EXTERNAL_MAX_PER_ROUTE:-20}
+    maxConnectionsTotal: ${CEDAR_HTTP_EXTERNAL_MAX_TOTAL:-40}
+
 externalAuthorities:
+  timeouts:
+    responseMillis: ${CEDAR_HTTP_AUTHORITIES_RESPONSE_MS:-20000}
   ror:
     apiPrefix: "${CEDAR_ROR_API_PREFIX}"
   orcid:

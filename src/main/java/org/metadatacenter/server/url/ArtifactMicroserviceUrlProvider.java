@@ -15,7 +15,7 @@ public class ArtifactMicroserviceUrlProvider extends MicroserviceUrlProvider {
   protected static final String VALIDATE_COMMAND = "command/validate";
 
   public ArtifactMicroserviceUrlProvider(ServerConfig server) {
-    super(server.getBase());
+    super(server.getBase(), server.getTimeouts());
   }
 
   public String getResourceType(CedarResourceType resourceType) {

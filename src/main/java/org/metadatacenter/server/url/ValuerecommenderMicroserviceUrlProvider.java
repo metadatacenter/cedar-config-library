@@ -7,7 +7,7 @@ import org.metadatacenter.util.http.UrlUtil;
 public class ValuerecommenderMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
   public ValuerecommenderMicroserviceUrlProvider(ServerConfig server) {
-    super(server.getBase());
+    super(server.getBase(), server.getTimeouts());
   }
 
   public String getCommandGenerateRules(CedarTemplateId templateId) {

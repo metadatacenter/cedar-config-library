@@ -192,6 +192,50 @@ public class CedarConfigTest {
   }
 
   @Test
+  public void outboundHttpClassesCarryTheirDefaultsAndAcceptOverrides() {
+    Map<String, String> env = new HashMap<>(CedarEnvironmentSource.getAll());
+    env.keySet().removeIf(k -> k.startsWith("CEDAR_HTTP_"));
+    CedarEnvironmentSource.setOverride(env);
+    OutboundHttpConfig http = getCedarConfig().getOutboundHttp();
+
+    assertEquals(1000, http.getInteractive().getConnectMillis());
+    assertEquals(20000, http.getInteractive().getResponseMillis());
+    assertEquals(120000, http.getBatch().getResponseMillis());
+
+    // The one value this work changes: a second is a loopback's connect timeout, not a
+    // transatlantic TLS handshake's.
+    assertEquals(5000, http.getExternal().getConnectMillis());
+    assertEquals(20000, http.getExternal().getResponseMillis());
+    assertNotEquals(http.getInteractive().getMaxConnectionsTotal(),
+        http.getExternal().getMaxConnectionsTotal());
+
+    env.put("CEDAR_HTTP_EXTERNAL_CONNECT_MS", "8000");
+    CedarEnvironmentSource.setOverride(env);
+    assertEquals(8000, getCedarConfig().getOutboundHttp().getExternal().getConnectMillis());
+
+    env.put("CEDAR_HTTP_EXTERNAL_CONNECT_MS", "10");
+    CedarEnvironmentSource.setOverride(env);
+    assertThrows(CedarConfigurationException.class, this::getCedarConfig);
+  }
+
+  @Test
+  public void aHopAndAnAuthorityCarryTheirOwnTimeoutOverride() {
+    Map<String, String> env = new HashMap<>(CedarEnvironmentSource.getAll());
+    env.keySet().removeIf(k -> k.startsWith("CEDAR_HTTP_"));
+    env.put("CEDAR_HTTP_ARTIFACT_RESPONSE_MS", "45000");
+    env.put("CEDAR_HTTP_AUTHORITIES_RESPONSE_MS", "9000");
+    CedarEnvironmentSource.setOverride(env);
+    CedarConfig config = getCedarConfig();
+
+    assertEquals(45000, config.getServers().getArtifact().getTimeouts().getResponseMillis().orElseThrow());
+    assertEquals(9000, config.getExternalAuthorities().getTimeouts().getResponseMillis().orElseThrow());
+    // A hop states a response timeout and nothing else, so its connect timeout stays its class's.
+    assertTrue(config.getServers().getArtifact().getTimeouts().getConnectMillis().isEmpty());
+    // A hop that states nothing overrides nothing.
+    assertTrue(config.getServers().getResource().getTimeouts().isEmpty());
+  }
+
+  @Test
   public void rateLimitDefaultsAndEnvironmentOverridesAreValidated() {
     Map<String, String> env = new HashMap<>(CedarEnvironmentSource.getAll());
     env.keySet().removeIf(k -> k.startsWith("CEDAR_RATE_LIMIT_"));
