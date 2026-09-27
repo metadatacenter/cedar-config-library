@@ -297,7 +297,7 @@ assertNotNull(instance);
     OpensearchConfig opensearch = getCedarConfig().getElasticsearchConfig();
 
     assertEquals(30, opensearch.getMaxConnections());
-    assertEquals(10, opensearch.getMaxConnectionsPerRoute());
+    assertEquals(30, opensearch.getMaxConnectionsPerRoute());
     assertEquals(1000, opensearch.getConnectionRequestTimeoutMillis());
     assertEquals(1000, opensearch.getConnectTimeoutMillis());
     assertEquals(30000, opensearch.getSocketTimeoutMillis());

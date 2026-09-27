@@ -161,7 +161,8 @@ elasticsearch:
   # One process-wide REST client serves every OpenSearch operation in a service. These values make
   # the OpenSearch client's previous defaults explicit and bound both connection acquisition and I/O.
   maxConnections: 30
-  maxConnectionsPerRoute: 10
+  # This client targets one OpenSearch host. Let that route use the bounded pool.
+  maxConnectionsPerRoute: 30
   connectionRequestTimeoutMillis: 1000
   connectTimeoutMillis: 1000
   socketTimeoutMillis: 30000
