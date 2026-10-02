@@ -2,7 +2,6 @@ package org.metadatacenter.config;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.metadatacenter.config.environment.CedarEnvironmentSource;
 import org.metadatacenter.config.environment.CedarEnvironmentVariable;
@@ -357,7 +356,6 @@ assertNotNull(first.getMicroserviceUrlUtil());
   }
 
   @Test
-  @Disabled("Assertions use fixed Keycloak values that are not derived from the test environment")
   public void testKeycloakConfig() throws Exception {
     CedarConfig instance = getCedarConfig();
     KeycloakConfig keycloakConfig = instance.getKeycloakConfig();
