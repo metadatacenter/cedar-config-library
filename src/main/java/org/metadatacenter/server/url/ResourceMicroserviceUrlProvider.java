@@ -12,8 +12,15 @@ import static org.metadatacenter.constant.CedarQueryParameters.QP_RESOURCE_TYPE;
 
 public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
+  private final org.metadatacenter.server.jsonld.LinkedDataUtil identifiers;
+
   public ResourceMicroserviceUrlProvider(ServerConfig server) {
+    this(server, null);
+  }
+
+  public ResourceMicroserviceUrlProvider(ServerConfig server, org.metadatacenter.server.jsonld.LinkedDataUtil identifiers) {
     super(server.getBase(), server.getTimeouts());
+    this.identifiers = identifiers;
   }
 
   public String getResourceType(CedarResourceType resourceType) {
@@ -25,7 +32,7 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
     if (format.isPresent()) {
       f = "?" + QP_FORMAT + "=" + format.get();
     }
-    return base + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(id) + f;
+    return base + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(identifiers == null ? id : identifiers.resourcePathId(resourceType, id)) + f;
   }
 
   public String getArtifactTypeWithId(CedarResourceType resourceType, CedarArtifactId id) {
@@ -33,7 +40,7 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
   }
 
   public String getOpenArtifact(CedarResourceType resourceType, String id) {
-    return base + "open/" + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(id);
+    return base + "open/" + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(identifiers == null ? id : identifiers.resourcePathId(resourceType, id));
   }
 
   public String getCommandDOIUpdate() {

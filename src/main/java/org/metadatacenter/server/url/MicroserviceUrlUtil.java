@@ -11,11 +11,15 @@ public class MicroserviceUrlUtil {
   private final ValuerecommenderMicroserviceUrlProvider valuerecommender;
 
   public MicroserviceUrlUtil(ServersConfig servers) {
+    this(servers, null);
+  }
+
+  public MicroserviceUrlUtil(ServersConfig servers, org.metadatacenter.server.jsonld.LinkedDataUtil identifiers) {
     user = new UserMicroserviceUrlProvider(servers.getUser());
-    artifact = new ArtifactMicroserviceUrlProvider(servers.getArtifact());
-    resource = new ResourceMicroserviceUrlProvider(servers.getResource());
+    artifact = new ArtifactMicroserviceUrlProvider(servers.getArtifact(), identifiers);
+    resource = new ResourceMicroserviceUrlProvider(servers.getResource(), identifiers);
     messaging = new MessagingMicroserviceUrlProvider(servers.getMessaging());
-    valuerecommender = new ValuerecommenderMicroserviceUrlProvider(servers.getValuerecommender());
+    valuerecommender = new ValuerecommenderMicroserviceUrlProvider(servers.getValuerecommender(), identifiers);
   }
 
   public UserMicroserviceUrlProvider getUser() {

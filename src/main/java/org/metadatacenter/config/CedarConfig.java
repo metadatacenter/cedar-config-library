@@ -170,7 +170,7 @@ public class CedarConfig extends Configuration {
             substitutingSourceProvider);
 
     config.linkedDataUtil = new LinkedDataUtil(config.getLinkedDataConfig());
-    config.microserviceUrlUtil = new MicroserviceUrlUtil(config.getServers());
+    config.microserviceUrlUtil = new MicroserviceUrlUtil(config.getServers(), config.linkedDataUtil);
 
     return config;
   }

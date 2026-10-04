@@ -50,6 +50,74 @@ public class LinkedDataUtil {
     return getLinkedDataPrefix(resourceType) + uuid;
   }
 
+  /** Resolve a typed HTTP selector without changing a document's stored identity. */
+  public String resolveResourceId(CedarResourceType type, String value) {
+    requireAddressableType(type);
+    if (value == null || value.isBlank()) {
+      throw new jakarta.ws.rs.BadRequestException("A resource identifier is required");
+    }
+    // Full IRIs retain their existing validation and lookup contract at the calling boundary.
+    // In particular, do not reinterpret legacy hosts or arbitrary historical identifier paths.
+    if (value.contains("://")) return value;
+    String typedPrefix = type.getPrefix() + "/";
+    if (value.startsWith(typedPrefix)) value = value.substring(typedPrefix.length());
+    if (!isShortIdentifier(value)) {
+      throw new jakarta.ws.rs.BadRequestException("Invalid " + type.getValue() + " identifier");
+    }
+    return getLinkedDataId(type, value);
+  }
+
+  /** Resolve a self-describing selector such as templates/uuid or its legacy absolute IRI. */
+  public String resolveResourceId(String value) {
+    if (value == null) throw new jakarta.ws.rs.BadRequestException("A resource identifier is required");
+    String path = value;
+    if (value.contains("://")) return value;
+    int separator = path.indexOf('/');
+    CedarResourceType type = separator > 0 ? CedarResourceType.forPrefix(path.substring(0, separator)) : null;
+    requireAddressableType(type);
+    return resolveResourceId(type, value);
+  }
+
+  /** The self-describing form used in query parameters and command bodies. */
+  public String resourceRequestId(String value) {
+    String resolved = resolveResourceId(value);
+    if (!resolved.startsWith(ldConfig.getBase())) return resolved;
+    String relative = resolved.substring(ldConfig.getBase().length());
+    int separator = relative.indexOf('/');
+    if (separator <= 0 || !isShortIdentifier(relative.substring(separator + 1))) return resolved;
+    CedarResourceType type = CedarResourceType.forPrefix(relative.substring(0, separator));
+    return isAddressableType(type) ? relative : resolved;
+  }
+
+  /** Shorten only this deployment's canonical identities; never silently retarget another host. */
+  public String resourcePathId(CedarResourceType type, String value) {
+    if (isIdentifierSegment(value)) return value; // Existing repo/OpenView callers also use opaque local names.
+    String resolved = resolveResourceId(type, value);
+    String prefix = getLinkedDataPrefix(type);
+    return resolved.startsWith(prefix) && isShortIdentifier(resolved.substring(prefix.length()))
+        ? resolved.substring(prefix.length()) : resolved;
+  }
+
+  private static boolean isShortIdentifier(String value) {
+    return value != null && value.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+  }
+
+  private static boolean isIdentifierSegment(String value) {
+    return value != null && value.matches("[A-Za-z0-9_-]+");
+  }
+
+  private static void requireAddressableType(CedarResourceType type) {
+    if (!isAddressableType(type)) {
+      throw new jakarta.ws.rs.BadRequestException("Expected a folder or artifact type");
+    }
+  }
+
+  private static boolean isAddressableType(CedarResourceType type) {
+    return type == CedarResourceType.FOLDER || type == CedarResourceType.TEMPLATE
+        || type == CedarResourceType.ELEMENT || type == CedarResourceType.FIELD
+        || type == CedarResourceType.INSTANCE;
+  }
+
   //TODO: create wrapped object
   public String buildNewLinkedDataId(CedarResourceType resourceType) {
     return getLinkedDataId(resourceType, UUID.randomUUID().toString());
