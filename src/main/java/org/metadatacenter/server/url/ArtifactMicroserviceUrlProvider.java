@@ -14,8 +14,15 @@ public class ArtifactMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
   protected static final String VALIDATE_COMMAND = "command/validate";
 
+  private final org.metadatacenter.server.jsonld.LinkedDataUtil identifiers;
+
   public ArtifactMicroserviceUrlProvider(ServerConfig server) {
+    this(server, null);
+  }
+
+  public ArtifactMicroserviceUrlProvider(ServerConfig server, org.metadatacenter.server.jsonld.LinkedDataUtil identifiers) {
     super(server.getBase(), server.getTimeouts());
+    this.identifiers = identifiers;
   }
 
   public String getResourceType(CedarResourceType resourceType) {
@@ -27,7 +34,7 @@ public class ArtifactMicroserviceUrlProvider extends MicroserviceUrlProvider {
     if (format.isPresent()) {
       f = "?" + QP_FORMAT + "=" + format.get();
     }
-    return base + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(id) + f;
+    return base + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(identifiers == null ? id : identifiers.resourcePathId(resourceType, id)) + f;
   }
 
   public String getArtifactTypeWithId(CedarResourceType resourceType, CedarArtifactId id) {
