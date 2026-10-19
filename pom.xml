@@ -41,11 +41,6 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-    </dependency>
-
     <!-- Reads cedar-main.yml back as a tree, so the resolved configuration can be reported with
          its secrets masked. Dropwizard already brings this in transitively; declared here because
          this module now uses it directly. -->
