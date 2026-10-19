@@ -3,6 +3,7 @@ package org.metadatacenter.server.jsonld;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.BadRequestException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.metadatacenter.config.LinkedDataConfig;
 import org.metadatacenter.model.CedarResourceType;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,5 +57,27 @@ class ResourceAddressingTest {
     for (String bad : new String[]{"id", "users/id", "categories/id", "template-element-instances/id"}) {
       assertThrows(BadRequestException.class, () -> ids.resolveResourceId(bad), bad);
     }
+  }
+
+  /**
+   * Every refusal is an UnresolvableIdentifierException whose message says what was wrong, which the
+   * shared exception mapper carries into the error body. A BadRequestException without an entity
+   * reached the client as a 400 whose body carried no message.
+   */
+  @Test void refusalsSayWhatWasWrong() throws Exception {
+    var ids = identifiers();
+    assertRefusal("A resource identifier is required", () -> ids.resolveResourceId(CedarResourceType.TEMPLATE, " "));
+    assertRefusal("A resource identifier is required", () -> ids.resolveResourceId(null));
+    assertRefusal("Invalid template identifier", () -> ids.resolveResourceId(CedarResourceType.TEMPLATE, "folders/id"));
+    assertRefusal("Invalid folder identifier", () -> ids.resourcePathId(CedarResourceType.FOLDER, "id/child"));
+    assertRefusal("Expected a folder or artifact type", () -> ids.resolveResourceId("users/id"));
+    assertRefusal("Expected a folder or artifact type", () -> ids.resolveResourceId(CedarResourceType.USER, "id"));
+  }
+
+  private static void assertRefusal(String message, Executable resolution) {
+    UnresolvableIdentifierException refusal = assertThrows(UnresolvableIdentifierException.class, resolution);
+    assertEquals(message, refusal.getMessage());
+    assertEquals(400, refusal.getResponse().getStatus());
+    assertFalse(refusal.getResponse().hasEntity());
   }
 }

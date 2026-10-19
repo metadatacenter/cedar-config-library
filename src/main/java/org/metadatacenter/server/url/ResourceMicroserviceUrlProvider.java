@@ -44,7 +44,7 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
   }
 
   public String getCommandDOIUpdate() {
-    return base + "/command/annotations/doi";
+    return base + "command/annotations/doi";
   }
 
   public String getValidateCommand(String resourceType) {

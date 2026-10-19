@@ -54,7 +54,7 @@ public class LinkedDataUtil {
   public String resolveResourceId(CedarResourceType type, String value) {
     requireAddressableType(type);
     if (value == null || value.isBlank()) {
-      throw new jakarta.ws.rs.BadRequestException("A resource identifier is required");
+      throw new UnresolvableIdentifierException("A resource identifier is required");
     }
     // Full IRIs retain their existing validation and lookup contract at the calling boundary.
     // In particular, do not reinterpret legacy hosts or arbitrary historical identifier paths.
@@ -62,14 +62,14 @@ public class LinkedDataUtil {
     String typedPrefix = type.getPrefix() + "/";
     if (value.startsWith(typedPrefix)) value = value.substring(typedPrefix.length());
     if (!isShortIdentifier(value)) {
-      throw new jakarta.ws.rs.BadRequestException("Invalid " + type.getValue() + " identifier");
+      throw new UnresolvableIdentifierException("Invalid " + type.getValue() + " identifier");
     }
     return getLinkedDataId(type, value);
   }
 
   /** Resolve a self-describing selector such as templates/uuid or its legacy absolute IRI. */
   public String resolveResourceId(String value) {
-    if (value == null) throw new jakarta.ws.rs.BadRequestException("A resource identifier is required");
+    if (value == null) throw new UnresolvableIdentifierException("A resource identifier is required");
     String path = value;
     if (value.contains("://")) return value;
     int separator = path.indexOf('/');
@@ -108,7 +108,7 @@ public class LinkedDataUtil {
 
   private static void requireAddressableType(CedarResourceType type) {
     if (!isAddressableType(type)) {
-      throw new jakarta.ws.rs.BadRequestException("Expected a folder or artifact type");
+      throw new UnresolvableIdentifierException("Expected a folder or artifact type");
     }
   }
 
