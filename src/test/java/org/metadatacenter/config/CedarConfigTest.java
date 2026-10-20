@@ -41,14 +41,6 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_ANALYTICS_KEY.getName(), "false");
     env.put(CedarEnvironmentVariable.CEDAR_GA4_TRACKING_ID.getName(), "false");
 
-    env.put(CedarEnvironmentVariable.CEDAR_NCBI_SRA_FTP_HOST.getName(), "ftpHost");
-    env.put(CedarEnvironmentVariable.CEDAR_NCBI_SRA_FTP_USER.getName(), "ftpUser");
-    env.put(CedarEnvironmentVariable.CEDAR_NCBI_SRA_FTP_PASSWORD.getName(), "ftpPassword");
-    env.put(CedarEnvironmentVariable.CEDAR_NCBI_SRA_FTP_DIRECTORY.getName(), "ftpDirectory");
-
-    env.put(CedarEnvironmentVariable.CEDAR_IMMPORT_SUBMISSION_USER.getName(), "submissionUser");
-    env.put(CedarEnvironmentVariable.CEDAR_IMMPORT_SUBMISSION_PASSWORD.getName(), "submissionPassword");
-
     env.put(CedarEnvironmentVariable.CEDAR_ADMIN_USER_PASSWORD.getName(), CEDAR_ADMIN_USER_PASSWORD);
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVICE_API_KEY.getName(), "test-only-artifact-service-key-not-for-prod");
     env.put(CedarEnvironmentVariable.CEDAR_ADMIN_USER_API_KEY.getName(), CEDAR_ADMIN_USER_API_KEY);
@@ -79,9 +71,6 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_SALT_API_KEY.getName(), "salt");
 
-
-    env.put(CedarEnvironmentVariable.CEDAR_SUBMISSION_TEMPLATE_ID_1.getName(), "http://template-id-1");
-    env.put(CedarEnvironmentVariable.CEDAR_SUBMISSION_TEMPLATE_ID_2.getName(), "http://template-id-2");
 
     env.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(),
         "{\\\"caDSR\\\":[\\\"https://repo.metadatacenter.orgx/folders/c3a7b03c-87bb-49c4-b311-2eb1bd398c4e\\\"]}");
@@ -125,14 +114,6 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT.getName(), "9107");
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_STOP_PORT.getName(), "9207");
 
-    env.put(CedarEnvironmentVariable.CEDAR_SCHEMA_HTTP_PORT.getName(), "9003");
-    env.put(CedarEnvironmentVariable.CEDAR_SCHEMA_ADMIN_PORT.getName(), "9103");
-    env.put(CedarEnvironmentVariable.CEDAR_SCHEMA_STOP_PORT.getName(), "9203");
-
-    env.put(CedarEnvironmentVariable.CEDAR_SUBMISSION_HTTP_PORT.getName(), "9010");
-    env.put(CedarEnvironmentVariable.CEDAR_SUBMISSION_ADMIN_PORT.getName(), "9110");
-    env.put(CedarEnvironmentVariable.CEDAR_SUBMISSION_STOP_PORT.getName(), "9210");
-
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_HTTP_PORT.getName(), "9001");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT.getName(), "9101");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_STOP_PORT.getName(), "9201");
@@ -145,10 +126,6 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_USER_HTTP_PORT.getName(), "9005");
     env.put(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT.getName(), "9105");
     env.put(CedarEnvironmentVariable.CEDAR_USER_STOP_PORT.getName(), "9205");
-
-    env.put(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_HTTP_PORT.getName(), "9006");
-    env.put(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_ADMIN_PORT.getName(), "9106");
-    env.put(CedarEnvironmentVariable.CEDAR_VALUERECOMMENDER_STOP_PORT.getName(), "9206");
 
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_HTTP_PORT.getName(), "9011");
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_ADMIN_PORT.getName(), "9111");
@@ -494,17 +471,6 @@ assertNotNull(searchSettingsMappingsConfig.getMappings().getDoc());
     Map<String, Object> ngram_tokenizer = (Map<String, Object>) tokenizer.get("cedar_ngram_tokenizer");
 
 assertEquals("ngram", ngram_tokenizer.get("type"));
-  }
-
-  @Test
-  public void testElasticSearchRulesConfig() throws Exception {
-    CedarConfig instance = getCedarConfig();
-    OpensearchSettingsMappingsConfig rulesSettingsMappingsConfig = instance
-        .getSearchSettingsMappingsConfig();
-assertNotNull(rulesSettingsMappingsConfig);
-assertNotNull(rulesSettingsMappingsConfig.getSettings());
-assertNotNull(rulesSettingsMappingsConfig.getMappings());
-assertNotNull(rulesSettingsMappingsConfig.getMappings().getDoc());
   }
 
 }

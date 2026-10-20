@@ -4,8 +4,6 @@ public class ResourceServerConfig extends ServerConfig {
 
   private String regenerateSearchIndex;
   private String generateEmptySearchIndex;
-  private String regenerateRulesIndex;
-  private String generateEmptyRulesIndex;
   private String loadValueSetsOntology;
   private String loadValueSetsOntologyStatus;
 
@@ -15,14 +13,6 @@ public class ResourceServerConfig extends ServerConfig {
 
   public String getGenerateEmptySearchIndex() {
     return generateEmptySearchIndex;
-  }
-
-  public String getRegenerateRulesIndex() {
-    return regenerateRulesIndex;
-  }
-
-  public String getGenerateEmptyRulesIndex() {
-    return generateEmptyRulesIndex;
   }
 
   public String getLoadValueSetsOntology() {

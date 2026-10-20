@@ -85,7 +85,6 @@ public class CedarConfig extends Configuration {
 
   // This is read from a different config file
   private OpensearchSettingsMappingsConfig searchSettingsMappingsConfig;
-  private OpensearchSettingsMappingsConfig rulesSettingsMappingsConfig;
 
   @JsonProperty("servers")
   private ServersConfig servers;
@@ -105,9 +104,6 @@ public class CedarConfig extends Configuration {
   @JsonProperty("categoryRESTAPI")
   private CategoryRESTAPI categoryRESTAPI;
 
-  @JsonProperty("submission")
-  private SubmissionConfig submissionConfig;
-
   @JsonProperty("trustedFolders")
   private TrustedFoldersConfig trustedFolders;
 
@@ -119,9 +115,6 @@ public class CedarConfig extends Configuration {
 
   @JsonProperty("terminology")
   private TerminologyConfig terminologyConfig;
-
-  @JsonProperty("worker")
-  private WorkerConfig workerConfig;
 
   @JsonProperty("cache")
   private CacheConfig cacheConfig;
@@ -160,13 +153,9 @@ public class CedarConfig extends Configuration {
 
     // Read search config
     final String searchSettingsMappingsConfigFileName = "cedar-search.json";
-    final String rulesSettingsMappingsConfigFileName = "cedar-rules.json";
 
     config.searchSettingsMappingsConfig =
         getSettingsMappingsConfigFromFile(searchSettingsMappingsConfigFileName, validator,
-            substitutingSourceProvider);
-    config.rulesSettingsMappingsConfig =
-        getSettingsMappingsConfigFromFile(rulesSettingsMappingsConfigFileName, validator,
             substitutingSourceProvider);
 
     config.linkedDataUtil = new LinkedDataUtil(config.getLinkedDataConfig());
@@ -315,10 +304,6 @@ public class CedarConfig extends Configuration {
     return searchSettingsMappingsConfig;
   }
 
-  public OpensearchSettingsMappingsConfig getRulesSettingsMappingsConfig() {
-    return rulesSettingsMappingsConfig;
-  }
-
   public ServersConfig getServers() {
     return servers;
   }
@@ -343,8 +328,6 @@ public class CedarConfig extends Configuration {
     return categoryRESTAPI;
   }
 
-  public SubmissionConfig getSubmissionConfig() { return submissionConfig; }
-
   public TrustedFoldersConfig getTrustedFolders() { return trustedFolders; }
 
   public ExternalAuthoritiesConfig getExternalAuthorities() { return externalAuthorities; }
@@ -355,10 +338,6 @@ public class CedarConfig extends Configuration {
 
   public TerminologyConfig getTerminologyConfig() {
     return terminologyConfig;
-  }
-
-  public WorkerConfig getWorkerConfig() {
-    return workerConfig;
   }
 
   public CacheConfig getCacheConfig() {

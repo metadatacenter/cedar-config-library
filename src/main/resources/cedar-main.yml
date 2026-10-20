@@ -153,8 +153,6 @@ elasticsearch:
   indexes:
     searchIndex:
       name: "cedar-search"
-    rulesIndex:
-      name: "cedar-rules"
   host: "${CEDAR_OPENSEARCH_HOST}"
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
   transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
@@ -233,20 +231,6 @@ servers:
     loadValueSetsOntologyStatus: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/load-valuesets-ontology-status"
     regenerateSearchIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/regenerate-search-index"
     generateEmptySearchIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/generate-empty-search-index"
-    regenerateRulesIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/regenerate-rules-index"
-    generateEmptyRulesIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/generate-empty-rules-index"
-  schema:
-    httpPort: "${CEDAR_SCHEMA_HTTP_PORT}"
-    adminPort: "${CEDAR_SCHEMA_ADMIN_PORT}"
-    stopPort: "${CEDAR_SCHEMA_STOP_PORT}"
-    base: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_SCHEMA_SERVER_HOST}:${CEDAR_SCHEMA_ADMIN_PORT}/"
-  submission:
-    httpPort: "${CEDAR_SUBMISSION_HTTP_PORT}"
-    adminPort: "${CEDAR_SUBMISSION_ADMIN_PORT}"
-    stopPort: "${CEDAR_SUBMISSION_STOP_PORT}"
-    base: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_SUBMISSION_SERVER_HOST}:${CEDAR_SUBMISSION_ADMIN_PORT}/"
   artifact:
     httpPort: "${CEDAR_ARTIFACT_HTTP_PORT}"
     adminPort: "${CEDAR_ARTIFACT_ADMIN_PORT}"
@@ -268,12 +252,6 @@ servers:
     usersBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/users/"
     base: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/"
     adminBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_ADMIN_PORT}/"
-  valuerecommender:
-    httpPort: "${CEDAR_VALUERECOMMENDER_HTTP_PORT}"
-    adminPort: "${CEDAR_VALUERECOMMENDER_ADMIN_PORT}"
-    stopPort: "${CEDAR_VALUERECOMMENDER_STOP_PORT}"
-    base: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_VALUERECOMMENDER_SERVER_HOST}:${CEDAR_VALUERECOMMENDER_ADMIN_PORT}/"
   worker:
     httpPort: "${CEDAR_WORKER_HTTP_PORT}"
     adminPort: "${CEDAR_WORKER_ADMIN_PORT}"
@@ -358,18 +336,12 @@ terminology:
   # Snapshot files are located relative to the catalog file's own directory, so deploying is just:
   # copy catalog.sqlite plus its snapshots/ directory anywhere and set catalogPath to the catalog.
   # System-property overrides use the terminologyStore.* names (NOT a cedar.* prefix, which CedarConfig
-  # claims for its own Dropwizard config overrides and would break the search/rules configs):
+  # claims for its own Dropwizard config overrides and would break the search config):
   #   -DterminologyStore.catalogPath=/opt/cedar/terminology/catalog.sqlite
   #   -DterminologyStore.localOntologies=DOID,NCIT,PECO
   localStore:
     catalogPath: ""
     localOntologies: ""
-
-worker:
-  valuerecommender:
-    maxReindexingThreadCount: 10
-    sleepMillisAfterTooManyProcessing: 1000
-    sleepMillisAfterCurrentIdProcessing: 1000
 
 importExport:
   exportDir: "${CEDAR_HOME}/export/"
@@ -426,34 +398,8 @@ cache:
       timeout: 2000
     queueNames:
       searchPermission: "CEDAR-QUEUE-search-permission"
-      ncbiSubmission: "CEDAR-QUEUE-ncbi-submission"
       appLog: "CEDAR-QUEUE-app-log"
-      valuerecommender: "CEDAR-QUEUE-valuerecommender"
       cloneInstances: "CEDAR-QUEUE-cloneInstances"
-
-submission:
-  ncbi:
-    sra:
-      ftp:
-        host: "${CEDAR_NCBI_SRA_FTP_HOST}"
-        user: "${CEDAR_NCBI_SRA_FTP_USER}"
-        password: "${CEDAR_NCBI_SRA_FTP_PASSWORD}"
-        submissionDirectory: "${CEDAR_NCBI_SRA_FTP_DIRECTORY}"
-  immPort:
-    authentication:
-      user: "${CEDAR_IMMPORT_SUBMISSION_USER}"
-      password: "${CEDAR_IMMPORT_SUBMISSION_PASSWORD}"
-    tokenEndpoint:
-      url: https://auth.dev.immport.org/auth/token
-    workspaceEndpoint:
-      url: https://api.dev.immport.org/users
-    submissionEndpoint:
-      url: https://api.dev.immport.org/data/upload
-    statusEndpoint:
-      url: https://api.dev.immport.org/data/upload/registration
-  submittableTemplateIds:
-    - "${CEDAR_SUBMISSION_TEMPLATE_ID_1}"
-    - "${CEDAR_SUBMISSION_TEMPLATE_ID_2}"
 
 bridge:
   dataCite:

@@ -8,7 +8,6 @@ public class MicroserviceUrlUtil {
   private final ArtifactMicroserviceUrlProvider artifact;
   private final ResourceMicroserviceUrlProvider resource;
   private final MessagingMicroserviceUrlProvider messaging;
-  private final ValuerecommenderMicroserviceUrlProvider valuerecommender;
 
   public MicroserviceUrlUtil(ServersConfig servers) {
     this(servers, null);
@@ -19,7 +18,6 @@ public class MicroserviceUrlUtil {
     artifact = new ArtifactMicroserviceUrlProvider(servers.getArtifact(), identifiers);
     resource = new ResourceMicroserviceUrlProvider(servers.getResource(), identifiers);
     messaging = new MessagingMicroserviceUrlProvider(servers.getMessaging());
-    valuerecommender = new ValuerecommenderMicroserviceUrlProvider(servers.getValuerecommender(), identifiers);
   }
 
   public UserMicroserviceUrlProvider getUser() {
@@ -32,10 +30,6 @@ public class MicroserviceUrlUtil {
 
   public MessagingMicroserviceUrlProvider getMessaging() {
     return messaging;
-  }
-
-  public ValuerecommenderMicroserviceUrlProvider getValuerecommender() {
-    return valuerecommender;
   }
 
   public ResourceMicroserviceUrlProvider getResource() {
