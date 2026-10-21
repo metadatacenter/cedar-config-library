@@ -48,8 +48,7 @@ class MicroserviceUrlProviderTest {
           "artifact": {"base": "http://127.0.0.1:9001/"},
           "messaging": {"base": "http://127.0.0.1:9012/"},
           "resource": {"base": "http://127.0.0.1:9007/"},
-          "user": {"base": "http://127.0.0.1:9005/", "usersBase": "http://127.0.0.1:9005/users/"},
-          "valuerecommender": {"base": "http://127.0.0.1:9006/"}
+          "user": {"base": "http://127.0.0.1:9005/", "usersBase": "http://127.0.0.1:9005/users/"}
         }""", ServersConfig.class);
     LinkedDataUtil identifiers = new LinkedDataUtil(mapper.readValue(
         "{\"base\":\"https://repo.metadatacenter.orgx/\",\"usersBase\":\"https://user.metadatacenter.orgx/users/\"}",

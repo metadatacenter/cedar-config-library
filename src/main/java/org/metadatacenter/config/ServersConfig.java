@@ -12,17 +12,11 @@ public class ServersConfig {
 
   private ResourceServerConfig resource;
 
-  private ServerConfig schema;
-
-  private ServerConfig submission;
-
   private ServerConfig artifact;
 
   private ServerConfig terminology;
 
   private UserServerConfig user;
-
-  private ServerConfig valuerecommender;
 
   private ServerConfig worker;
 
@@ -50,14 +44,6 @@ public class ServersConfig {
     return resource;
   }
 
-  public ServerConfig getSchema() {
-    return schema;
-  }
-
-  public ServerConfig getSubmission() {
-    return submission;
-  }
-
   public ServerConfig getArtifact() {
     return artifact;
   }
@@ -68,10 +54,6 @@ public class ServersConfig {
 
   public UserServerConfig getUser() {
     return user;
-  }
-
-  public ServerConfig getValuerecommender() {
-    return valuerecommender;
   }
 
   public ServerConfig getWorker() {
@@ -104,18 +86,12 @@ public class ServersConfig {
         return repo;
       case RESOURCE:
         return resource;
-      case SCHEMA:
-        return schema;
-      case SUBMISSION:
-        return submission;
       case ARTIFACT:
         return artifact;
       case TERMINOLOGY:
         return terminology;
       case USER:
         return user;
-      case VALUERECOMMENDER:
-        return valuerecommender;
       case WORKER:
         return worker;
       case OPENVIEW:

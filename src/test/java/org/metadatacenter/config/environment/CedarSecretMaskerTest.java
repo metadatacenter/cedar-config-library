@@ -35,18 +35,18 @@ class CedarSecretMaskerTest {
     assertTrue(CedarSecretMasker.isSecretKey("client-secret"));
     assertTrue(CedarSecretMasker.isSecretKey("apiKey"));
     assertFalse(CedarSecretMasker.isSecretKey("host"));
-    assertFalse(CedarSecretMasker.isSecretKey("submissionDirectory"));
+    assertFalse(CedarSecretMasker.isSecretKey("exportDir"));
   }
 
   /**
    * The bug this method exists for. A service that does not declare the variable leaves the template's
-   * placeholder in place, and masking it by key returned {@code ${**************************D}} — the
+   * placeholder in place, and masking it by key returned {@code ${***************************D}} — the
    * variable name gone, and nothing protected, because a placeholder holds no secret.
    */
   @Test
   void keepsAnUnresolvedPlaceholderIntact() {
-    assertEquals("${CEDAR_NCBI_SRA_FTP_PASSWORD}",
-        CedarSecretMasker.maskPreservingPlaceholders("${CEDAR_NCBI_SRA_FTP_PASSWORD}"));
+    assertEquals("${CEDAR_NCI_CADSR_FTP_PASSWORD}",
+        CedarSecretMasker.maskPreservingPlaceholders("${CEDAR_NCI_CADSR_FTP_PASSWORD}"));
   }
 
   @Test
