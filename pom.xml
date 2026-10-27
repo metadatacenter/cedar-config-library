@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.metadatacenter</groupId>
     <artifactId>cedar-parent</artifactId>
-    <version>2.9.29</version>
+    <version>2.9.30</version>
   </parent>
 
   <groupId>org.metadatacenter</groupId>
   <artifactId>cedar-config-library</artifactId>
-  <version>2.9.29</version>
+  <version>2.9.30</version>
   <packaging>jar</packaging>
 
   <name>CEDAR Config Library</name>
@@ -18,6 +18,9 @@
   <properties>
     <!-- Line coverage measured on 2026-10-19: 79.5%. The build fails below this floor. -->
     <cedar.coverage.line.minimum>0.77</cedar.coverage.line.minimum>
+    <!-- Branch coverage measured on 2026-10-26: 67.3% in CI and 67.5% locally. The floor follows
+         the lower figure, and the build fails below it. -->
+    <cedar.coverage.branch.minimum>0.65</cedar.coverage.branch.minimum>
   </properties>
 
   <scm>
