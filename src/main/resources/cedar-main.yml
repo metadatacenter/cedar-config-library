@@ -315,6 +315,9 @@ blueprintUserProfile:
       - "searchReindexer"
       - "processMessageSender"
       - "monitorManager"
+    # Granted per person in Keycloak, next to "normal": MONITOR_READ, and nothing else.
+    monitorViewer:
+      - "monitorManager"
   uiPreferences:
     folderView:
       sortBy: "name"
