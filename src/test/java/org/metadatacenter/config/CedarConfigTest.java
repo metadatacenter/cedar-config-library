@@ -139,9 +139,6 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_ADMIN_PORT.getName(), "9114");
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_STOP_PORT.getName(), "9214");
 
-    env.put(CedarEnvironmentVariable.CEDAR_IMPEX_HTTP_PORT.getName(), "9008");
-    env.put(CedarEnvironmentVariable.CEDAR_IMPEX_ADMIN_PORT.getName(), "9108");
-    env.put(CedarEnvironmentVariable.CEDAR_IMPEX_STOP_PORT.getName(), "9208");
 
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT.getName(), "9015");
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT.getName(), "9115");

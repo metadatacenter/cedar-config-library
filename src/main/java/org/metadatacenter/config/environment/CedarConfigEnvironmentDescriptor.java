@@ -145,7 +145,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarCaDSRAdminUserApiKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_CADSR_ADMIN_USER_API_KEY);
     cedarCaDSRAdminUserApiKey.add(SystemComponent.ADMIN_TOOL);
     cedarCaDSRAdminUserApiKey.add(SystemComponent.CADSR_TOOL);
-    cedarCaDSRAdminUserApiKey.add(SystemComponent.SERVER_IMPEX);
 
     Set<SystemComponent> cedarMongoUserName = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_NAME);
     cedarMongoUserName.add(SystemComponent.ADMIN_TOOL);
@@ -437,16 +436,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarServerHostMonitor = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONITOR_SERVER_HOST);
     cedarServerHostMonitor.add(SystemComponent.SERVER_MONITOR);
 
-    Set<SystemComponent> cedarHttpPortImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_HTTP_PORT);
-    cedarHttpPortImpex.add(SystemComponent.SERVER_IMPEX);
-    cedarHttpPortImpex.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarAdminPortImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_ADMIN_PORT);
-    cedarAdminPortImpex.add(SystemComponent.SERVER_IMPEX);
-    cedarAdminPortImpex.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_STOP_PORT);
-    cedarStopPortImpex.add(SystemComponent.SERVER_IMPEX);
-    Set<SystemComponent> cedarServerHostImpex = variableToComponent.get(CedarEnvironmentVariable.CEDAR_IMPEX_SERVER_HOST);
-    cedarServerHostImpex.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarHttpPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT);
     cedarHttpPortBridge.add(SystemComponent.SERVER_BRIDGE);
