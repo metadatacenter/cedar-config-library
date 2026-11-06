@@ -24,8 +24,6 @@ public class ServersConfig {
 
   private ServerConfig monitor;
 
-  private ServerConfig impex;
-
   private ServerConfig bridge;
 
   public ServerConfig getGroup() {
@@ -68,10 +66,6 @@ public class ServersConfig {
     return monitor;
   }
 
-  public ServerConfig getImpex() {
-    return impex;
-  }
-
   public ServerConfig getBridge() {
     return bridge;
   }
@@ -98,8 +92,6 @@ public class ServersConfig {
         return openview;
       case MONITOR:
         return monitor;
-      case IMPEX:
-        return impex;
       case BRIDGE:
         return bridge;
       default:

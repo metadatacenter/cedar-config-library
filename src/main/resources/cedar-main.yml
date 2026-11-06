@@ -271,12 +271,6 @@ servers:
     stopPort: "${CEDAR_MONITOR_STOP_PORT}"
     base: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_HTTP_PORT}/"
     adminBase: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_ADMIN_PORT}/"
-  impex:
-    httpPort: "${CEDAR_IMPEX_HTTP_PORT}"
-    adminPort: "${CEDAR_IMPEX_ADMIN_PORT}"
-    stopPort: "${CEDAR_IMPEX_STOP_PORT}"
-    base: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_IMPEX_SERVER_HOST}:${CEDAR_IMPEX_ADMIN_PORT}/"
   bridge:
     httpPort: "${CEDAR_BRIDGE_HTTP_PORT}"
     adminPort: "${CEDAR_BRIDGE_ADMIN_PORT}"
@@ -314,6 +308,9 @@ blueprintUserProfile:
       - "artifactPrivilegedAdministrator"
       - "searchReindexer"
       - "processMessageSender"
+      - "monitorManager"
+    # Granted per person in Keycloak, next to "normal": MONITOR_READ, and nothing else.
+    monitorViewer:
       - "monitorManager"
   uiPreferences:
     folderView:
