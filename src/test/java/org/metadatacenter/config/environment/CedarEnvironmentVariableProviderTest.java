@@ -51,6 +51,26 @@ class CedarEnvironmentVariableProviderTest {
   }
 
   @Test
+  void artifactServerReceivesTheAddressesOfTheServicesItVerifiesValuesWith() {
+    var needed = CedarConfigEnvironmentDescriptor.getVariableNamesFor(SystemComponent.SERVER_ARTIFACT);
+    for (var variable : java.util.List.of(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST,
+        CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT, CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST,
+        CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT)) {
+      assertTrue(needed.contains(variable), variable.getName());
+    }
+    CedarEnvironmentSource.setOverride(Map.of("CEDAR_TERMINOLOGY_SERVER_HOST", "terminology.example",
+        "CEDAR_TERMINOLOGY_HTTP_PORT", "9004", "CEDAR_BRIDGE_SERVER_HOST", "bridge.example",
+        "CEDAR_BRIDGE_HTTP_PORT", "9015"));
+    var environment = CedarEnvironmentVariableProvider.getFor(SystemComponent.SERVER_ARTIFACT);
+    // An undeclared port takes the placeholder 0 and an undeclared host is held back, so these four
+    // assertions are what keeps the artifact server's two outbound addresses requestable.
+    assertEquals("terminology.example", environment.get("CEDAR_TERMINOLOGY_SERVER_HOST"));
+    assertEquals("9004", environment.get("CEDAR_TERMINOLOGY_HTTP_PORT"));
+    assertEquals("bridge.example", environment.get("CEDAR_BRIDGE_SERVER_HOST"));
+    assertEquals("9015", environment.get("CEDAR_BRIDGE_HTTP_PORT"));
+  }
+
+  @Test
   void onlyArtifactAndItsTrustedCallersReceiveTheServiceCredential() {
     for (var component : java.util.List.of(SystemComponent.SERVER_ARTIFACT, SystemComponent.SERVER_RESOURCE,
         SystemComponent.SERVER_WORKER, SystemComponent.SERVER_BRIDGE, SystemComponent.SERVER_REPO,
