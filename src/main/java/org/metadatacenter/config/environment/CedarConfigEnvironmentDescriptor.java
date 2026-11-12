@@ -351,6 +351,12 @@ public class CedarConfigEnvironmentDescriptor {
     // published artifact then carries silently. Declaring them makes the absence fatal at startup
     // and visible to ops/check_docker_env.py, which asks this descriptor what each server needs.
     cedarHttpPortTerminology.add(SystemComponent.SERVER_RESOURCE);
+    // The artifact server asks the terminology server whether each controlled-term value of a write
+    // is permitted by its field, and asks the bridge about each external-authority identifier.
+    // Undeclared, the host was held back and the port took the placeholder 0, so the address the
+    // artifact server built for either service could not be requested. Every check then answered
+    // "unavailable", which a save tolerates, and nothing reported that no check had ever been made.
+    cedarHttpPortTerminology.add(SystemComponent.SERVER_ARTIFACT);
     Set<SystemComponent> cedarAdminPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_MONITOR);
@@ -359,6 +365,7 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarServerHostTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST);
     cedarServerHostTerminology.add(SystemComponent.SERVER_MONITOR);
     cedarServerHostTerminology.add(SystemComponent.SERVER_RESOURCE);
+    cedarServerHostTerminology.add(SystemComponent.SERVER_ARTIFACT);
 
     Set<SystemComponent> cedarHttpPortWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_HTTP_PORT);
     cedarHttpPortWorker.add(SystemComponent.SERVER_WORKER);
@@ -440,6 +447,7 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarHttpPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT);
     cedarHttpPortBridge.add(SystemComponent.SERVER_BRIDGE);
     cedarHttpPortBridge.add(SystemComponent.SERVER_MONITOR);
+    cedarHttpPortBridge.add(SystemComponent.SERVER_ARTIFACT);
     Set<SystemComponent> cedarAdminPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT);
     cedarAdminPortBridge.add(SystemComponent.SERVER_BRIDGE);
     cedarAdminPortBridge.add(SystemComponent.SERVER_MONITOR);
@@ -447,6 +455,7 @@ public class CedarConfigEnvironmentDescriptor {
     cedarStopPortBridge.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> cedarServerHostBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST);
     cedarServerHostBridge.add(SystemComponent.SERVER_MONITOR);
+    cedarServerHostBridge.add(SystemComponent.SERVER_ARTIFACT);
 
     // The worker runs the three log aggregation jobs, and every knob they read is optional, so the
     // worker still boots on a host that sets none of them.
