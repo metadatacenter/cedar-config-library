@@ -1,5 +1,6 @@
 package org.metadatacenter.config;
 
+import io.dropwizard.configuration.UndefinedEnvironmentVariableException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -309,6 +310,26 @@ assertSame(first, second);
     CedarConfig after = getCedarConfig();
 assertNotSame(before, after);
 assertEquals("changed.metadatacenter.orgx", after.getHost());
+  }
+
+  /**
+   * A variable the component declares but the environment does not supply reaches the sandbox as a null
+   * entry. Building from it must fail and name the variable: the relaxed substitution would otherwise
+   * leave the literal placeholder in place, and the service would boot with it as the password.
+   */
+  @Test
+  public void aDeclaredVariableWithoutAValueRefusesTheConfiguration() {
+    String name = CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_PASSWORD.getName();
+    Map<String, String> environment = new HashMap<>(CedarEnvironmentSource.getAll());
+    environment.remove(name);
+    CedarEnvironmentSource.setOverride(environment);
+
+    Map<String, String> sandbox = CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL);
+    assertTrue(sandbox.containsKey(name) && sandbox.get(name) == null, "the sandbox carries the variable as null");
+
+    UndefinedEnvironmentVariableException thrown =
+        assertThrows(UndefinedEnvironmentVariableException.class, () -> CedarConfig.buildForEnvironment(sandbox));
+    assertTrue(thrown.getMessage().contains("[" + name + "]"), thrown.getMessage());
   }
 
   /**
