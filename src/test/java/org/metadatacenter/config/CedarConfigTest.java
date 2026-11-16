@@ -71,6 +71,14 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_SALT_API_KEY.getName(), "salt");
 
+    env.put(CedarEnvironmentVariable.CEDAR_CADSR_ONTOLOGIES_FOLDER.getName(), "/home/cedar/cadsr-ontologies");
+
+    env.put(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_ID.getName(), "dataCiteRepositoryId");
+    env.put(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PASSWORD.getName(), "dataCiteRepositoryPassword");
+    env.put(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_PREFIX.getName(), "10.5072");
+    env.put(CedarEnvironmentVariable.CEDAR_DATACITE_API_ENDPOINT_URL.getName(), "https://api.test.datacite.org/dois");
+    env.put(CedarEnvironmentVariable.CEDAR_DATACITE_TEMPLATE_ID.getName(), "http://datacite-template-id");
+
 
     env.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(),
         "{\\\"caDSR\\\":[\\\"https://repo.metadatacenter.orgx/folders/c3a7b03c-87bb-49c4-b311-2eb1bd398c4e\\\"]}");
@@ -101,22 +109,27 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_HTTP_PORT.getName(), "9009");
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_ADMIN_PORT.getName(), "9109");
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_STOP_PORT.getName(), "9209");
+    env.put(CedarEnvironmentVariable.CEDAR_GROUP_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_HTTP_PORT.getName(), "9012");
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_ADMIN_PORT.getName(), "9112");
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_STOP_PORT.getName(), "9212");
+    env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_REPO_HTTP_PORT.getName(), "9002");
     env.put(CedarEnvironmentVariable.CEDAR_REPO_ADMIN_PORT.getName(), "9102");
     env.put(CedarEnvironmentVariable.CEDAR_REPO_STOP_PORT.getName(), "9202");
+    env.put(CedarEnvironmentVariable.CEDAR_REPO_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_HTTP_PORT.getName(), "9007");
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT.getName(), "9107");
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_STOP_PORT.getName(), "9207");
+    env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_HTTP_PORT.getName(), "9001");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT.getName(), "9101");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_STOP_PORT.getName(), "9201");
+    env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT.getName(), "9004");
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT.getName(), "9104");
@@ -126,33 +139,35 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_USER_HTTP_PORT.getName(), "9005");
     env.put(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT.getName(), "9105");
     env.put(CedarEnvironmentVariable.CEDAR_USER_STOP_PORT.getName(), "9205");
+    env.put(CedarEnvironmentVariable.CEDAR_USER_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_HTTP_PORT.getName(), "9011");
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_ADMIN_PORT.getName(), "9111");
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_STOP_PORT.getName(), "9211");
+    env.put(CedarEnvironmentVariable.CEDAR_WORKER_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_HTTP_PORT.getName(), "9013");
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_ADMIN_PORT.getName(), "9113");
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_STOP_PORT.getName(), "9213");
+    env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_HTTP_PORT.getName(), "9014");
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_ADMIN_PORT.getName(), "9114");
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_STOP_PORT.getName(), "9214");
+    env.put(CedarEnvironmentVariable.CEDAR_MONITOR_SERVER_HOST.getName(), "127.0.0.1");
 
 
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT.getName(), "9015");
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT.getName(), "9115");
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT.getName(), "9215");
+    env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER1_ID.getName(), "https://metadatacenter.org/users/user1-uuid");
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER2_ID.getName(), "https://metadatacenter.org/users/user2-uuid");
 
-    // Merge over the process environment, so variables the test does not set keep their real
-    // values; the override redirects every CEDAR environment read without touching the process
-    // environment itself.
-    Map<String, String> merged = new HashMap<>(System.getenv());
-    merged.putAll(env);
-    CedarEnvironmentSource.setOverride(merged);
+    // The override replaces the process environment for every CEDAR read, so the configuration
+    // depends on these values alone and never on the shell that runs the test.
+    CedarEnvironmentSource.setOverride(env);
   }
 
   @AfterEach
