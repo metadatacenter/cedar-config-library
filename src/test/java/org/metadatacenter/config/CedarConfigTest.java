@@ -332,6 +332,25 @@ assertEquals("changed.metadatacenter.orgx", after.getHost());
     assertTrue(thrown.getMessage().contains("[" + name + "]"), thrown.getMessage());
   }
 
+  @Test
+  public void theEscapedTrustedFoldersValueMapsEachFolderToItsEntity() {
+    Map<String, String> folders = getCedarConfig().getTrustedFolders().getFoldersMap();
+
+    assertEquals(Map.of("https://repo.metadatacenter.orgx/folders/c3a7b03c-87bb-49c4-b311-2eb1bd398c4e", "caDSR"),
+        folders);
+  }
+
+  @Test
+  public void anUnparsableTrustedFoldersValueTrustsNoFolder() {
+    Map<String, String> environment = new HashMap<>(CedarEnvironmentSource.getAll());
+    environment.put(CedarEnvironmentVariable.CEDAR_TRUSTED_FOLDERS.getName(), "{\\\"caDSR\\\":");
+    CedarEnvironmentSource.setOverride(environment);
+
+    CedarConfig config = CedarConfig.buildForEnvironment(CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL));
+
+    assertEquals(Map.of(), config.getTrustedFolders().getFoldersMap());
+  }
+
   /**
    * A value that breaks the configuration file used to end the JVM: the load logged one line and
    * called {@code System.exit}, so a test could only die alongside it. The quotes below are the case
