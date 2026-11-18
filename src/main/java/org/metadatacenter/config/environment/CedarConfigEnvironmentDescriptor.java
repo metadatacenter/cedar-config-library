@@ -276,6 +276,9 @@ public class CedarConfigEnvironmentDescriptor {
     cedarHttpPortResource.add(SystemComponent.ADMIN_TOOL);
     cedarHttpPortResource.add(SystemComponent.CADSR_TOOL);
     cedarHttpPortResource.add(SystemComponent.SERVER_MONITOR);
+    // The Keycloak event listener posts every login and user change to the resource server, at the
+    // host and port it reads from Keycloak's own environment.
+    cedarHttpPortResource.add(SystemComponent.KEYCLOAK_EVENT_LISTENER);
     Set<SystemComponent> cedarAdminPortResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT);
     cedarAdminPortResource.add(SystemComponent.SERVER_RESOURCE);
     cedarAdminPortResource.add(SystemComponent.SERVER_MONITOR);
