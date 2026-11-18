@@ -1,6 +1,13 @@
 package org.metadatacenter.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import io.dropwizard.configuration.ConfigurationException;
+import io.dropwizard.configuration.ConfigurationSourceProvider;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.configuration.UndefinedEnvironmentVariableException;
+import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.jackson.Jackson;
+import jakarta.validation.Validation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +17,8 @@ import org.metadatacenter.config.environment.CedarEnvironmentVariableProvider;
 import org.metadatacenter.model.ServerName;
 import org.metadatacenter.model.SystemComponent;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +48,6 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_BIOPORTAL_API_KEY.getName(), "apiKey-abcd");
 
-    env.put(CedarEnvironmentVariable.CEDAR_ANALYTICS_KEY.getName(), "false");
     env.put(CedarEnvironmentVariable.CEDAR_GA4_TRACKING_ID.getName(), "false");
 
     env.put(CedarEnvironmentVariable.CEDAR_ADMIN_USER_PASSWORD.getName(), CEDAR_ADMIN_USER_PASSWORD);
@@ -69,8 +77,6 @@ public class CedarConfigTest {
     env.put(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_DB.getName(), "cedar_log");
     env.put(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_USER.getName(), "cedar_log_user");
     env.put(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_PASSWORD.getName(), "cedar_log_password");
-
-    env.put(CedarEnvironmentVariable.CEDAR_SALT_API_KEY.getName(), "salt");
 
     env.put(CedarEnvironmentVariable.CEDAR_CADSR_ONTOLOGIES_FOLDER.getName(), "/home/cedar/cadsr-ontologies");
 
@@ -102,65 +108,53 @@ public class CedarConfigTest {
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_HOST.getName(), "127.0.0.1");
     env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_REST_PORT.getName(), "9200");
-    env.put(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT.getName(), "9300");
 
     env.put(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_HOST.getName(), "127.0.0.1");
     env.put(CedarEnvironmentVariable.CEDAR_REDIS_PERSISTENT_PORT.getName(), "6379");
 
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_HTTP_PORT.getName(), "9009");
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_ADMIN_PORT.getName(), "9109");
-    env.put(CedarEnvironmentVariable.CEDAR_GROUP_STOP_PORT.getName(), "9209");
     env.put(CedarEnvironmentVariable.CEDAR_GROUP_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_HTTP_PORT.getName(), "9012");
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_ADMIN_PORT.getName(), "9112");
-    env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_STOP_PORT.getName(), "9212");
     env.put(CedarEnvironmentVariable.CEDAR_MESSAGING_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_REPO_HTTP_PORT.getName(), "9002");
     env.put(CedarEnvironmentVariable.CEDAR_REPO_ADMIN_PORT.getName(), "9102");
-    env.put(CedarEnvironmentVariable.CEDAR_REPO_STOP_PORT.getName(), "9202");
     env.put(CedarEnvironmentVariable.CEDAR_REPO_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_HTTP_PORT.getName(), "9007");
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT.getName(), "9107");
-    env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_STOP_PORT.getName(), "9207");
     env.put(CedarEnvironmentVariable.CEDAR_RESOURCE_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_HTTP_PORT.getName(), "9001");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT.getName(), "9101");
-    env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_STOP_PORT.getName(), "9201");
     env.put(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_HTTP_PORT.getName(), "9004");
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT.getName(), "9104");
-    env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_STOP_PORT.getName(), "9204");
     env.put(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_USER_HTTP_PORT.getName(), "9005");
     env.put(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT.getName(), "9105");
-    env.put(CedarEnvironmentVariable.CEDAR_USER_STOP_PORT.getName(), "9205");
     env.put(CedarEnvironmentVariable.CEDAR_USER_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_HTTP_PORT.getName(), "9011");
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_ADMIN_PORT.getName(), "9111");
-    env.put(CedarEnvironmentVariable.CEDAR_WORKER_STOP_PORT.getName(), "9211");
     env.put(CedarEnvironmentVariable.CEDAR_WORKER_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_HTTP_PORT.getName(), "9013");
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_ADMIN_PORT.getName(), "9113");
-    env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_STOP_PORT.getName(), "9213");
     env.put(CedarEnvironmentVariable.CEDAR_OPENVIEW_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_HTTP_PORT.getName(), "9014");
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_ADMIN_PORT.getName(), "9114");
-    env.put(CedarEnvironmentVariable.CEDAR_MONITOR_STOP_PORT.getName(), "9214");
     env.put(CedarEnvironmentVariable.CEDAR_MONITOR_SERVER_HOST.getName(), "127.0.0.1");
 
 
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_HTTP_PORT.getName(), "9015");
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT.getName(), "9115");
-    env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT.getName(), "9215");
     env.put(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST.getName(), "127.0.0.1");
 
     env.put(CedarEnvironmentVariable.CEDAR_TEST_USER1_ID.getName(), "https://metadatacenter.org/users/user1-uuid");
@@ -417,15 +411,6 @@ assertEquals("template-fields", artifactServerCollections.get("field"));
 assertEquals("template-elements", artifactServerCollections.get("element"));
 assertEquals("templates", artifactServerCollections.get("template"));
 assertEquals("template-instances", artifactServerCollections.get("instance"));
-
-    MongoConfig userServerConfig = instance.getUserServerConfig();
-assertNotNull(userServerConfig);
-assertEquals("cedar", userServerConfig.getDatabaseName());
-
-    Map<String, String> userServerCollections = userServerConfig.getCollections();
-assertNotNull(userServerCollections);
-
-assertEquals("users", userServerCollections.get("user"));
   }
 
   @Test
@@ -471,8 +456,7 @@ assertEquals("users", userServerCollections.get("user"));
     // The host comes from the environment the build runs in — 127.0.0.1 under the native profile, a
     // container address under the Docker one — so asserting it made this suite pass only in native
     // mode. The port is what this configuration decides.
-    assertTrue(instance.getServers().getBridge().getAdminBase().endsWith(":9115/"),
-        "the bridge admin base should address the admin port");
+    assertEquals(9115, instance.getServers().getBridge().getAdminPort());
   }
 
   /**
@@ -523,6 +507,48 @@ assertNotNull(searchSettingsMappingsConfig.getMappings().getDoc());
     Map<String, Object> ngram_tokenizer = (Map<String, Object>) tokenizer.get("cedar_ngram_tokenizer");
 
 assertEquals("ngram", ngram_tokenizer.get("type"));
+  }
+
+  /**
+   * Dropwizard's mapper ignores a key that binds to no property, so a misspelt or retired key in
+   * cedar-main.yml would load without complaint and configure nothing. Reading the file with a mapper
+   * that refuses unknown properties holds every key to a property of the configuration classes.
+   */
+  @Test
+  public void everyKeyOfTheMainConfigurationBindsToAProperty() throws Exception {
+    assertNotNull(strictFactory(CedarConfig.class).build(substitutingSource(), "cedar-main.yml"));
+  }
+
+  @Test
+  public void everyKeyOfTheSearchConfigurationBindsToAProperty() throws Exception {
+    assertNotNull(strictFactory(OpensearchSettingsMappingsConfig.class)
+        .build(substitutingSource(), "cedar-search.json"));
+  }
+
+  @Test
+  public void theStrictReadingRefusesAKeyThatBindsToNoProperty() {
+    ConfigurationSourceProvider misspelt = path -> new ByteArrayInputStream(
+        "host: \"metadatacenter.orgx\"\nhots: \"metadatacenter.orgx\"\n".getBytes(StandardCharsets.UTF_8));
+
+    ConfigurationException refusal = assertThrows(ConfigurationException.class,
+        () -> strictFactory(CedarConfig.class).build(misspelt, "misspelt.yml"));
+    assertTrue(refusal.getMessage().contains("hots"), refusal.getMessage());
+  }
+
+  /**
+   * The runtime factory stays lenient for one reason: Dropwizard applies every system property under
+   * its prefix as an override, and the terminology server reads -Dcedar.terminology.* properties of its
+   * own that no configuration class declares. This factory uses a prefix no property carries, so it
+   * reads the files alone.
+   */
+  private static <T> YamlConfigurationFactory<T> strictFactory(Class<T> type) {
+    return new YamlConfigurationFactory<>(type, Validation.buildDefaultValidatorFactory().getValidator(),
+        Jackson.newObjectMapper().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES), "cedar-strict-read");
+  }
+
+  private static SubstitutingSourceProvider substitutingSource() {
+    return new SubstitutingSourceProvider(new ClasspathConfigurationSourceProvider(),
+        new CedarEnvironmentVariableSubstitutor(CedarEnvironmentVariableProvider.getFor(SystemComponent.ALL)));
   }
 
 }

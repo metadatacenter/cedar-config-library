@@ -6,17 +6,11 @@ public class BlueprintDefaultAPIKey {
 
   private String description;
 
-  private String salt;
-
   public String getServiceName() {
     return serviceName;
   }
 
   public String getDescription() {
     return description;
-  }
-
-  public String getSalt() {
-    return salt;
   }
 }

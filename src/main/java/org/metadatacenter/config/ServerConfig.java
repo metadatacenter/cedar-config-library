@@ -9,11 +9,7 @@ public class ServerConfig {
 
   private int adminPort;
 
-  private int stopPort;
-
   private String base;
-
-  private String adminBase;
 
   /**
    * What this hop changes about the class of call that reaches it, if anything.
@@ -33,16 +29,8 @@ public class ServerConfig {
     return adminPort;
   }
 
-  public int getStopPort() {
-    return stopPort;
-  }
-
   public String getBase() {
     return base;
-  }
-
-  public String getAdminBase() {
-    return adminBase;
   }
 
   public OutboundTimeoutOverride getTimeouts() {
