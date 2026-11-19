@@ -41,9 +41,6 @@ public class CedarConfig extends Configuration {
 
   public OutboundHttpConfig getOutboundHttp() { return outboundHttp; }
 
-  @JsonProperty("home")
-  private String home;
-
   @JsonProperty("host")
   private String host;
 
@@ -58,9 +55,6 @@ public class CedarConfig extends Configuration {
 
   @JsonProperty("artifactServer")
   private MongoConfig artifactServerConfig;
-
-  @JsonProperty("userServer")
-  private MongoConfig userServerConfig;
 
   @JsonProperty("messagingServer")
   private HibernateConfig messagingServerConfig;
@@ -244,10 +238,6 @@ public class CedarConfig extends Configuration {
     return nonNull;
   }
 
-  public String getHome() {
-    return home;
-  }
-
   public String getHost() {
     return host;
   }
@@ -266,10 +256,6 @@ public class CedarConfig extends Configuration {
 
   public MongoConfig getArtifactServerConfig() {
     return artifactServerConfig;
-  }
-
-  public MongoConfig getUserServerConfig() {
-    return userServerConfig;
   }
 
   public HibernateConfig getMessagingServerConfig() {

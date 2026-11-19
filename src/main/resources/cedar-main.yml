@@ -16,7 +16,6 @@ rateLimits:
     burst: ${CEDAR_RATE_LIMIT_WRITES_BURST:-10}
     failureMode: "${CEDAR_RATE_LIMIT_WRITES_FAILURE_MODE:-closed}"
 
-home: "${CEDAR_HOME}"
 host: "${CEDAR_HOST}"
 
 artifactService:
@@ -66,21 +65,6 @@ artifactServer:
     element: "template-elements"
     template: "templates"
     instance: "template-instances"
-
-userServer:
-  mongoConnection:
-    host: "${CEDAR_MONGO_HOST}"
-    port: "${CEDAR_MONGO_PORT}"
-    user: "${CEDAR_MONGO_APP_USER_NAME}"
-    password: "${CEDAR_MONGO_APP_USER_PASSWORD}"
-    databaseName: "cedar"
-    serverSelectionTimeoutMillis: 30000
-    connectTimeoutMillis: 10000
-    readTimeoutMillis: 60000
-    poolWaitTimeoutMillis: 120000
-    maxPoolSize: 100
-  collections:
-    user: "users"
 
 messagingServer:
   url: "jdbc:mysql://${CEDAR_MESSAGING_MYSQL_HOST}:${CEDAR_MESSAGING_MYSQL_PORT}/${CEDAR_MESSAGING_MYSQL_DB}"
@@ -149,13 +133,11 @@ searchSettings:
     delayAttempts: 10000
 
 elasticsearch:
-  clusterName: "opensearch_cedar"
   indexes:
     searchIndex:
       name: "cedar-search"
   host: "${CEDAR_OPENSEARCH_HOST}"
   restPort: "${CEDAR_OPENSEARCH_REST_PORT}"
-  transportPort: "${CEDAR_OPENSEARCH_TRANSPORT_PORT}"
   # One process-wide REST client serves every OpenSearch operation in a service. These values make
   # the OpenSearch client's previous defaults explicit and bound both connection acquisition and I/O.
   maxConnections: 30
@@ -206,77 +188,53 @@ servers:
   group:
     httpPort: "${CEDAR_GROUP_HTTP_PORT}"
     adminPort: "${CEDAR_GROUP_ADMIN_PORT}"
-    stopPort: "${CEDAR_GROUP_STOP_PORT}"
     base: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_GROUP_SERVER_HOST}:${CEDAR_GROUP_ADMIN_PORT}/"
   messaging:
     httpPort: "${CEDAR_MESSAGING_HTTP_PORT}"
     adminPort: "${CEDAR_MESSAGING_ADMIN_PORT}"
-    stopPort: "${CEDAR_MESSAGING_STOP_PORT}"
     base: "http://${CEDAR_MESSAGING_SERVER_HOST}:${CEDAR_MESSAGING_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_MESSAGING_SERVER_HOST}:${CEDAR_MESSAGING_ADMIN_PORT}/"
   repo:
     httpPort: "${CEDAR_REPO_HTTP_PORT}"
     adminPort: "${CEDAR_REPO_ADMIN_PORT}"
-    stopPort: "${CEDAR_REPO_STOP_PORT}"
     base: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_REPO_SERVER_HOST}:${CEDAR_REPO_ADMIN_PORT}/"
   resource:
     httpPort: "${CEDAR_RESOURCE_HTTP_PORT}"
     adminPort: "${CEDAR_RESOURCE_ADMIN_PORT}"
-    stopPort: "${CEDAR_RESOURCE_STOP_PORT}"
     base: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_ADMIN_PORT}/"
-    loadValueSetsOntology: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/load-valuesets-ontology"
-    loadValueSetsOntologyStatus: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/load-valuesets-ontology-status"
     regenerateSearchIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/regenerate-search-index"
     generateEmptySearchIndex: "http://${CEDAR_RESOURCE_SERVER_HOST}:${CEDAR_RESOURCE_HTTP_PORT}/command/generate-empty-search-index"
   artifact:
     httpPort: "${CEDAR_ARTIFACT_HTTP_PORT}"
     adminPort: "${CEDAR_ARTIFACT_ADMIN_PORT}"
-    stopPort: "${CEDAR_ARTIFACT_STOP_PORT}"
     base: "http://${CEDAR_ARTIFACT_SERVER_HOST}:${CEDAR_ARTIFACT_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_ARTIFACT_SERVER_HOST}:${CEDAR_ARTIFACT_ADMIN_PORT}/"
     timeouts:
       responseMillis: ${CEDAR_HTTP_ARTIFACT_RESPONSE_MS:-20000}
   terminology:
     httpPort: "${CEDAR_TERMINOLOGY_HTTP_PORT}"
     adminPort: "${CEDAR_TERMINOLOGY_ADMIN_PORT}"
-    stopPort: "${CEDAR_TERMINOLOGY_STOP_PORT}"
     base: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_TERMINOLOGY_SERVER_HOST}:${CEDAR_TERMINOLOGY_ADMIN_PORT}/"
   user:
     httpPort: "${CEDAR_USER_HTTP_PORT}"
     adminPort: "${CEDAR_USER_ADMIN_PORT}"
-    stopPort: "${CEDAR_USER_STOP_PORT}"
     usersBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/users/"
     base: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_USER_SERVER_HOST}:${CEDAR_USER_ADMIN_PORT}/"
   worker:
     httpPort: "${CEDAR_WORKER_HTTP_PORT}"
     adminPort: "${CEDAR_WORKER_ADMIN_PORT}"
-    stopPort: "${CEDAR_WORKER_STOP_PORT}"
     base: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_WORKER_SERVER_HOST}:${CEDAR_WORKER_ADMIN_PORT}/"
   openview:
     httpPort: "${CEDAR_OPENVIEW_HTTP_PORT}"
     adminPort: "${CEDAR_OPENVIEW_ADMIN_PORT}"
-    stopPort: "${CEDAR_OPENVIEW_STOP_PORT}"
     base: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_OPENVIEW_SERVER_HOST}:${CEDAR_OPENVIEW_ADMIN_PORT}/"
     uriBase: "https://openview.${CEDAR_HOST}/"
   monitor:
     httpPort: "${CEDAR_MONITOR_HTTP_PORT}"
     adminPort: "${CEDAR_MONITOR_ADMIN_PORT}"
-    stopPort: "${CEDAR_MONITOR_STOP_PORT}"
     base: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_MONITOR_SERVER_HOST}:${CEDAR_MONITOR_ADMIN_PORT}/"
   bridge:
     httpPort: "${CEDAR_BRIDGE_HTTP_PORT}"
     adminPort: "${CEDAR_BRIDGE_ADMIN_PORT}"
-    stopPort: "${CEDAR_BRIDGE_STOP_PORT}"
     base: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_HTTP_PORT}/"
-    adminBase: "http://${CEDAR_BRIDGE_SERVER_HOST}:${CEDAR_BRIDGE_ADMIN_PORT}/"
 
 
 #Default values for user profile
@@ -287,7 +245,6 @@ blueprintUserProfile:
   defaultAPIKey:
     serviceName: "CEDAR"
     description: "Auto-generated apiKey for CEDAR"
-    salt: "${CEDAR_SALT_API_KEY}"
   defaultRoles:
     normal:
       - "defaultUser"
@@ -342,7 +299,6 @@ terminology:
 
 importExport:
   exportDir: "${CEDAR_HOME}/export/"
-  exportConvertedDir: "${CEDAR_HOME}/export-converted/"
   importDir: "${CEDAR_HOME}/import/"
 
 resourceRESTAPI:

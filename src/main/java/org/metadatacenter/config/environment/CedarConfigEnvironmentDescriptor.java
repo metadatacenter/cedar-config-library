@@ -84,12 +84,6 @@ public class CedarConfigEnvironmentDescriptor {
     // all the microservices
     cedarHost.addAll(allMicroservices);
 
-    Set<SystemComponent> cedarNetGateway = variableToComponent.get(CedarEnvironmentVariable.CEDAR_NET_GATEWAY);
-    cedarNetGateway.add(SystemComponent.ADMIN_TOOL);
-    cedarNetGateway.add(SystemComponent.CADSR_TOOL);
-    // all the microservices
-    cedarNetGateway.addAll(allMicroservices);
-
     Set<SystemComponent> nciCADSRValueSetsOntologyFilePath = variableToComponent.get(CedarEnvironmentVariable.CEDAR_CADSR_ONTOLOGIES_FOLDER);
     nciCADSRValueSetsOntologyFilePath.add(SystemComponent.SERVER_RESOURCE);
 
@@ -98,12 +92,6 @@ public class CedarConfigEnvironmentDescriptor {
 
     Set<SystemComponent> cedarBioportalRestBase = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BIOPORTAL_REST_BASE);
     cedarBioportalRestBase.add(SystemComponent.SERVER_TERMINOLOGY);
-
-    Set<SystemComponent> cedarAnalyticsKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ANALYTICS_KEY);
-    // gulpfile.js replaces int tracking-service.conf.json
-    cedarAnalyticsKey.add(SystemComponent.FRONTEND_DEVELOPMENT);
-    cedarAnalyticsKey.add(SystemComponent.FRONTEND_TEST);
-    cedarAnalyticsKey.add(SystemComponent.FRONTEND_PRODUCTION);
 
     Set<SystemComponent> cedarGA4TrackingId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GA4_TRACKING_ID);
     // gulpfile.js replaces int version.js
@@ -146,11 +134,11 @@ public class CedarConfigEnvironmentDescriptor {
     cedarCaDSRAdminUserApiKey.add(SystemComponent.ADMIN_TOOL);
     cedarCaDSRAdminUserApiKey.add(SystemComponent.CADSR_TOOL);
 
+    // The artifact server keeps the artifact documents in Mongo, and the admin tool initializes, wipes and
+    // exports that database. No other component opens a Mongo connection.
     Set<SystemComponent> cedarMongoUserName = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_NAME);
     cedarMongoUserName.add(SystemComponent.ADMIN_TOOL);
-    cedarMongoUserName.add(SystemComponent.CADSR_TOOL);
-    // all the microservices for MongoDB initialization for user details
-    cedarMongoUserName.addAll(allMicroservices);
+    cedarMongoUserName.add(SystemComponent.SERVER_ARTIFACT);
 
     Set<SystemComponent> cedarMongoUserPasswd = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONGO_APP_USER_PASSWORD);
     cedarMongoUserPasswd.addAll(cedarMongoUserName);// used together with the username
@@ -169,35 +157,27 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarOpenSearchRestPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_REST_PORT);
     cedarOpenSearchRestPort.addAll(cedarOpensearchHost);
 
-    Set<SystemComponent> cedarOpenSearchTransportPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENSEARCH_TRANSPORT_PORT);
-    cedarOpenSearchTransportPort.addAll(cedarOpensearchHost);
-
     // The monitor reads this datasource to report what the messaging database holds, alongside the
     // log database it already declares below. Reporting a datasource means connecting to it, and a
     // component that has not declared these sees the template's placeholders instead of a server.
     Set<SystemComponent> cedarMessagingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_HOST);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_MESSAGING);
-    cedarMessagingMysqlHost.add(SystemComponent.SERVER_WORKER);
     cedarMessagingMysqlHost.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPort = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PORT);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_MESSAGING);
-    cedarMessagingMysqlPort.add(SystemComponent.SERVER_WORKER);
     cedarMessagingMysqlPort.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlDb = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_DB);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_MESSAGING);
-    cedarMessagingMysqlDb.add(SystemComponent.SERVER_WORKER);
     cedarMessagingMysqlDb.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_USER);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_MESSAGING);
-    cedarMessagingMysqlUser.add(SystemComponent.SERVER_WORKER);
     cedarMessagingMysqlUser.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarMessagingMysqlPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_MYSQL_PASSWORD);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MESSAGING);
-    cedarMessagingMysqlPassword.add(SystemComponent.SERVER_WORKER);
     cedarMessagingMysqlPassword.add(SystemComponent.SERVER_MONITOR);
 
     Set<SystemComponent> cedarLoggingMysqlHost = variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_HOST);
@@ -219,11 +199,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarLoggingMysqlPassword = variableToComponent.get(CedarEnvironmentVariable.CEDAR_LOG_MYSQL_PASSWORD);
     cedarLoggingMysqlPassword.add(SystemComponent.SERVER_WORKER);
     cedarLoggingMysqlPassword.add(SystemComponent.SERVER_MONITOR);
-
-    Set<SystemComponent> cedarSaltApiKey = variableToComponent.get(CedarEnvironmentVariable.CEDAR_SALT_API_KEY);
-    cedarSaltApiKey.add(SystemComponent.ADMIN_TOOL); //profile creation
-    cedarSaltApiKey.add(SystemComponent.CADSR_TOOL);
-    cedarSaltApiKey.add(SystemComponent.SERVER_RESOURCE); //profile creation triggered by event listener
 
     Set<SystemComponent> dataCiteRepositoryId = variableToComponent.get(CedarEnvironmentVariable.CEDAR_DATACITE_REPOSITORY_ID);
     dataCiteRepositoryId.add(SystemComponent.SERVER_BRIDGE);
@@ -260,8 +235,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortGroup = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GROUP_ADMIN_PORT);
     cedarAdminPortGroup.add(SystemComponent.SERVER_GROUP);
     cedarAdminPortGroup.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortGroup = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GROUP_STOP_PORT);
-    cedarStopPortGroup.add(SystemComponent.SERVER_GROUP);
     Set<SystemComponent> cedarServerHostGroup = variableToComponent.get(CedarEnvironmentVariable.CEDAR_GROUP_SERVER_HOST);
     cedarServerHostGroup.add(SystemComponent.SERVER_MONITOR);
 
@@ -271,8 +244,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortMessaging = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_ADMIN_PORT);
     cedarAdminPortMessaging.add(SystemComponent.SERVER_MESSAGING);
     cedarAdminPortMessaging.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortMessaging = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_STOP_PORT);
-    cedarStopPortMessaging.add(SystemComponent.SERVER_MESSAGING);
     Set<SystemComponent> cedarServerHostMessaging = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MESSAGING_SERVER_HOST);
     cedarServerHostMessaging.add(SystemComponent.SERVER_MONITOR);
 
@@ -282,8 +253,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_USER_ADMIN_PORT);
     cedarAdminPortUser.add(SystemComponent.SERVER_USER);
     cedarAdminPortUser.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_USER_STOP_PORT);
-    cedarStopPortUser.add(SystemComponent.SERVER_USER);
     Set<SystemComponent> cedarServerHostUser = variableToComponent.get(CedarEnvironmentVariable.CEDAR_USER_SERVER_HOST);
     cedarServerHostUser.add(SystemComponent.SERVER_MESSAGING);
     cedarServerHostUser.add(SystemComponent.SERVER_OPENVIEW);
@@ -296,8 +265,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortRepo = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REPO_ADMIN_PORT);
     cedarAdminPortRepo.add(SystemComponent.SERVER_REPO);
     cedarAdminPortRepo.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortRepo = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REPO_STOP_PORT);
-    cedarStopPortRepo.add(SystemComponent.SERVER_REPO);
     Set<SystemComponent> cedarServerHostRepo = variableToComponent.get(CedarEnvironmentVariable.CEDAR_REPO_SERVER_HOST);
     cedarServerHostRepo.add(SystemComponent.SERVER_MONITOR);
 
@@ -309,11 +276,12 @@ public class CedarConfigEnvironmentDescriptor {
     cedarHttpPortResource.add(SystemComponent.ADMIN_TOOL);
     cedarHttpPortResource.add(SystemComponent.CADSR_TOOL);
     cedarHttpPortResource.add(SystemComponent.SERVER_MONITOR);
+    // The Keycloak event listener posts every login and user change to the resource server, at the
+    // host and port it reads from Keycloak's own environment.
+    cedarHttpPortResource.add(SystemComponent.KEYCLOAK_EVENT_LISTENER);
     Set<SystemComponent> cedarAdminPortResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_ADMIN_PORT);
     cedarAdminPortResource.add(SystemComponent.SERVER_RESOURCE);
     cedarAdminPortResource.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_STOP_PORT);
-    cedarStopPortResource.add(SystemComponent.SERVER_RESOURCE);
     Set<SystemComponent> cedarServerHostResource = variableToComponent.get(CedarEnvironmentVariable.CEDAR_RESOURCE_SERVER_HOST);
     cedarServerHostResource.add(SystemComponent.SERVER_BRIDGE);
     cedarServerHostResource.add(SystemComponent.SERVER_REPO);
@@ -334,8 +302,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_ADMIN_PORT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_ARTIFACT);
     cedarAdminPortArtifact.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortTemplate = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_STOP_PORT);
-    cedarStopPortTemplate.add(SystemComponent.SERVER_ARTIFACT);
     Set<SystemComponent> cedarServerHostArtifact = variableToComponent.get(CedarEnvironmentVariable.CEDAR_ARTIFACT_SERVER_HOST);
     cedarServerHostArtifact.add(SystemComponent.SERVER_WORKER);
     cedarServerHostArtifact.add(SystemComponent.SERVER_RESOURCE);
@@ -360,8 +326,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_ADMIN_PORT);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
     cedarAdminPortTerminology.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_STOP_PORT);
-    cedarStopPortTerminology.add(SystemComponent.SERVER_TERMINOLOGY);
     Set<SystemComponent> cedarServerHostTerminology = variableToComponent.get(CedarEnvironmentVariable.CEDAR_TERMINOLOGY_SERVER_HOST);
     cedarServerHostTerminology.add(SystemComponent.SERVER_MONITOR);
     cedarServerHostTerminology.add(SystemComponent.SERVER_RESOURCE);
@@ -373,8 +337,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_ADMIN_PORT);
     cedarAdminPortWorker.add(SystemComponent.SERVER_WORKER);
     cedarAdminPortWorker.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_STOP_PORT);
-    cedarStopPortWorker.add(SystemComponent.SERVER_WORKER);
     Set<SystemComponent> cedarServerHostWorker = variableToComponent.get(CedarEnvironmentVariable.CEDAR_WORKER_SERVER_HOST);
     cedarServerHostWorker.add(SystemComponent.SERVER_MONITOR);
 
@@ -429,8 +391,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_ADMIN_PORT);
     cedarAdminPortOpenview.add(SystemComponent.SERVER_OPENVIEW);
     cedarAdminPortOpenview.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_STOP_PORT);
-    cedarStopPortOpenview.add(SystemComponent.SERVER_OPENVIEW);
     Set<SystemComponent> cedarServerHostOpenview = variableToComponent.get(CedarEnvironmentVariable.CEDAR_OPENVIEW_SERVER_HOST);
     cedarServerHostOpenview.add(SystemComponent.SERVER_MONITOR);
 
@@ -438,8 +398,6 @@ public class CedarConfigEnvironmentDescriptor {
     cedarHttpPortMonitor.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarAdminPortMonitor = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONITOR_ADMIN_PORT);
     cedarAdminPortMonitor.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortMonitor = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONITOR_STOP_PORT);
-    cedarStopPortMonitor.add(SystemComponent.SERVER_MONITOR);
     Set<SystemComponent> cedarServerHostMonitor = variableToComponent.get(CedarEnvironmentVariable.CEDAR_MONITOR_SERVER_HOST);
     cedarServerHostMonitor.add(SystemComponent.SERVER_MONITOR);
 
@@ -451,8 +409,6 @@ public class CedarConfigEnvironmentDescriptor {
     Set<SystemComponent> cedarAdminPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_ADMIN_PORT);
     cedarAdminPortBridge.add(SystemComponent.SERVER_BRIDGE);
     cedarAdminPortBridge.add(SystemComponent.SERVER_MONITOR);
-    Set<SystemComponent> cedarStopPortBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_STOP_PORT);
-    cedarStopPortBridge.add(SystemComponent.SERVER_BRIDGE);
     Set<SystemComponent> cedarServerHostBridge = variableToComponent.get(CedarEnvironmentVariable.CEDAR_BRIDGE_SERVER_HOST);
     cedarServerHostBridge.add(SystemComponent.SERVER_MONITOR);
     cedarServerHostBridge.add(SystemComponent.SERVER_ARTIFACT);
@@ -501,7 +457,6 @@ public class CedarConfigEnvironmentDescriptor {
         CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_DB,
         CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_USER,
         CedarEnvironmentVariable.CEDAR_KEYCLOAK_MYSQL_PASSWORD,
-        CedarEnvironmentVariable.CEDAR_CA,
         CedarEnvironmentVariable.CEDAR_HOME,
         CedarEnvironmentVariable.CEDAR_HOST}) {
       variableToComponent.get(keycloakVariable).add(SystemComponent.KEYCLOAK_SERVER);
@@ -562,7 +517,6 @@ public class CedarConfigEnvironmentDescriptor {
     }
 
     for (CedarEnvironmentVariable v : new CedarEnvironmentVariable[]{
-        CedarEnvironmentVariable.CEDAR_CA,
         CedarEnvironmentVariable.CEDAR_CA_HOME,
         CedarEnvironmentVariable.CEDAR_CA_PASSWORD,
         CedarEnvironmentVariable.CEDAR_CA_COMMON_NAME,
@@ -611,7 +565,6 @@ public class CedarConfigEnvironmentDescriptor {
         CedarEnvironmentVariable.CEDAR_DEVELOP_HOME,
         CedarEnvironmentVariable.CEDAR_UTIL_BIN,
         CedarEnvironmentVariable.CEDAR_DEV_BUILD_FRONTENDS,
-        CedarEnvironmentVariable.CEDAR_DEV_USE_PRIVATE_REPOS,
         CedarEnvironmentVariable.CEDAR_VERSION,
         CedarEnvironmentVariable.CEDAR_VERSION_MODIFIER}) {
       variableToComponent.get(v).add(SystemComponent.CEDAR_CLI);

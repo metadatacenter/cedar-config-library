@@ -20,7 +20,6 @@ public enum CedarEnvironmentVariable {
   CEDAR_BIOPORTAL_API_KEY("CEDAR_BIOPORTAL_API_KEY", CedarEnvironmentVariableSecure.YES),
   CEDAR_BIOPORTAL_REST_BASE("CEDAR_BIOPORTAL_REST_BASE"),
 
-  CEDAR_ANALYTICS_KEY("CEDAR_ANALYTICS_KEY", CedarEnvironmentVariableSecure.YES),
   CEDAR_GA4_TRACKING_ID("CEDAR_GA4_TRACKING_ID", CedarEnvironmentVariableSecure.YES),
 
   CEDAR_ADMIN_USER_PASSWORD("CEDAR_ADMIN_USER_PASSWORD", CedarEnvironmentVariableSecure.YES),
@@ -41,7 +40,6 @@ public enum CedarEnvironmentVariable {
 
   CEDAR_OPENSEARCH_HOST("CEDAR_OPENSEARCH_HOST"),
   CEDAR_OPENSEARCH_REST_PORT("CEDAR_OPENSEARCH_REST_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_OPENSEARCH_TRANSPORT_PORT("CEDAR_OPENSEARCH_TRANSPORT_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_MESSAGING_MYSQL_HOST("CEDAR_MESSAGING_MYSQL_HOST"),
   CEDAR_MESSAGING_MYSQL_PORT("CEDAR_MESSAGING_MYSQL_PORT", CedarEnvironmentVariableType.NUMERIC),
@@ -121,7 +119,6 @@ public enum CedarEnvironmentVariable {
   CEDAR_KEYCLOAK_MYSQL_USER("CEDAR_KEYCLOAK_MYSQL_USER", CedarEnvironmentVariableOptional.YES),
   CEDAR_KEYCLOAK_MYSQL_PASSWORD("CEDAR_KEYCLOAK_MYSQL_PASSWORD", CedarEnvironmentVariableSecure.YES,
       CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
-  CEDAR_CA("CEDAR_CA", CedarEnvironmentVariableOptional.YES),
 
   // The infrastructure layer. Every one is optional: no JVM resolves any of them, so requiring one
   // would fail a boot over a variable that boot never reads. They are declared so the environment page
@@ -214,13 +211,11 @@ public enum CedarEnvironmentVariable {
   CEDAR_UTIL_BIN("CEDAR_UTIL_BIN", CedarEnvironmentVariableOptional.YES),
   CEDAR_DEV_BUILD_FRONTENDS("CEDAR_DEV_BUILD_FRONTENDS", CedarEnvironmentVariableType.BOOLEAN,
       CedarEnvironmentVariableOptional.YES),
-  CEDAR_DEV_USE_PRIVATE_REPOS("CEDAR_DEV_USE_PRIVATE_REPOS", CedarEnvironmentVariableType.BOOLEAN,
-      CedarEnvironmentVariableOptional.YES),
 
-  CEDAR_SALT_API_KEY("CEDAR_SALT_API_KEY", CedarEnvironmentVariableSecure.YES),
-
-  CEDAR_TEST_USER1_ID("CEDAR_TEST_USER1_ID"),
-  CEDAR_TEST_USER2_ID("CEDAR_TEST_USER2_ID"),
+  // The two accounts the server suites authenticate as. Only cedar-test-support-library reads them, so a
+  // deployment can leave them unset. Its configuration then keeps the two placeholders, which nothing reads.
+  CEDAR_TEST_USER1_ID("CEDAR_TEST_USER1_ID", CedarEnvironmentVariableOptional.YES),
+  CEDAR_TEST_USER2_ID("CEDAR_TEST_USER2_ID", CedarEnvironmentVariableOptional.YES),
 
   CEDAR_TRUSTED_FOLDERS("CEDAR_TRUSTED_FOLDERS"),
 
@@ -247,58 +242,47 @@ public enum CedarEnvironmentVariable {
   CEDAR_GROUP_SERVER_HOST("CEDAR_GROUP_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_GROUP_HTTP_PORT("CEDAR_GROUP_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_GROUP_ADMIN_PORT("CEDAR_GROUP_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_GROUP_STOP_PORT("CEDAR_GROUP_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_MESSAGING_SERVER_HOST("CEDAR_MESSAGING_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_MESSAGING_HTTP_PORT("CEDAR_MESSAGING_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_MESSAGING_ADMIN_PORT("CEDAR_MESSAGING_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_MESSAGING_STOP_PORT("CEDAR_MESSAGING_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_REPO_SERVER_HOST("CEDAR_REPO_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_REPO_HTTP_PORT("CEDAR_REPO_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_REPO_ADMIN_PORT("CEDAR_REPO_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_REPO_STOP_PORT("CEDAR_REPO_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_RESOURCE_SERVER_HOST("CEDAR_RESOURCE_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_RESOURCE_HTTP_PORT("CEDAR_RESOURCE_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_RESOURCE_ADMIN_PORT("CEDAR_RESOURCE_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_RESOURCE_STOP_PORT("CEDAR_RESOURCE_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_ARTIFACT_SERVER_HOST("CEDAR_ARTIFACT_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_ARTIFACT_HTTP_PORT("CEDAR_ARTIFACT_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_ARTIFACT_ADMIN_PORT("CEDAR_ARTIFACT_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_ARTIFACT_STOP_PORT("CEDAR_ARTIFACT_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_TERMINOLOGY_SERVER_HOST("CEDAR_TERMINOLOGY_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_TERMINOLOGY_HTTP_PORT("CEDAR_TERMINOLOGY_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_TERMINOLOGY_ADMIN_PORT("CEDAR_TERMINOLOGY_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_TERMINOLOGY_STOP_PORT("CEDAR_TERMINOLOGY_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_USER_SERVER_HOST("CEDAR_USER_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_USER_HTTP_PORT("CEDAR_USER_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_USER_ADMIN_PORT("CEDAR_USER_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_USER_STOP_PORT("CEDAR_USER_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_WORKER_SERVER_HOST("CEDAR_WORKER_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_WORKER_HTTP_PORT("CEDAR_WORKER_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_WORKER_ADMIN_PORT("CEDAR_WORKER_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_WORKER_STOP_PORT("CEDAR_WORKER_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_OPENVIEW_SERVER_HOST("CEDAR_OPENVIEW_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_OPENVIEW_HTTP_PORT("CEDAR_OPENVIEW_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_OPENVIEW_ADMIN_PORT("CEDAR_OPENVIEW_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_OPENVIEW_STOP_PORT("CEDAR_OPENVIEW_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
   CEDAR_MONITOR_SERVER_HOST("CEDAR_MONITOR_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_MONITOR_HTTP_PORT("CEDAR_MONITOR_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_MONITOR_ADMIN_PORT("CEDAR_MONITOR_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_MONITOR_STOP_PORT("CEDAR_MONITOR_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
 
 
   CEDAR_BRIDGE_SERVER_HOST("CEDAR_BRIDGE_SERVER_HOST", CedarEnvironmentVariableType.STRING),
   CEDAR_BRIDGE_HTTP_PORT("CEDAR_BRIDGE_HTTP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_BRIDGE_ADMIN_PORT("CEDAR_BRIDGE_ADMIN_PORT", CedarEnvironmentVariableType.NUMERIC),
-  CEDAR_BRIDGE_STOP_PORT("CEDAR_BRIDGE_STOP_PORT", CedarEnvironmentVariableType.NUMERIC),
   CEDAR_RATE_LIMIT_MODE("CEDAR_RATE_LIMIT_MODE", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
   CEDAR_RATE_LIMIT_REDIS_PREFIX("CEDAR_RATE_LIMIT_REDIS_PREFIX", CedarEnvironmentVariableType.STRING, CedarEnvironmentVariableOptional.YES),
   CEDAR_RATE_LIMIT_REDIS_TIMEOUT_MS("CEDAR_RATE_LIMIT_REDIS_TIMEOUT_MS", CedarEnvironmentVariableType.NUMERIC, CedarEnvironmentVariableOptional.YES),
