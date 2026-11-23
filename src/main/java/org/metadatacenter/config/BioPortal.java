@@ -6,7 +6,6 @@ public class BioPortal extends ServerConfig {
   private String basePath;
   private int connectTimeout;
   private int socketTimeout;
-  private int defaultPageSize;
 
   public String getApiKey() {
     return apiKey;
@@ -22,9 +21,5 @@ public class BioPortal extends ServerConfig {
 
   public int getSocketTimeout() {
     return socketTimeout;
-  }
-
-  public int getDefaultPageSize() {
-    return defaultPageSize;
   }
 }

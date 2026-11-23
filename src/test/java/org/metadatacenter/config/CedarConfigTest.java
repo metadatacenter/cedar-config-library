@@ -414,6 +414,20 @@ assertEquals("template-instances", artifactServerCollections.get("instance"));
   }
 
   @Test
+  public void testEveryOffsetPagedApiDefaultsTo100AndAllowsAtMost500() {
+    CedarConfig config = getCedarConfig();
+    PaginationConfig[] paginations = {
+        config.getResourceRESTAPI().getPagination(),
+        config.getArtifactRESTAPI().getPagination(),
+        config.getCategoryRESTAPI().getPagination()
+    };
+    for (PaginationConfig pagination : paginations) {
+      assertEquals(100, pagination.getDefaultPageSize());
+      assertEquals(500, pagination.getMaxPageSize());
+    }
+  }
+
+  @Test
   public void testMySqlPoolBudgetsAreExplicitPerService() {
     HibernateConfig messaging = getCedarConfig().getMessagingServerConfig();
     HibernateConfig logging = getCedarConfig().getDBLoggingConfig();

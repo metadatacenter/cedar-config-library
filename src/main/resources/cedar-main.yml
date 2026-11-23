@@ -284,7 +284,6 @@ terminology:
     basePath: "${CEDAR_BIOPORTAL_REST_BASE}"
     connectTimeout: 3000
     socketTimeout: 30000
-    defaultPageSize: 50
   # Local, version-aware SQLite store. Empty = disabled (all terminology served via BioPortal).
   # Enable by pointing catalogPath at an ingested catalog and listing ontologies to serve locally.
   # Snapshot files are located relative to the catalog file's own directory, so deploying is just:
@@ -312,7 +311,7 @@ resourceRESTAPI:
 
 artifactRESTAPI:
   pagination:
-    defaultPageSize: 20
+    defaultPageSize: 100
     maxPageSize: 500
   excludedFields:
     - "_id"
@@ -340,7 +339,7 @@ artifactRESTAPI:
 
 categoryRESTAPI:
   pagination:
-    defaultPageSize: 20
+    defaultPageSize: 100
     maxPageSize: 500
 
 cache:
