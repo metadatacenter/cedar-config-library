@@ -58,7 +58,7 @@ class MicroserviceUrlProviderTest {
 
   @Test
   void theDoiWriteBackAddressesTheResourceServerCommand() throws Exception {
-    assertEquals("http://127.0.0.1:9007/command/annotations/doi", urls().getResource().getCommandDOIUpdate());
+    assertEquals("http://127.0.0.1:9007/command/set-doi", urls().getResource().getCommandDOIUpdate());
   }
 
   /**
