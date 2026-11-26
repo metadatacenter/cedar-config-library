@@ -43,12 +43,19 @@ public class ResourceMicroserviceUrlProvider extends MicroserviceUrlProvider {
     return base + "open/" + resourceType.getPrefix() + "/" + UrlUtil.urlEncode(identifiers == null ? id : identifiers.resourcePathId(resourceType, id));
   }
 
-  public String getCommandDOIUpdate() {
-    return base + "command/set-doi";
+  public String getArtifactAnnotations(String artifactId) {
+    var full = org.metadatacenter.id.CedarFQResourceId.build(artifactId);
+    CedarResourceType type = full == null
+        ? CedarResourceType.forPrefix(artifactId.split("/", 2)[0]) : full.getType();
+    if (type == null || type == CedarResourceType.FOLDER) {
+      throw new IllegalArgumentException("An artifact identifier must name its collection");
+    }
+    return base + type.getPrefix() + "/"
+        + UrlUtil.urlEncode(org.metadatacenter.id.CedarResourceAddress.pathId(artifactId)) + "/annotations";
   }
 
   public String getValidateCommand(String resourceType) {
-    return base + "command/validate?" + QP_RESOURCE_TYPE + "=" + UrlUtil.urlEncode(resourceType);
+    return base + "artifact-validations/" + UrlUtil.urlEncode(resourceType);
   }
 
 }

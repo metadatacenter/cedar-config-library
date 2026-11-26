@@ -58,7 +58,9 @@ class MicroserviceUrlProviderTest {
 
   @Test
   void theDoiWriteBackAddressesTheResourceServerCommand() throws Exception {
-    assertEquals("http://127.0.0.1:9007/command/set-doi", urls().getResource().getCommandDOIUpdate());
+    assertEquals("http://127.0.0.1:9007/templates/00000000-0000-0000-0000-000000000001/annotations", urls().getResource().getArtifactAnnotations("templates/00000000-0000-0000-0000-000000000001"));
+    assertEquals("http://127.0.0.1:9007/templates/https%3A%2F%2Flegacy.example%2Ftemplates%2Fabc/annotations",
+        urls().getResource().getArtifactAnnotations("https://legacy.example/templates/abc"));
   }
 
   /**
@@ -91,6 +93,9 @@ class MicroserviceUrlProviderTest {
   }
 
   private static List<Object[]> argumentLists(Method method) {
+    if (method.getName().equals("getArtifactAnnotations")) {
+      return java.util.Collections.singletonList(new Object[]{"templates/00000000-0000-0000-0000-000000000001"});
+    }
     List<Object[]> lists = Collections.singletonList(new Object[0]);
     for (Class<?> type : method.getParameterTypes()) {
       List<?> samples = SAMPLES.get(type);

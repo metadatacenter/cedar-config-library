@@ -12,7 +12,7 @@ import static org.metadatacenter.constant.CedarQueryParameters.QP_RESOURCE_TYPE;
 
 public class ArtifactMicroserviceUrlProvider extends MicroserviceUrlProvider {
 
-  protected static final String VALIDATE_COMMAND = "command/validate";
+  protected static final String VALIDATE_COMMAND = "artifact-validations";
 
   private final org.metadatacenter.server.jsonld.LinkedDataUtil identifiers;
 
@@ -42,6 +42,6 @@ public class ArtifactMicroserviceUrlProvider extends MicroserviceUrlProvider {
   }
 
   public String getValidateCommand(String resourceType) {
-    return String.format("%s%s?%s=%s", base, VALIDATE_COMMAND, QP_RESOURCE_TYPE, resourceType);
+    return base + VALIDATE_COMMAND + "/" + UrlUtil.urlEncode(resourceType);
   }
 }
