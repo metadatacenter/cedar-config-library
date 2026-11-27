@@ -40,6 +40,33 @@ class ResourceAddressingTest {
     }
   }
 
+  @Test void groupsAndCategoriesResolveOnlyAtAnExplicitlyTypedBoundary() throws Exception {
+    var ids = identifiers();
+    String uuid = "12345678-abcd-1234-abcd-123456789012";
+    for (var type : new CedarResourceType[]{CedarResourceType.GROUP, CedarResourceType.CATEGORY}) {
+      String selector = type.getPrefix() + "/" + uuid;
+      String iri = "https://repo.metadatacenter.orgx/" + selector;
+      assertEquals(iri, ids.resolveResourceId(type, uuid));
+      assertEquals(iri, ids.resolveResourceId(type, selector));
+      assertEquals(iri, ids.resolveResourceId(type, iri));
+      assertEquals(uuid, ids.resourcePathId(type, iri));
+      assertThrows(UnresolvableIdentifierException.class, () -> ids.resolveResourceId(selector),
+          "A group or category is not a filesystem command selector");
+      assertEquals(iri, ids.resourceRequestId(iri));
+      for (String historical : new String[]{"https://repo.metadatacenter.net/" + selector,
+          "https://repo.example/legacy/special-category"}) {
+        assertEquals(historical, ids.resolveResourceId(type, historical));
+      }
+      for (String invalid : new String[]{"templates/" + uuid, "../" + uuid, "not-a-uuid", uuid + "/users"}) {
+        assertThrows(UnresolvableIdentifierException.class, () -> ids.resolveResourceId(type, invalid));
+      }
+    }
+    assertThrows(UnresolvableIdentifierException.class,
+        () -> ids.resolveResourceId(CedarResourceType.GROUP, "categories/" + uuid));
+    assertThrows(UnresolvableIdentifierException.class,
+        () -> ids.resolveResourceId(CedarResourceType.CATEGORY, "groups/" + uuid));
+  }
+
   @Test void otherResourceFamiliesRetainTheirExistingSelectors() throws Exception {
     var ids = identifiers();
     for (String type : new String[]{"users", "groups", "categories", "template-element-instances"}) {

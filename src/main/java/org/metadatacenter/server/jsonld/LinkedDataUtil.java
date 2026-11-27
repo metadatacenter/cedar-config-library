@@ -52,7 +52,11 @@ public class LinkedDataUtil {
 
   /** Resolve a typed HTTP selector without changing a document's stored identity. */
   public String resolveResourceId(CedarResourceType type, String value) {
-    requireAddressableType(type);
+    // Groups and categories have typed HTTP paths too, but are not filesystem selectors in
+    // command bodies. Keep the untyped overload's folder/artifact restriction below.
+    if (type != CedarResourceType.GROUP && type != CedarResourceType.CATEGORY) {
+      requireAddressableType(type);
+    }
     if (value == null || value.isBlank()) {
       throw new UnresolvableIdentifierException("A resource identifier is required");
     }
